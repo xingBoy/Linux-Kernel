@@ -1,1 +1,1 @@
-# Linux
+# Linux-Kernel## Branch Namimg Specification(chip name)-Kernel-(Linux kernel version)* chip name: * i.MX6;   * AM335x;  * Linux kernel version: * v3.0.35 * v3.2.0E.g  i.MX6(chip name)-Kernel-v3.0.35(Linux kernel version) = i.MX6-Kernel-v3.0.35## i.MX6 Linux Kernel## AM335x Linux Kernel
