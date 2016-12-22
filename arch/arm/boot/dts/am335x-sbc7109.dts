@@ -13,6 +13,10 @@
 / {
 	model = "APLEX SBC7109";
 	compatible = "ti,am335x-sbc7109", "ti,am33xx";
+	
+	chosen {
+		linux,stdout-path = &uart1;
+	};
 
 	cpus {
 		cpu@0 {
