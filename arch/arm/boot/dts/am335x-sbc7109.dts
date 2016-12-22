@@ -134,6 +134,9 @@
 		pinctrl-single,pins = <
 			0x170 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart0_rxd.uart0_rxd */
 			0x174 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart0_txd.uart0_txd */
+			0x20  (PIN_OUTPUT_PULLUP | MUX_MODE7)   /* (U10) gpmc_ad8.gpio0[22] COM0_MODE_0 */
+			0x24  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)   /* (T10) gpmc_ad9.gpio0[23] COM0_MODE_1 */
+			0x1b0 (PIN_OUTPUT_PULLDOWN | MUX_MODE7 ) /* (A15) xdma_event_intr0.gpio0[19] COM0_TERM */
 		>;
 	};
 
@@ -202,6 +205,7 @@
 	ecap0_pins: backlight_pins {
 		pinctrl-single,pins = <
 			0x164 0x0	/* eCAP0_in_PWM0_out.eCAP0_in_PWM0_out MODE0 */
+			0x178 ( PIN_OUTPUT_PULLUP | MUX_MODE7 ) /* (D18) uart1_ctsn.gpio0[12] LVDS_BLKT_ON s*/
 		>;
 	};
 
