@@ -77,15 +77,17 @@
 
 	sound {
 		compatible = "simple-audio-card";
-		simple-audio-card,name = "AM335x-EVM";
+		simple-audio-card,name = "SBC7109";
 		simple-audio-card,widgets =
 			"Headphone", "Headphone Jack",
-			"Line", "Line In";
+			"Line", "Line In",
+			"Microphone", "Microphone Jack";
 		simple-audio-card,routing =
 			"Headphone Jack",	"HPLOUT",
 			"Headphone Jack",	"HPROUT",
 			"LINE1L",		"Line In",
-			"LINE1R",		"Line In";
+			"LINE1R",		"Line In",
+			"LINE2L",		"Microphone Jack";
 		simple-audio-card,format = "dsp_b";
 		simple-audio-card,bitclock-master = <&sound_master>;
 		simple-audio-card,frame-master = <&sound_master>;
@@ -211,11 +213,7 @@
 
 	mygpio0_pins_default: mygpio0_pins_default {
 		pinctrl-single,pins = <
-			0x178 ( PIN_OUTPUT | MUX_MODE7 ) /* (D18) uart1_ctsn.gpio0[12] */
 			0x17c ( PIN_OUTPUT | MUX_MODE7 ) /* (D17) uart1_rtsn.gpio0[13] */
-			0x1b0 ( PIN_OUTPUT | MUX_MODE7 ) /* (A15) xdma_event_intr0.gpio0[19] */
-			0x20 ( PIN_OUTPUT | MUX_MODE7 ) /* (U10) gpmc_ad8.gpio0[22] */
-			0x24 ( PIN_OUTPUT | MUX_MODE7 ) /* (T10) gpmc_ad9.gpio0[23] */
 			0x28 ( PIN_INPUT | MUX_MODE7 ) /* (T11) gpmc_ad10.gpio0[26] */
 			0x2c ( PIN_OUTPUT_PULLUP | MUX_MODE7 ) /* (U12) gpmc_ad11.gpio0[27] */
 			0x144 ( PIN_OUTPUT | MUX_MODE7 ) /* (H18) rmii1_refclk.gpio0[29] */
@@ -235,15 +233,6 @@
 		pinctrl-single,pins = <
 			0x88 ( PIN_INPUT | MUX_MODE7 ) /* (T13) gpmc_csn3.gpio2[0] */
 			0x8c ( PIN_INPUT | MUX_MODE7 ) /* (V12) gpmc_clk.gpio2[1] */
-		>;
-	};
-
-	mygpio3_pins_default: mygpio3_pins_default {
-		pinctrl-single,pins = <
-			0x190 ( PIN_OUTPUT | MUX_MODE7 ) /* (A13) mcasp0_aclkx.gpio3[14] */
-			0x194 ( PIN_OUTPUT | MUX_MODE7 ) /* (B13) mcasp0_fsx.gpio3[15] */
-			0x198 ( PIN_OUTPUT | MUX_MODE7 ) /* (D12) mcasp0_axr0.gpio3[16] */
-			0x19c ( PIN_OUTPUT | MUX_MODE7 ) /* (C12) mcasp0_ahclkr.gpio3[17] */
 		>;
 	};
 
@@ -375,10 +364,14 @@
 
 	mcasp1_pins: mcasp1_pins {
 		pinctrl-single,pins = <
-			0x1ac ( PIN_INPUT_PULLDOWN | MUX_MODE0 ) /* (A14) mcasp0_ahclkx.mcasp0_ahclkx */ //DOUT
-			0x1a0 ( PIN_OUTPUT_PULLDOWN | MUX_MODE0 ) /* (B12) mcasp0_aclkr.mcasp0_aclkr */ //BCLK
-			0x1a4 ( PIN_OUTPUT_PULLDOWN | MUX_MODE0 ) /* (C13) mcasp0_fsr.mcasp0_fsr */ //WCLK
-			0x1a8 ( PIN_OUTPUT_PULLDOWN | MUX_MODE0 ) /* (D13) mcasp0_axr1.mcasp0_axr1 */ //DIN
+//			0x1ac ( PIN_INPUT | MUX_MODE2 ) /* (A14) mcasp0_ahclkx.mcasp0_axr3 */ //DOUT
+//			0x1a0 ( PIN_INPUT | MUX_MODE0 ) /* (B12) mcasp0_aclkr.mcasp0_aclkr */ //BCLK
+//			0x1a4 ( PIN_INPUT | MUX_MODE0 ) /* (C13) mcasp0_fsr.mcasp0_fsr */ //WCLK
+//			0x1a8 ( PIN_INPUT | MUX_MODE0 ) /* (D13) mcasp0_axr1.mcasp0_axr1 */ //DIN
+			0x1ac ( PIN_INPUT_PULLDOWN | MUX_MODE3 ) /* (A14) mcasp0_ahclkx.mcasp1_axr1 */ //DOUT
+			0x1a0 ( PIN_INPUT_PULLDOWN | MUX_MODE3 ) /* (B12) mcasp0_aclkr.mcasp1_aclkx */ //BCLK
+			0x1a4 ( PIN_INPUT_PULLDOWN | MUX_MODE3 ) /* (C13) mcasp0_fsr.mcasp1_fsx */ //WCLK
+			0x1a8 ( PIN_OUTPUT_PULLDOWN | MUX_MODE3 ) /* (D13) mcasp0_axr1.mcasp1_axr0 */ //DIN
 		>;
 	};
 	
@@ -614,8 +607,11 @@
 	op-mode = <0>;          /* MCASP_IIS_MODE */
 	tdm-slots = <2>;
 	/* 4 serializers */
+	//serial-dir = <  /* 0: INACTIVE, 1: TX, 2: RX */
+	//	0 1 0 2
+	//>;
 	serial-dir = <  /* 0: INACTIVE, 1: TX, 2: RX */
-		0 0 1 2
+		1 2 0 0
 	>;
 	tx-num-evt = <32>;
 	rx-num-evt = <32>;
