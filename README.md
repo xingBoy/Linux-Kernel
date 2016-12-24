@@ -1,1 +1,28 @@
-# Linux-Kernel## Branch Namimg Specification(product name)-(system type)-Kernel-(Linux kernel version)* product name: * SBC-7112S; * SBC-7112S-Q; * SBC-7109S-454;* system type: * Linux; * Android;* Linux kernel version: * v3.0.35 * v3.2.0E.g  SBC-7112S-Q(chip name)-Linux(system type)-Kernel-v3.0.35(Linux kernel version) = SBC-7112S-Q-Linux-Kernel-v3.0.35## SBC-7112S Linux Kernel## SBC-7112S-Q Linux Kernel## SBC-7109S-454 Linux Kernel
+# Linux-Kernel
+
+## Branch Namimg Specification
+
+(product name)-(system type)-Kernel-(Linux kernel version)
+
+* product name:
+ * SBC-7112S;
+ * SBC-7112S-Q;
+ * SBC-7109S-454;
+* system type:
+ * Linux;
+ * Android;
+* Linux kernel version:
+ * v3.0.35
+ * v3.2.0
+
+E.g  
+SBC-7112S-Q(chip name)-Linux(system type)-Kernel-v3.0.35(Linux kernel version) = SBC-7112S-Q-Linux-Kernel-v3.0.35
+
+## SBC-7112S Linux Kernel
+
+* [SBC-7112S-Linux-Kernel-v3.0.35](https://github.com/AplexOS/Linux-Kernel/tree/SBC-7112S-Linux-Kernel-v3.0.35)
+
+## SBC-7112S-Q Linux Kernel
+
+## SBC-7109S-454 Linux Kernel
+
