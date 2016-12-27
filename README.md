@@ -18,7 +18,7 @@
 
 ## 2. Release Naming Specification
 
-**Reference to U-Boot's [Release Naming Specification](https://github.com/AplexOS/U-Boot#release-naming-specification) section.**
+**Reference to U-Boot's [Release Naming Specification](https://github.com/AplexOS/U-Boot#2-release-naming-specification) section.**
 
 
 ## 3. SBC-7112S Linux Kernel
