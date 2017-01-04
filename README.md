@@ -29,5 +29,5 @@
 
 ## 5. SBC-7109S-454 Linux Kernel
 
-2. [SBC-7109S-454-Linux-Kernel-v4.4.12](https://github.com/AplexOS/Linux-Kernel/tree/SBC-7109S-454-Linux-Kernel-v4.4.12)
+2. [SBC-7109S-454_Linux_Kernel-v4.4.12](https://github.com/AplexOS/Linux-Kernel/tree/SBC-7109S-454-Linux-Kernel-v4.4.12)
 
