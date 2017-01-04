@@ -2,7 +2,7 @@
 
 ## 1. Branch Namimg Specification
 
-* **branch namimg format**: (product name)-(system type)-Kernel-(linux kernel version)
+* **branch namimg format**: (product name)\_(system type)\_Kernel-(linux kernel version)
   * **product name**:
     * SBC-7112S;
     * SBC-7112S-Q;
@@ -14,7 +14,7 @@
     * v3.0.35
     * v3.2.0
 * **E.g**:  
-`SBC-7112S-Q`(product name)`-Linux`(system type)`-Kernel-v3.0.35`(linux kernel version) = `SBC-7112S-Q-Linux-Kernel-v3.0.35`
+`SBC-7112S-Q`(product name)`_Linux`(system type)`_Kernel-v3.0.35`(linux kernel version) = `SBC-7112S-Q_Linux_Kernel-v3.0.35`
 
 ## 2. Release Naming Specification
 
@@ -23,7 +23,7 @@
 
 ## 3. SBC-7112S Linux Kernel
 
-1. [SBC-7112S-Linux-Kernel-v3.0.35](https://github.com/AplexOS/Linux-Kernel/tree/SBC-7112S-Linux-Kernel-v3.0.35)
+1. [SBC-7112S_Linux_Kernel-v3.0.35](https://github.com/AplexOS/Linux-Kernel/tree/SBC-7112S-Linux-Kernel-v3.0.35)
 
 ## 4. SBC-7112S-Q Linux Kernel
 
