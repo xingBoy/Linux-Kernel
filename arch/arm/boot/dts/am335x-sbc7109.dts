@@ -518,6 +518,16 @@
 	};
 };
 
+&epwmss1 {
+	status = "okay";
+
+	ecap1: ecap@48302100 {
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&am335x_io_buzz_pins_default>;
+	};
+};
+
 /*
 &gpmc {
 	status = "okay";
