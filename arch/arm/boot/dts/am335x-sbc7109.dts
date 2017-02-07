@@ -420,6 +420,11 @@
 	tps: tps@2d {
 		reg = <0x2d>;
 	};
+
+    eeprom@50 {
+        compatible = "at24,24c02";
+        reg = <0x50>;
+    };
 };
 
 &i2c1 {
