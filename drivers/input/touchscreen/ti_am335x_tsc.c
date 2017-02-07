@@ -35,6 +35,10 @@
 #define SEQ_SETTLE		275
 #define MAX_12BIT		((1 << 12) - 1)
 
+int pen_up_event_flag = 1;
+unsigned int bckup_x = 0, bckup_y = 0;
+unsigned int save_x = 0, save_y = 0;
+
 static const int config_pins[] = {
 	STEPCONFIG_XPP,
 	STEPCONFIG_XNN,
@@ -161,8 +165,12 @@ static void titsc_step_config(struct titsc *ts_dev)
 		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
 		break;
 	case 5:
+        /*
 		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
 				ts_dev->bit_xn | ts_dev->bit_yp;
+                */
+		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
+				(1 << 9) | (1 << 10);
 		break;
 	case 8:
 		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
@@ -204,24 +212,37 @@ static void titsc_step_config(struct titsc *ts_dev)
 
 	ts_dev->step_mask = stepenable;
 	am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
-}
 
-static int titsc_cmp_coord(const void *a, const void *b)
-{
-	return *(int *)a - *(int *)b;
+
 }
 
 static void titsc_read_coordinates(struct titsc *ts_dev,
-		u32 *x, u32 *y, u32 *z1, u32 *z2)
+		u32 *x, u32 *y, u32 *z1, u32 *z2, u32 *diffx, u32 *diffy)
 {
-	unsigned int yvals[7], xvals[7];
-	unsigned int i, xsum = 0, ysum = 0;
+	unsigned int i;
 	unsigned int creads = ts_dev->coordinate_readouts;
+    unsigned int readx1 = 0, ready1 = 0, channel, prev_val_x = ~0, prev_val_y = ~0, prev_diff_x = ~0, prev_diff_y = ~0;
+    unsigned int cur_diff_x = 0, cur_diff_y = 0;
+
 
 	for (i = 0; i < creads; i++) {
-		yvals[i] = titsc_readl(ts_dev, REG_FIFO0);
-		yvals[i] &= 0xfff;
-	}
+        ready1 = titsc_readl(ts_dev,  REG_FIFO0);
+        channel = ready1 & 0xf0000;
+        channel = channel >> 0x10;
+        ready1 &= 0xfff;
+
+        if (ready1 > prev_val_y)
+            cur_diff_y = ready1 - prev_val_y;
+        else
+            cur_diff_y = prev_val_y - ready1;
+
+        if (cur_diff_y < prev_diff_y) {
+            prev_diff_y = cur_diff_y;
+            *y = ready1;
+        }
+        prev_val_y = ready1;
+
+    }
 
 	*z1 = titsc_readl(ts_dev, REG_FIFO0);
 	*z1 &= 0xfff;
@@ -229,8 +250,19 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
 	*z2 &= 0xfff;
 
 	for (i = 0; i < creads; i++) {
-		xvals[i] = titsc_readl(ts_dev, REG_FIFO0);
-		xvals[i] &= 0xfff;
+        readx1 = titsc_readl(ts_dev,  REG_FIFO0);
+        readx1 = readx1 & 0xfff;
+
+        if (readx1 > prev_val_x)
+            cur_diff_x = readx1 - prev_val_x;
+        else
+            cur_diff_x = prev_val_x - readx1;
+
+        if (cur_diff_x < prev_diff_x) {
+            prev_diff_x = cur_diff_x;
+            *x = readx1;
+        }
+        prev_val_x = readx1;
 	}
 
 	/*
@@ -240,36 +272,26 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
 	 * min and max values and report the average of
 	 * remaining values.
 	 */
-	if (creads <=  3) {
-		for (i = 0; i < creads; i++) {
-			ysum += yvals[i];
-			xsum += xvals[i];
-		}
-		ysum /= creads;
-		xsum /= creads;
-	} else {
-		sort(yvals, creads, sizeof(unsigned int),
-		     titsc_cmp_coord, NULL);
-		sort(xvals, creads, sizeof(unsigned int),
-		     titsc_cmp_coord, NULL);
-		for (i = 1; i < creads - 1; i++) {
-			ysum += yvals[i];
-			xsum += xvals[i];
-		}
-		ysum /= creads - 2;
-		xsum /= creads - 2;
-	}
-	*y = ysum;
-	*x = xsum;
+
+    if (*x > bckup_x) {
+        *diffx = *x - bckup_x;
+        *diffy = *y - bckup_y;
+    } else {
+        *diffx = bckup_x - *x;
+        *diffy = bckup_y - *y;
+    }
+    bckup_x = *x;
+    bckup_y = *y;
+
 }
 
 static irqreturn_t titsc_irq(int irq, void *dev)
 {
 	struct titsc *ts_dev = dev;
 	struct input_dev *input_dev = ts_dev->input;
-	unsigned int fsm, status, irqclr = 0;
-	unsigned int x = 0, y = 0;
-	unsigned int z1, z2, z;
+	unsigned int  status, irqclr = 0;
+    unsigned int z1 = 0, z2 = 0, z = 0, fsm = 0 ;
+	unsigned int val_x = 0, val_y = 0, diffx = 0, diffy = 0;
 
 	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
 	if (status & IRQENB_HW_PEN) {
@@ -281,11 +303,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 	if (status & IRQENB_PENUP) {
 		fsm = titsc_readl(ts_dev, REG_ADCFSM);
 		if (fsm == ADCFSM_STEPID) {
-			ts_dev->pen_down = false;
-			input_report_key(input_dev, BTN_TOUCH, 0);
-			input_report_abs(input_dev, ABS_PRESSURE, 0);
-			input_sync(input_dev);
-			pm_relax(ts_dev->mfd_tscadc->dev);
+		  ts_dev->pen_down = false;
+		  //input_report_key(input_dev, BTN_TOUCH, 0);
+		  //input_report_abs(input_dev, ABS_PRESSURE, 0);
+		  //input_sync(input_dev);
+		  pm_relax(ts_dev->mfd_tscadc->dev);
 		} else {
 			ts_dev->pen_down = true;
 		}
@@ -300,31 +322,65 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
 	 */
 	if (status & IRQENB_FIFO0THRES) {
+        titsc_read_coordinates(ts_dev, &val_x, &val_y, &z1, &z2, &diffx, &diffy);
 
-		titsc_read_coordinates(ts_dev, &x, &y, &z1, &z2);
-
-		if (ts_dev->pen_down && z1 != 0 && z2 != 0) {
+		if ((z1 != 0) && (z2 != 0)) {
 			/*
-			 * Calculate pressure using formula
+			 * cal pressure using formula
 			 * Resistance(touch) = x plate resistance *
 			 * x postion/4096 * ((z2 / z1) - 1)
 			 */
-			z = z1 - z2;
-			z *= x;
+			z = z2 - z1;
+			z *= val_x;
 			z *= ts_dev->x_plate_resistance;
-			z /= z2;
+			z /= z1;
 			z = (z + 2047) >> 12;
 
-			if (z <= MAX_12BIT) {
-				input_report_abs(input_dev, ABS_X, x);
-				input_report_abs(input_dev, ABS_Y, y);
-				input_report_abs(input_dev, ABS_PRESSURE, z);
-				input_report_key(input_dev, BTN_TOUCH, 1);
-				input_sync(input_dev);
+			/*
+			 * Sample found inconsistent by debouncing
+			 * or pressure is beyond the maximum.
+			 * Don't report it to user space.
+			 */
+
+			//100,100
+			//1024*600 300,300
+			if ((val_x > 300) && (val_y > 300))
+			{
+				if ( pen_up_event_flag == 0)
+				{
+					if ((diffx < 15) && (diffy < 15))
+					{
+						val_x=save_x=bckup_x;
+						val_y=save_y=bckup_y;
+						input_report_abs(input_dev, ABS_X, val_x);
+						input_report_abs(input_dev, ABS_Y,val_y);
+						input_report_abs(input_dev, ABS_PRESSURE,5);
+						input_report_key(input_dev, BTN_TOUCH,1);
+						input_sync(input_dev);
+					}
+				}
+				pen_up_event_flag=0;
 			}
-		}
+			else
+			{
+				/*pen_up_event_flag == 1 as pen up*/
+				if (save_x > 0 || save_y > 0)
+                {
+					pen_up_event_flag  = 1;
+					val_x=save_x;
+					val_y=save_y;
+					input_report_key(input_dev, BTN_TOUCH, 0);
+					input_report_abs(input_dev, ABS_PRESSURE, 0);
+					input_sync(input_dev);
+					save_x=save_y=0;
+				}
+			}
+        }
 		irqclr |= IRQENB_FIFO0THRES;
+
 	}
+    udelay(315);
+
 	if (irqclr) {
 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
 		if (status & IRQENB_EOS)
@@ -332,7 +388,9 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 						ts_dev->step_mask);
 		return IRQ_HANDLED;
 	}
+
 	return IRQ_NONE;
+
 }
 
 static int titsc_parse_dt(struct platform_device *pdev,
