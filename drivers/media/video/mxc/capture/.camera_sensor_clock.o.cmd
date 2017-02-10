@@ -1,0 +1,1 @@
+cmd_drivers/media/video/mxc/capture/camera_sensor_clock.o := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL    -r -o drivers/media/video/mxc/capture/camera_sensor_clock.o drivers/media/video/mxc/capture/sensor_clock.o 

@@ -1,0 +1,1 @@
+cmd_drivers/media/video/gspca/gspca_main.o := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL    -r -o drivers/media/video/gspca/gspca_main.o drivers/media/video/gspca/gspca.o 

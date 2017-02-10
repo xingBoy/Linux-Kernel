@@ -1,0 +1,4 @@
+kernel/drivers/input/touchscreen/eeti_ts.ko
+kernel/drivers/input/touchscreen/egalax_ts.ko
+kernel/drivers/input/touchscreen/elan_ts.ko
+kernel/drivers/input/touchscreen/ar1020-spi.ko

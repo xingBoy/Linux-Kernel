@@ -1,0 +1,1 @@
+cmd_fs/autofs4/autofs4.ko := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL -r  -T /home/Qt/kernel/linuxQt_kernel/scripts/module-common.lds --build-id  -o fs/autofs4/autofs4.ko fs/autofs4/autofs4.o fs/autofs4/autofs4.mod.o

@@ -1,0 +1,1 @@
+cmd_drivers/net/wireless/ath/ath.o := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL    -r -o drivers/net/wireless/ath/ath.o drivers/net/wireless/ath/main.o drivers/net/wireless/ath/regd.o drivers/net/wireless/ath/hw.o drivers/net/wireless/ath/key.o 

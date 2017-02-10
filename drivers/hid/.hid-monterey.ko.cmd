@@ -1,0 +1,1 @@
+cmd_drivers/hid/hid-monterey.ko := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL -r  -T /home/Qt/kernel/linuxQt_kernel/scripts/module-common.lds --build-id  -o drivers/hid/hid-monterey.ko drivers/hid/hid-monterey.o drivers/hid/hid-monterey.mod.o

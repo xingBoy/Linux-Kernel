@@ -1,0 +1,3 @@
+kernel/fs/nls/nls_ascii.ko
+kernel/fs/nls/nls_utf8.ko
+kernel/fs/autofs4/autofs4.ko

@@ -1,0 +1,1 @@
+cmd_drivers/media/video/uvc/uvcvideo.ko := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL -r  -T /home/Qt/kernel/linuxQt_kernel/scripts/module-common.lds --build-id  -o drivers/media/video/uvc/uvcvideo.ko drivers/media/video/uvc/uvcvideo.o drivers/media/video/uvc/uvcvideo.mod.o

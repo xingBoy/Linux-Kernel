@@ -1,0 +1,1 @@
+cmd_fs/nls/nls_ascii.ko := /home/Qt/arm-linux-gcc/gcc-4.6.2-glibc-2.13-linaro-multilib-2011.12/fsl-linaro-toolchain/bin/arm-none-linux-gnueabi-ld -EL -r  -T /home/Qt/kernel/linuxQt_kernel/scripts/module-common.lds --build-id  -o fs/nls/nls_ascii.ko fs/nls/nls_ascii.o fs/nls/nls_ascii.mod.o
