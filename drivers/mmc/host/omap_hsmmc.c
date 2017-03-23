@@ -2416,6 +2416,7 @@ static struct omap_hsmmc_platform_data *of_get_hsmmc_pdata(struct device *dev)
 		pdata->controller_flags |= OMAP_HSMMC_SUPPORTS_DUAL_VOLT;
 
 	pdata->gpio_cd = -EINVAL;
+
 	pdata->gpio_cod = -EINVAL;
 	pdata->gpio_wp = -EINVAL;
 
