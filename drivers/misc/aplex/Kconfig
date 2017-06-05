@@ -1,0 +1,25 @@
+
+config APLEX_DEBUG_LED
+	bool "/dev/alpex_led0 debug led support(add by danny zhao)"
+	default n
+	help
+	  Say Y here if you want to support the /dev/aplex_led0 device. The
+	  /dev/aplex_led0 device is rarely used, but can be used for certain
+	  kind of kernel debugging operations.
+	  When in doubt, say "N".
+config APLEX_SBC_7109_BUZZ
+	bool "/dev/alpex_buzz buzz support(add by danny zhao)"
+	default n
+	help
+	  Say Y here if you want to support the /dev/aplex_buzz device. The
+	  /dev/kmem device is rarely used, but can be used for certain
+	  kind of kernel debugging operations.
+	  When in doubt, say "N".
+config APLEX_SBC_7109_IO
+	bool "/dev/alpex_io io support(add by danny zhao)"
+	default n
+	help
+	  Say Y here if you want to support the /dev/aplex_io device. The
+	  /dev/aplex_knob device is rarely used, but can be used for certain
+	  kind of kernel debugging operations.
+	  When in doubt, say "N".
