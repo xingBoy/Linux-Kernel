@@ -15,13 +15,14 @@
 	model = "Freescale i.MX6 DualLite SABRE Smart Device Board";
 	compatible = "fsl,imx6dl-sabresd", "fsl,imx6dl";
 };
-
+#if 0
 &battery {
 	offset-charger = <1485>;
 	offset-discharger = <1464>;
 	offset-usb-charger = <1285>;
 };
-
+#endif
+#if 0
 &iomuxc {
         epdc {
                 pinctrl_epdc_0: epdcgrp-0 {
@@ -59,7 +60,8 @@
         DISPLAY-supply = <&DISPLAY_reg>;
         status = "okay";
 };
-
+#endif
+#if 0
 &i2c3 {
         max17135@48 {
                 compatible = "maxim,max17135";
@@ -128,7 +130,7 @@
                 };
         };
 };
-
+#endif
 &ldb {
 	lvds-channel@0 {
 		crtc = "ipu1-di0";

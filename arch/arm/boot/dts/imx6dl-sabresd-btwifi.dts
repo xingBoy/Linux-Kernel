@@ -7,4 +7,4 @@
  */
 
 #include "imx6dl-sabresd.dts"
-#include "imx6qdl-sabresd-btwifi.dtsi"
+//#include "imx6qdl-sabresd-btwifi.dtsi"

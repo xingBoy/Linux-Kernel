@@ -161,7 +161,7 @@
 				clock-names = "mipi_pllref_clk", "mipi_cfg_clk";
 				status = "disabled";
 			};
-
+#if 0
 			i2c4: i2c@021f8000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -171,6 +171,7 @@
 				clocks = <&clks IMX6DL_CLK_I2C4>;
 				status = "disabled";
 			};
+#endif
 		};
 	};
 };
@@ -184,7 +185,7 @@
 	dmas = <&sdma 5 7 1>, <&sdma 6 7 2>;
 	dma-names = "rx", "tx";
 };
-
+#if 0
 &ecspi3 {
 	dmas = <&sdma 7 7 1>, <&sdma 8 7 2>;
 	dma-names = "rx", "tx";
@@ -194,7 +195,7 @@
 	dmas = <&sdma 9 7 1>, <&sdma 10 7 2>;
 	dma-names = "rx", "tx";
 };
-
+#endif
 &ldb {
 	compatible = "fsl,imx6dl-ldb", "fsl,imx53-ldb";
 

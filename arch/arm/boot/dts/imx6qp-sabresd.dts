@@ -71,7 +71,7 @@
 &mxcfb4 {
 	prefetch;
 };
-
+#if 0
 &ov564x {
 	DOVDD-supply = <&sw4_reg>; /* 1.8v */
 };
@@ -79,7 +79,7 @@
 &ov564x_mipi {
 	DOVDD-supply = <&sw4_reg>; /* 1.8v */
 };
-
+#endif
 &pcie {
 	power-on-gpio = <&gpio3 19 0>;
 	reset-gpio = <&gpio7 12 0>;

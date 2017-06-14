@@ -19,13 +19,13 @@
 	model = "Freescale i.MX6 Quad SABRE Smart Device Board";
 	compatible = "fsl,imx6q-sabresd", "fsl,imx6q";
 };
-
+#if 0
 &battery {
 	offset-charger = <1900>;
 	offset-discharger = <1694>;
 	offset-usb-charger = <1685>;
 };
-
+#endif
 &ldb {
 	lvds-channel@0 {
 		crtc = "ipu2-di0";

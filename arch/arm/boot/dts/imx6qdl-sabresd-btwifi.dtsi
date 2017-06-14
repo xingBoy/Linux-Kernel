@@ -60,7 +60,7 @@
 		};
 	};
 };
-
+#if 0
 &uart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5_1>;
@@ -70,11 +70,14 @@
 	/* fsl,dte-mode; */
 	/* pinctrl-0 = <&pinctrl_uart5dte_1>; */
 };
-
+#endif
+#if 0
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wifi>;
 	bus-width = <4>;
 	no-1-8-v;
 	wifi-host;
+	status = "disabled";
 };
+#endif
