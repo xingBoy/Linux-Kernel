@@ -57,3 +57,7 @@ obj-$(CONFIG_LATTICE_ECP3_CONFIG)	+= lattice-ecp3-config.o
 obj-$(CONFIG_SRAM)		+= sram.o
 obj-y				+= mic/
 obj-$(CONFIG_GENWQE)		+= genwqe/
+obj-y               += com3mode.o
+obj-y               += gpio_mio.o
+obj-y               += mx6check.o
+obj-y               += buzzer.o

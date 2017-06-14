@@ -967,4 +967,26 @@ config TOUCHSCREEN_ZFORCE
 	  To compile this driver as a module, choose M here: the
 	  module will be called zforce_ts.
 
+config TOUCHSCREEN_AR1021_SPI 
+       tristate "Microchip AR1020 SPI touchscreen" 
+       depends on SPI_MASTER 
+       help 
+         Say Y here if you have a Microchip AR1020 SPI Controller and 
+         want to enable support for the built-in touchscreen. 
+ 
+         To compile this driver as a module, choose M here: the 
+         module will be called ar1021_spi. 
+
+config TOUCHSCREEN_AR1021_I2C
+	tristate "Microchip AR1021 i2c touchscreen"
+	depends on I2C && OF
+	help
+	  Say Y here if you have the Microchip AR1021 touchscreen controller
+	  chip in your system.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ar1021_i2c.
+
 endif
