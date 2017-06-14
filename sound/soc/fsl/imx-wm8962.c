@@ -147,7 +147,8 @@ static int micjack_status_check(void)
 	int mic_status, ret;
 
 	if (!gpio_is_valid(priv->mic_gpio))
-		return 0;
+		if(priv->amic_mono==0)
+			return 0;
 
 	mic_status = gpio_get_value(priv->mic_gpio) ? 1 : 0;
 

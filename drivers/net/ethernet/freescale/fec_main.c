@@ -1677,6 +1677,11 @@ static void fec_get_mac(struct net_device *ndev)
 	 *    fec.macaddr=0x00,0x04,0x9f,0x01,0x30,0xe0
 	 */
 	iap = macaddr;
+	*((__be32 *) &tmpaddr[0]) =
+		cpu_to_be32(readl(fep->hwp + FEC_ADDR_LOW));
+	*((__be16 *) &tmpaddr[4]) =
+		cpu_to_be16(readl(fep->hwp + FEC_ADDR_HIGH) >> 16);
+	iap = &tmpaddr[0];
 
 	/*
 	 * 2) from device tree data
@@ -1702,7 +1707,7 @@ static void fec_get_mac(struct net_device *ndev)
 			iap = (unsigned char *)&pdata->mac;
 #endif
 	}
-
+#if 0
 	/*
 	 * 4) FEC mac registers set by bootloader
 	 */
@@ -1713,7 +1718,7 @@ static void fec_get_mac(struct net_device *ndev)
 			cpu_to_be16(readl(fep->hwp + FEC_ADDR_HIGH) >> 16);
 		iap = &tmpaddr[0];
 	}
-
+#endif
 	/*
 	 * 5) random mac address
 	 */

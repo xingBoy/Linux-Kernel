@@ -49,6 +49,7 @@
 #include <trace/events/asoc.h>
 
 #define NAME_SIZE	32
+#define ASOC_fix_debugfs
 
 #ifdef CONFIG_DEBUG_FS
 struct dentry *snd_soc_debugfs_root;
@@ -277,13 +278,38 @@ static const struct file_operations codec_reg_fops = {
 	.write = codec_reg_write_file,
 	.llseek = default_llseek,
 };
+#ifdef ASOC_fix_debugfs
+static struct dentry *soc_debugfs_create_dir(struct dentry *parent,
+	const char *fmt, ...)
+{
+	struct dentry *de;
+	va_list ap;
+	char *s;
 
+	va_start(ap, fmt);
+	s = kvasprintf(GFP_KERNEL, fmt, ap);
+	va_end(ap);
+
+	if (!s)
+		return NULL;
+
+	de = debugfs_create_dir(s, parent);
+	kfree(s);
+
+	return de;
+}
+#endif
 static void soc_init_codec_debugfs(struct snd_soc_codec *codec)
 {
 	struct dentry *debugfs_card_root = codec->card->debugfs_card_root;
 
+#ifdef ASOC_fix_debugfs
+	codec->debugfs_codec_root = soc_debugfs_create_dir(debugfs_card_root,
+						"codec:%s", codec->name);
+#else
 	codec->debugfs_codec_root = debugfs_create_dir(codec->name,
 						       debugfs_card_root);
+#endif
 	if (!codec->debugfs_codec_root) {
 		dev_warn(codec->dev,
 			"ASoC: Failed to create codec debugfs directory\n");
@@ -313,9 +339,13 @@ static void soc_cleanup_codec_debugfs(struct snd_soc_codec *codec)
 static void soc_init_platform_debugfs(struct snd_soc_platform *platform)
 {
 	struct dentry *debugfs_card_root = platform->card->debugfs_card_root;
-
+#ifdef ASOC_fix_debugfs
+	platform->debugfs_platform_root = soc_debugfs_create_dir(debugfs_card_root,
+					"platform:%s", platform->name);
+#else
 	platform->debugfs_platform_root = debugfs_create_dir(platform->name,
 						       debugfs_card_root);
+#endif
 	if (!platform->debugfs_platform_root) {
 		dev_warn(platform->dev,
 			"ASoC: Failed to create platform debugfs directory\n");
