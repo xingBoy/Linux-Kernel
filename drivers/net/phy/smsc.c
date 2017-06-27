@@ -63,7 +63,7 @@ static int smsc_phy_ack_interrupt(struct phy_device *phydev)
 static int smsc_phy_config_init(struct phy_device *phydev)
 {
 // lt:Taipei Not Link and two board lan1 can link
-
+#if 0
 	int rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
 	if (rc < 0)
 		return rc;
@@ -73,7 +73,7 @@ static int smsc_phy_config_init(struct phy_device *phydev)
 		       rc | MII_LAN83C185_EDPWRDOWN);
 	if (rc < 0)
 		return rc;
-
+#endif
 
 	return smsc_phy_ack_interrupt (phydev);
 }
