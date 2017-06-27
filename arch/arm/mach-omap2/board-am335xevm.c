@@ -716,8 +716,8 @@ static struct pinmux_config spi0_pin_mux[] = {
 static struct pinmux_config spi1_pin_mux[] = {
 	//{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
 	{"mcasp0_fsx.spi1_d0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
-	{"mcasp0_axr0.spi1_d1", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
-	{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
+	//{"mcasp0_axr0.spi1_d1", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
+	//{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
 	{NULL, 0},
 };
 
@@ -941,7 +941,7 @@ static struct pinmux_config mcasp1_pin_mux[] = {
 static struct pinmux_config mcasp0_pin_mux[] = {
     //{"mcasp0_aclkx.mcasp0_aclkx", OMAP_MUX_MODE0 |AM33XX_PIN_INPUT_PULLDOWN },
     {"mcasp0_fsx.mcasp0_fsx", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLDOWN },
-    {"mcasp0_axr0.mcasp0_axr0", OMAP_MUX_MODE0 |AM33XX_PIN_OUTPUT_PULLUP },
+    //{"mcasp0_axr0.mcasp0_axr0", OMAP_MUX_MODE0 |AM33XX_PIN_OUTPUT_PULLUP },
     {"mcasp0_axr1.mcasp0_axr1", OMAP_MUX_MODE0 |AM33XX_PIN_INPUT_PULLUP
                         },
     {NULL, 0},
@@ -951,7 +951,7 @@ static struct pinmux_config mcasp0_pin_mux[] = {
 static struct pinmux_config bone_black_mcasp0_pin_mux[] = {
 	//{"mcasp0_aclkx.mcasp0_aclkx", OMAP_MUX_MODE0 |AM33XX_PIN_OUTPUT},
 	{"mcasp0_fsx.mcasp0_fsx", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
-	{"mcasp0_ahclkr.mcasp0_axr2", OMAP_MUX_MODE2 | AM33XX_PIN_OUTPUT},
+	//{"mcasp0_ahclkr.mcasp0_axr2", OMAP_MUX_MODE2 | AM33XX_PIN_OUTPUT},
 	/* Same pin is used for rx, but for hdmi we don't need rx */
 	{"mcasp0_ahclkx.mcasp0_ahclkx", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLUP},
 	{"spi0_d1.i2c1_sda",    OMAP_MUX_MODE2 | AM33XX_SLEWCTRL_SLOW |
@@ -1069,6 +1069,8 @@ static struct pinmux_config sbc7816led_pin_mux[] = {
 	{"mcasp0_aclkx.gpio3_14", OMAP_MUX_MODE7 },
 	{"mcasp0_fsx.gpio3_15",   OMAP_MUX_MODE7 },
     {"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT },
+    {"mcasp0_axr0.gpio3_16",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_ahclkr.gpio3_17",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 	{NULL, 0},
 };
 
@@ -1343,8 +1345,8 @@ static struct pinmux_config ecap1_pin_mux[] = {
 
 /* Module pin mux for eCAP2 */
 static struct pinmux_config ecap2_pin_mux[] = {
-	{"mcasp0_ahclkr.ecap2_in_pwm2_out",
-		OMAP_MUX_MODE4 | AM33XX_PIN_OUTPUT},
+	//{"mcasp0_ahclkr.ecap2_in_pwm2_out",
+	//	OMAP_MUX_MODE4 | AM33XX_PIN_OUTPUT},
 	{NULL, 0},
 };
 static struct pinmux_config ehrpwm0a_pin_mux[] = {
@@ -1389,7 +1391,7 @@ static struct pinmux_config uart1_wl12xx_pin_mux[] = {
 
 static struct pinmux_config wl12xx_pin_mux[] = {
 	{"gpmc_a0.gpio1_16", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-	{"mcasp0_ahclkr.gpio3_17", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
+	//{"mcasp0_ahclkr.gpio3_17", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 	{"mcasp0_ahclkx.gpio3_21", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
 	{NULL, 0},
  };
@@ -3145,7 +3147,7 @@ static void gpio_keys_init_forlinx_s(int evm_id, int profile)
 
 
 static struct pinmux_config gpio_led_mux_s[] = {
-        {"mcasp0_axr0.gpio3_16", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
+        //{"mcasp0_axr0.gpio3_16", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 		{"usb0_drvvbus.gpio0_18", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
         {NULL, 0},
 };
