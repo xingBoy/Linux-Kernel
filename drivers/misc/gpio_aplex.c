@@ -75,7 +75,7 @@ static int gpio_aplex_open(struct inode *inode, struct file *file)
 {
 	int i;
 	int ret = 0;
-    printk("gpio aplex open.\n");
+//    printk("gpio aplex open.\n");
 //	for (i = 0; i < ARRAYSIZE(io_table); i++) {
 //		ret = gpio_request(io_table[i], "");
 //		if (ret != 0) {
@@ -89,7 +89,7 @@ static int gpio_aplex_open(struct inode *inode, struct file *file)
 static int gpio_aplex_close(struct inode *inode, struct file *file)
 {
 	int i;
-    printk("gpio aplex close.\n");
+//    printk("gpio aplex close.\n");
 //	for (i = 0; i < ARRAYSIZE(io_table); i++) {
 //		gpio_free(io_table[i]);
 //	}
@@ -110,7 +110,7 @@ long gpio_ioctl(struct file * file, unsigned int cmd, unsigned long arg)
 	gpio_index = gpio_arg.gpio_index;
 	value = gpio_arg.value;
 
-    printk("gpio index: %d, gpio value: %d.\n", gpio_index, value);
+    //printk("gpio index: %d, gpio value: %d.\n", gpio_index, value);
 
 	switch (cmd) {
 		case GPIO_INPUT: 
