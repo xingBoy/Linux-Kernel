@@ -1,0 +1,687 @@
+                                                                                
+                                                                                
+1. i2c设备注册                                                              
+kernel/arch/arm/mach-mx6/board-mx6q_sabresd.c                                   
+static void __init mx6_sabresd_board_init(void)                                 
+{                                                                               
+    mxc_iomux_v3_setup_multiple_pads(mx6q_sabresd_pads, ---------------+        
+        ARRAY_SIZE(mx6q_sabresd_pads));                                |        
+    ... ...                                                            |        
+    strcpy(mxc_i2c0_board_info[0].type, "wm8962");                     |        
+        mxc_i2c0_board_info[0].platform_data = &wm8962_config_data;    |        
+                                                                       |        
+    //注册i2c总线                                                      |        
+    imx6q_add_imx_i2c(0, &mx6q_sabresd_i2c_data); ------------+        |        
+    imx6q_add_imx_i2c(1, &mx6q_sabresd_i2c_data); ----+       |        |        
+    imx6q_add_imx_i2c(2, &mx6q_sabresd_i2c_data);     |       |        |        
+                                                      |       |        |        
+    i2c_register_board_info(0, mxc_i2c0_board_info, ----------------+  |        
+            ARRAY_SIZE(mxc_i2c0_board_info));         |       |     |  |        
+    i2c_register_board_info(1, mxc_i2c1_board_info,   |       |     |  |        
+            ARRAY_SIZE(mxc_i2c1_board_info));         |       |     |  |        
+    i2c_register_board_info(2, mxc_i2c2_board_info,   |       |     |  |        
+            ARRAY_SIZE(mxc_i2c2_board_info));         |       |     |  |        
+    ... ...                                           |       |     |  |        
+}                                                     |       |     |  |        
+                                                      |       |     |  |        
+static iomux_v3_cfg_t mx6q_sabresd_pads[] = {      <----------|-----|--+        
+    /* I2C1, WM8958 */                                |       |     |           
+    MX6Q_PAD_CSI0_DAT8__I2C1_SDA,                     |       |     |           
+    MX6Q_PAD_CSI0_DAT9__I2C1_SCL,                     |       |     |           
+                                                      |       |     |           
+    /* I2C2, Camera, MIPI */                          |       |     |           
+    MX6Q_PAD_KEY_COL3__I2C2_SCL,                      |       |     |           
+    MX6Q_PAD_KEY_ROW3__I2C2_SDA,                      |       |     |           
+                                                      |       |     |           
+#ifdef CONFIG_MX6_ENET_IRQ_TO_GPIO                    |       |     |           
+    MX6Q_PAD_GPIO_6__OBSERVE_MUX_OBSRV_INT_OUT1,      |       |     |           
+#else                                                 |       |     |           
+    /* I2C3 */                                        |       |     |           
+    MX6Q_PAD_GPIO_3__I2C3_SCL,    /* GPIO1[3] */      |       |     |           
+    MX6Q_PAD_GPIO_6__I2C3_SDA,                        |       |     |           
+#endif                                                |       |     |           
+};                                                    |       |     |           
+                                                      |       |     |           
+//总线速率                                            V       |     |       
+static struct imxi2c_platform_data mx6q_sabresd_i2c_data = {  |     |           
+    .bitrate = 100000,                                        |     |           
+};                                                            |     |           
+                                                              |     |           
+#define imx6q_add_imx_i2c(id, pdata)    \         <-----------+     |           
+    imx_add_imx_i2c(&imx6q_imx_i2c_data[id], pdata)           |     |           
+                                                                                
+                                                                                
+const struct imx_imx_i2c_data imx6q_imx_i2c_data[] __initconst = {              
+#define imx6q_imx_i2c_data_entry(_id, _hwid)                \                   
+    imx_imx_i2c_data_entry(MX6Q, _id, _hwid, SZ_4K)                             
+    imx6q_imx_i2c_data_entry(0, 1),                                             
+    imx6q_imx_i2c_data_entry(1, 2),                                             
+    imx6q_imx_i2c_data_entry(2, 3),                                             
+};                                                                              
+                                                                                
+#define imx_imx_i2c_data_entry_single(soc, _id, _hwid, _size)    \              
+    {                            \                                              
+        .id = _id,                    \                                         
+        .iobase = soc ## _I2C ## _hwid ## _BASE_ADDR,    \                      
+        .iosize = _size,                    \                                   
+        .irq = soc ## _INT_I2C ## _hwid,        \                               
+    }                                                                           
+                                                                                
+#define imx_imx_i2c_data_entry(soc, _id, _hwid, _size)        \                 
+    [_id] = imx_imx_i2c_data_entry_single(soc, _id, _hwid, _size)               
+                                                              |     |           
+struct platform_device *__init imx_add_imx_i2c(   <-----------+     |           
+        const struct imx_imx_i2c_data *data,                        |           
+        const struct imxi2c_platform_data *pdata)                   |           
+{                                                                   |           
+    struct resource res[] = {                                       |           
+        {                                                           |           
+            .start = data->iobase,                                  |           
+            .end = data->iobase + data->iosize - 1,                 |           
+            .flags = IORESOURCE_MEM,                                |           
+        }, {                                                        |           
+            .start = data->irq,                                     |           
+            .end = data->irq,                                       |           
+            .flags = IORESOURCE_IRQ,                                |           
+        },                                                          |           
+    };                                                              |           
+                                                                    |           
+    return imx_add_platform_device("imx-i2c", data->id,             |           
+            res, ARRAY_SIZE(res),                                   |           
+            pdata, sizeof(*pdata));                                 |           
+}                                                                   |           
+                                                                    |           
+//指定i2c链接设备的名称，和地址                                     |          
+static struct i2c_board_info mxc_i2c0_board_info[] __initdata = { <-+           
+    {                                                               |           
+        I2C_BOARD_INFO("wm89**", 0x1a),                             |           
+    },                                                              |           
+    /*                                                              |           
+    {                                                               |           
+        I2C_BOARD_INFO("ov564x", 0x3c),                             |           
+        .platform_data = (void *)&camera_data,                      |           
+    },                                                              |           
+    {                                                               |           
+        I2C_BOARD_INFO("mma8451", 0x1d),                            |           
+        .platform_data = (void *)&mma8451_position,                 |           
+    },                                                              |           
+    {                                                               |           
+        I2C_BOARD_INFO("isl1208", 0x6f),                            |           
+    },                                                              |           
+    */                                                              |           
+};                                                                  |           
+                                                                    |           
+int __init                                                          |           
+i2c_register_board_info(int busnum,              <------------------+           
+    struct i2c_board_info const *info, unsigned len)                            
+{                                                                               
+    int status;                                                                 
+                                                                                
+    down_write(&__i2c_board_lock);                                              
+    //动态更新总线个数                                                  
+    /* dynamic bus numbers will be assigned after the last static one */        
+    if (busnum >= __i2c_first_dynamic_bus_num)                                  
+        __i2c_first_dynamic_bus_num = busnum + 1;                               
+    //将同一个i2c接口的所有设备都添加到一个链表中           
+    for (status = 0; len; len--, info++) {                                      
+        struct i2c_devinfo    *devinfo;                                         
+                                                                                
+        devinfo = kzalloc(sizeof(*devinfo), GFP_KERNEL);                        
+        if (!devinfo) {                                                         
+            pr_debug("i2c-core: can't register boardinfo!\n");                  
+            status = -ENOMEM;                                                   
+            break;                                                              
+        }                                                                       
+                                                                                
+        devinfo->busnum = busnum;                                               
+        devinfo->board_info = *info;                                            
+        list_add_tail(&devinfo->list, &__i2c_board_list);                       
+    }                                                                           
+                                                                                
+    up_write(&__i2c_board_lock);                                                
+                                                                                
+    return status;                                                              
+}                                                                               
+                                                                                
+2. i2c驱动注册                                                              
+kernel/drivers/i2c/busses/i2c-imx.c                                             
+static int __init i2c_adap_imx_init(void)                                       
+{                                                                               
+    return platform_driver_probe(&i2c_imx_driver, i2c_imx_probe); ----------+   
+}                                                                           |   
+                                                                            |   
+int __init_or_module platform_driver_probe(struct platform_driver *drv,     |   
+        int (*probe)(struct platform_device *))                             |   
+{                                                                           |   
+    int retval, code;                                                       |   
+                                                                            |   
+    drv->driver.suppress_bind_attrs = true;                                 |   
+    //指定驱动的probe函数                                                   |   
+    drv->probe = probe;                                                     |   
+    //注册平台驱动                                                          |   
+    retval = code = platform_driver_register(drv);                          |   
+                                                                            |   
+    spin_lock(&drv->driver.bus->p->klist_drivers.k_lock);                   |   
+    drv->probe = NULL;                                                      |   
+    if (code == 0 && list_empty(&drv->driver.p->klist_devices.k_list))      |   
+        retval = -ENODEV;                                                   |   
+    drv->driver.probe = platform_drv_probe_fail;                            |   
+    spin_unlock(&drv->driver.bus->p->klist_drivers.k_lock);                 |   
+                                                                            |   
+    if (code != retval)                                                     |   
+        platform_driver_unregister(drv);                                    |   
+    return retval;                                                          |   
+}                                                                           |   
+EXPORT_SYMBOL_GPL(platform_driver_probe);                                   |   
+                                                                            |   
+static struct platform_driver i2c_imx_driver = {          <-----------------+   
+    .remove        = __exit_p(i2c_imx_remove),                              |   
+    .driver    = {                                                          |   
+        .name    = DRIVER_NAME,         // "imx-i2c"                        |   
+        .owner    = THIS_MODULE,                                            |   
+    }                                                                       |   
+};                                                                          |   
+                                                                            |   
+static int __init i2c_imx_probe(struct platform_device *pdev)     <---------+   
+{                                                                               
+    struct imx_i2c_struct *i2c_imx;                                             
+    struct resource *res;                                                       
+    struct imxi2c_platform_data *pdata;                                         
+    void __iomem *base;                                                         
+    resource_size_t res_size;                                                   
+    int irq;                                                                    
+    int ret;                                                                    
+                                                                                
+    dev_dbg(&pdev->dev, "<%s>\n", __func__);                                    
+    //获得i2c寄存器地址的信息                                         
+    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);                       
+    if (!res) {                                                                 
+        dev_err(&pdev->dev, "can't get device resources\n");                    
+        return -ENOENT;                                                         
+    }                                                                           
+    irq = platform_get_irq(pdev, 0);                                            
+    if (irq < 0) {                                                              
+        dev_err(&pdev->dev, "can't get irq number\n");                          
+        return -ENOENT;                                                         
+    }                                                                           
+                                                                                
+    pdata = pdev->dev.platform_data;                                            
+                                                                                
+    if (pdata && pdata->init) {                                                 
+        ret = pdata->init(&pdev->dev);                                          
+        if (ret)                                                                
+            return ret;                                                         
+    }                                                                           
+                                                                                
+    res_size = resource_size(res);                                              
+                                                                                
+    if (!request_mem_region(res->start, res_size, DRIVER_NAME)) {               
+        ret = -EBUSY;                                                           
+        goto fail0;                                                             
+    }                                                                           
+                                                                                
+    base = ioremap(res->start, res_size);                                       
+    if (!base) {                                                                
+        dev_err(&pdev->dev, "ioremap failed\n");                                
+        ret = -EIO;                                                             
+        goto fail1;                                                             
+    }                                                                           
+                                                                                
+    i2c_imx = kzalloc(sizeof(struct imx_i2c_struct), GFP_KERNEL);               
+    if (!i2c_imx) {                                                             
+        dev_err(&pdev->dev, "can't allocate interface\n");                      
+        ret = -ENOMEM;                                                          
+        goto fail2;                                                             
+    }                                                                           
+                                                                                
+    /* Setup i2c_imx driver structure */                                        
+    strcpy(i2c_imx->adapter.name, pdev->name);                                  
+    i2c_imx->adapter.owner        = THIS_MODULE;                                
+    i2c_imx->adapter.algo        = &i2c_imx_algo; // i2c算法  ---------------+
+    i2c_imx->adapter.dev.parent    = &pdev->dev;                             |  
+    i2c_imx->adapter.nr         = pdev->id;                                  |  
+    i2c_imx->irq            = irq;                                           |  
+    i2c_imx->base            = base;                                         |  
+    i2c_imx->res            = res;                                           |  
+                                                                             |  
+    /* Get I2C clock */                                                      |  
+    i2c_imx->clk = clk_get(&pdev->dev, "i2c_clk");                           |  
+    if (IS_ERR(i2c_imx->clk)) {                                              |  
+        ret = PTR_ERR(i2c_imx->clk);                                         |  
+        dev_err(&pdev->dev, "can't get I2C clock\n");                        |  
+        goto fail3;                                                          |  
+    }                                                                        |  
+                                                                             |  
+    /* Request IRQ */                                                        |  
+    ret = request_irq(i2c_imx->irq, i2c_imx_isr, 0, pdev->name, i2c_imx);    |  
+    if (ret) {                                                               |  
+        dev_err(&pdev->dev, "can't claim irq %d\n", i2c_imx->irq);           |  
+        goto fail4;                                                          |  
+    }                                                                        |  
+                                                                             |  
+    /* Init queue */                                                         |  
+    init_waitqueue_head(&i2c_imx->queue);                                    |  
+                                                                             |  
+    /* Set up adapter data */                                                |  
+    i2c_set_adapdata(&i2c_imx->adapter, i2c_imx);                            |  
+                                                                             |  
+    /* Set up clock divider */                                               |  
+    if (pdata && pdata->bitrate)                                             |  
+        i2c_imx_set_clk(i2c_imx, pdata->bitrate);                            |  
+    else                                                                     |  
+        i2c_imx_set_clk(i2c_imx, IMX_I2C_BIT_RATE);                          |  
+                                                                             |  
+    /* Set up chip registers to defaults */                                  |  
+    writeb(0, i2c_imx->base + IMX_I2C_I2CR);                                 |  
+    writeb(0, i2c_imx->base + IMX_I2C_I2SR);                                 |  
+    //添加adapter，一个i2c对应一个adapter                                    |   
+    /* Add I2C adapter */                                                    |  
+    ret = i2c_add_numbered_adapter(&i2c_imx->adapter);   -----------------+  |  
+    if (ret < 0) {                                                        |  |  
+        dev_err(&pdev->dev, "registration failed\n");                     |  |  
+        goto fail5;                                                       |  |  
+    }                                                                     |  |  
+                                                                          |  |  
+    /* Set up platform driver data */                                     |  |  
+    platform_set_drvdata(pdev, i2c_imx);                                  |  |  
+                                                                          |  |  
+    dev_dbg(&i2c_imx->adapter.dev, "claimed irq %d\n", i2c_imx->irq);     |  |  
+    dev_dbg(&i2c_imx->adapter.dev, "device resources from 0x%x to 0x%x\n",|  |  
+        i2c_imx->res->start, i2c_imx->res->end);                          |  |  
+    dev_dbg(&i2c_imx->adapter.dev, "allocated %d bytes at 0x%x \n",       |  |  
+        res_size, i2c_imx->res->start);                                   |  |  
+    dev_dbg(&i2c_imx->adapter.dev, "adapter name: \"%s\"\n",              |  |  
+        i2c_imx->adapter.name);                                           |  |  
+    dev_dbg(&i2c_imx->adapter.dev, "IMX I2C adapter registered\n");       |  |  
+                                                                          |  |  
+    return 0;   /* Return OK */                                           |  |  
+                                                                          |  |  
+fail5:                                                                    |  |  
+    free_irq(i2c_imx->irq, i2c_imx);                                      |  |  
+fail4:                                                                    |  |  
+    clk_put(i2c_imx->clk);                                                |  |  
+fail3:                                                                    |  |  
+    kfree(i2c_imx);                                                       |  |  
+fail2:                                                                    |  |  
+    iounmap(base);                                                        |  |  
+fail1:                                                                    |  |  
+    release_mem_region(res->start, resource_size(res));                   |  |  
+fail0:                                                                    |  |  
+    if (pdata && pdata->exit)                                             |  |  
+        pdata->exit(&pdev->dev);                                          |  |  
+    return ret; /* Return error number */                                 |  |  
+}                                                                         |  |  
+                                                                          |  |  
+int i2c_add_numbered_adapter(struct i2c_adapter *adap)         <----------+  |  
+{                                                                            |  
+    int    id;                                                               |  
+    int    status;                                                           |  
+                                                                             |  
+    if (adap->nr & ~MAX_ID_MASK)                                             |  
+        return -EINVAL;                                                      |  
+                                                                             |  
+retry:                                                                       |  
+    if (idr_pre_get(&i2c_adapter_idr, GFP_KERNEL) == 0)                      |  
+        return -ENOMEM;                                                      |  
+                                                                             |  
+    mutex_lock(&core_lock);                                                  |  
+    /* "above" here means "above or equal to", sigh;                         |  
+     * we need the "equal to" result to force the result                     |  
+     */                                                                      |  
+    status = idr_get_new_above(&i2c_adapter_idr, adap, adap->nr, &id);       |  
+    if (status == 0 && id != adap->nr) {                                     |  
+        status = -EBUSY;                                                     |  
+        idr_remove(&i2c_adapter_idr, id);                                    |  
+    }                                                                        |  
+    mutex_unlock(&core_lock);                                                |  
+    if (status == -EAGAIN)                                                   |  
+        goto retry;                                                          |  
+                                                                             |  
+    if (status == 0)                                                         |  
+        status = i2c_register_adapter(adap);   ---------------+              |  
+    return status;                                            |              |  
+}                                                             |              |  
+EXPORT_SYMBOL_GPL(i2c_add_numbered_adapter);                  |              |  
+                                                              |              |  
+static int i2c_register_adapter(struct i2c_adapter *adap)  <--+              |  
+{                                                                            |  
+    int res = 0;                                                             |  
+                                                                             |  
+    /* Can't register until after driver model init */                       |  
+    if (unlikely(WARN_ON(!i2c_bus_type.p))) {                                |  
+        res = -EAGAIN;                                                       |  
+        goto out_list;                                                       |  
+    }                                                                        |  
+                                                                             |  
+    /* Sanity checks */                                                      |  
+    if (unlikely(adap->name[0] == '\0')) {                                   |  
+        pr_err("i2c-core: Attempt to register an adapter with "              |  
+               "no name!\n");                                                |  
+        return -EINVAL;                                                      |  
+    }                                                                        |  
+    if (unlikely(!adap->algo)) {                                             |  
+        pr_err("i2c-core: Attempt to register adapter '%s' with "            |  
+               "no algo!\n", adap->name);                                    |  
+        return -EINVAL;                                                      |  
+    }                                                                        |  
+                                                                             |  
+    rt_mutex_init(&adap->bus_lock);                                          |  
+    mutex_init(&adap->userspace_clients_lock);                               |  
+    INIT_LIST_HEAD(&adap->userspace_clients);                                |  
+                                                                             |  
+    /* Set default timeout to 1 second if not already set */                 |  
+    if (adap->timeout == 0)                                                  |  
+        adap->timeout = HZ;                                                  |  
+    //设置设备名，这里就是/dev显示的 /dev/i2c-1, /dev/i2c-2...               |   
+    dev_set_name(&adap->dev, "i2c-%d", adap->nr);                            |  
+    adap->dev.bus = &i2c_bus_type;                                           |  
+    adap->dev.type = &i2c_adapter_type;                                      |  
+    res = device_register(&adap->dev);                                       |  
+    if (res)                                                                 |  
+        goto out_list;                                                       |  
+                                                                             |  
+    dev_dbg(&adap->dev, "adapter [%s] registered\n", adap->name);            |  
+                                                                             |  
+#ifdef CONFIG_I2C_COMPAT                                                     |  
+    res = class_compat_create_link(i2c_adapter_compat_class, &adap->dev,     |  
+                       adap->dev.parent);                                    |  
+    if (res)                                                                 |  
+        dev_warn(&adap->dev,                                                 |  
+             "Failed to create compatibility class link\n");                 |  
+#endif                                                                       |  
+                                                                             |  
+    /* create pre-declared device nodes */                                   |  
+    if (adap->nr < __i2c_first_dynamic_bus_num)                              |  
+        i2c_scan_static_board_info(adap);                                    |  
+                                                                             |  
+    /* Notify drivers */                                                     |  
+    mutex_lock(&core_lock);                                                  |  
+    bus_for_each_drv(&i2c_bus_type, NULL, adap, __process_new_adapter);      |  
+    mutex_unlock(&core_lock);                                                |  
+                                                                             |  
+    return 0;                                                                |  
+                                                                             |  
+out_list:                                                                    |  
+    mutex_lock(&core_lock);                                                  |  
+    idr_remove(&i2c_adapter_idr, adap->nr);                                  |  
+    mutex_unlock(&core_lock);                                                |  
+    return res;                                                              |  
+}                                                                            |  
+                                                                             |  
+static struct i2c_algorithm i2c_imx_algo = {            <--------------------+  
+    .master_xfer    = i2c_imx_xfer,          ----------------------------------+
+    .functionality    = i2c_imx_func,                                          |
+};                                                                             |
+static u32 i2c_imx_func(struct i2c_adapter *adapter)                           |
+{                                                                              |
+    return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;                                 |
+}                                                                              |
+//发送接收会调用的函数                                                         |
+static int i2c_imx_xfer(struct i2c_adapter *adapter,     <---------------------+
+                        struct i2c_msg *msgs, int num)                         |
+{                                                                              |
+    unsigned int i, temp;                                                      |
+    int result;                                                                |
+    struct imx_i2c_struct *i2c_imx = i2c_get_adapdata(adapter);                |
+                                                                               |
+    dev_dbg(&i2c_imx->adapter.dev, "<%s>\n", __func__);                        |
+                                                                               |
+    /* Start I2C transfer */                                                   |
+    result = i2c_imx_start(i2c_imx);                                           |
+    if (result)                                                                |
+        goto fail0;                                                            |
+                                                                               |
+    /* read/write data */                                                      |
+    for (i = 0; i < num; i++) {                                                |
+        if (i) {                                                               |
+            dev_dbg(&i2c_imx->adapter.dev,                                     |
+                "<%s> repeated start\n", __func__);                            |
+            temp = readb(i2c_imx->base + IMX_I2C_I2CR);                        |
+            temp |= I2CR_RSTA;                                                 |
+            writeb(temp, i2c_imx->base + IMX_I2C_I2CR);                        |
+            result =  i2c_imx_bus_busy(i2c_imx, 1);                            |
+            if (result)                                                        |
+                goto fail0;                                                    |
+        }                                                                      |
+        dev_dbg(&i2c_imx->adapter.dev,                                         |
+            "<%s> transfer message: %d\n", __func__, i);                       |
+        /* write/read data */                                                  |
+#ifdef CONFIG_I2C_DEBUG_BUS                                                    |
+        temp = readb(i2c_imx->base + IMX_I2C_I2CR);                            |
+        dev_dbg(&i2c_imx->adapter.dev, "<%s> CONTROL: IEN=%d, IIEN=%d, "       |
+            "MSTA=%d, MTX=%d, TXAK=%d, RSTA=%d\n", __func__,                   |
+            (temp & I2CR_IEN ? 1 : 0), (temp & I2CR_IIEN ? 1 : 0),             |
+            (temp & I2CR_MSTA ? 1 : 0), (temp & I2CR_MTX ? 1 : 0),             |
+            (temp & I2CR_TXAK ? 1 : 0), (temp & I2CR_RSTA ? 1 : 0));           |
+        temp = readb(i2c_imx->base + IMX_I2C_I2SR);                            |
+        dev_dbg(&i2c_imx->adapter.dev,                                         |
+            "<%s> STATUS: ICF=%d, IAAS=%d, IBB=%d, "                           |
+            "IAL=%d, SRW=%d, IIF=%d, RXAK=%d\n", __func__,                     |
+            (temp & I2SR_ICF ? 1 : 0), (temp & I2SR_IAAS ? 1 : 0),             |
+            (temp & I2SR_IBB ? 1 : 0), (temp & I2SR_IAL ? 1 : 0),              |
+            (temp & I2SR_SRW ? 1 : 0), (temp & I2SR_IIF ? 1 : 0),              |
+            (temp & I2SR_RXAK ? 1 : 0));                                       |
+#endif                                                                         |
+        if (msgs[i].flags & I2C_M_RD)                                          |
+            result = i2c_imx_read(i2c_imx, &msgs[i]);                          |
+        else                                                                   |
+            result = i2c_imx_write(i2c_imx, &msgs[i]);                         |
+        if (result)                                                            |
+            goto fail0;                                                        |
+    }                                                                          |
+                                                                               |
+fail0:                                                                         |
+    /* Stop I2C transfer */                                                    |
+    i2c_imx_stop(i2c_imx);                                                     |
+                                                                               |
+    dev_dbg(&i2c_imx->adapter.dev, "<%s> exit with: %s: %d\n", __func__,       |
+        (result < 0) ? "error" : "success msg",                                |
+            (result < 0) ? result : num);                                      |
+    return (result < 0) ? result : num;                                        |
+}                                                                              |
+                                                                               |
+// i2c_msg记录了i2c地址                                                        | 
+struct i2c_msg {                                                               |
+    __u16 addr;    /* slave address            */                              |
+    __u16 flags;                                                               |
+#define I2C_M_TEN        0x0010    /* this is a ten bit chip address */        |
+#define I2C_M_RD        0x0001    /* read data, from slave to master */        |
+#define I2C_M_NOSTART        0x4000    /* if I2C_FUNC_PROTOCOL_MANGLING */     |
+#define I2C_M_REV_DIR_ADDR    0x2000    /* if I2C_FUNC_PROTOCOL_MANGLING */    |
+#define I2C_M_IGNORE_NAK    0x1000    /* if I2C_FUNC_PROTOCOL_MANGLING */      |
+#define I2C_M_NO_RD_ACK        0x0800    /* if I2C_FUNC_PROTOCOL_MANGLING */   |
+#define I2C_M_RECV_LEN        0x0400   /* length will be first received byte */|
+    __u16 len;        /* msg length                */                          |
+    __u8 *buf;        /* pointer to msg data            */                     |
+};                                                                             |
+                                                                               |
+                                                                               |
+3. 上层应用调用                                                                |
+kernel/driver/i2c/busses/i2c-dev.c                                             |
+static int __init i2c_dev_init(void)                                           |
+{                                                                              |
+    int res;                                                                   |
+                                                                               |
+    printk(KERN_INFO "i2c /dev entries driver\n");                             |
+                                                                               |
+    res = register_chrdev(I2C_MAJOR, "i2c", &i2cdev_fops);    ------------+    |
+    if (res)                                                              |    |
+        goto out;                                                         |    |
+                                                                          |    |
+    i2c_dev_class = class_create(THIS_MODULE, "i2c-dev");                 |    |
+    if (IS_ERR(i2c_dev_class)) {                                          |    |
+        res = PTR_ERR(i2c_dev_class);                                     |    |
+        goto out_unreg_chrdev;                                            |    |
+    }                                                                     |    |
+                                                                          |    |
+    /* Keep track of adapters which will be added or removed later */     |    |
+    res = bus_register_notifier(&i2c_bus_type, &i2cdev_notifier);         |    |
+    if (res)                                                              |    |
+        goto out_unreg_class;                                             |    |
+                                                                          |    |
+    /* Bind to already existing adapters right away */                    |    |
+    i2c_for_each_dev(NULL, i2cdev_attach_adapter);                        |    |
+                                                                          |    |
+    return 0;                                                             |    |
+                                                                          |    |
+out_unreg_class:                                                          |    |
+    class_destroy(i2c_dev_class);                                         |    |
+out_unreg_chrdev:                                                         |    |
+    unregister_chrdev(I2C_MAJOR, "i2c");                                  |    |
+out:                                                                      |    |
+    printk(KERN_ERR "%s: Driver Initialisation failed\n", __FILE__);      |    |
+    return res;                                                           |    |
+}                                                                         |    |
+static const struct file_operations i2cdev_fops = {         <-------------+    |
+    .owner        = THIS_MODULE,                                               |
+    .llseek        = no_llseek,                                                |
+    .read        = i2cdev_read,        ----------+                             |
+    .write        = i2cdev_write,                |                             |
+    .unlocked_ioctl    = i2cdev_ioctl,           |                             |
+    .open        = i2cdev_open,                  |                             |
+    .release    = i2cdev_release,                |                             |
+};                                               |                             |
+                                                 V                             |
+static ssize_t i2cdev_read(struct file *file, char __user *buf, size_t count,  |
+        loff_t *offset)                                                        |
+{                                                                              |
+    char *tmp;                                                                 |
+    int ret;                                                                   |
+                                                                               |
+    struct i2c_client *client = file->private_data;                            |
+                                                                               |
+    if (count > 8192)                                                          |
+        count = 8192;                                                          |
+                                                                               |
+    tmp = kmalloc(count, GFP_KERNEL);                                          |
+    if (tmp == NULL)                                                           |
+        return -ENOMEM;                                                        |
+                                                                               |
+    pr_debug("i2c-dev: i2c-%d reading %zu bytes.\n",                           |
+        iminor(file->f_path.dentry->d_inode), count);                          |
+                                                                               |
+    ret = i2c_master_recv(client, tmp, count);      ---------------+           |
+    if (ret >= 0)                                                  |           |
+        ret = copy_to_user(buf, tmp, count) ? -EFAULT : ret;       |           |
+    kfree(tmp);                                                    |           |
+    return ret;                                                    |           |
+}                                                                  |           |
+                                                                   V           |
+int i2c_master_recv(const struct i2c_client *client, char *buf, int count)     |
+{                                                                              |
+    struct i2c_adapter *adap = client->adapter;                                |
+    struct i2c_msg msg;                                                        |
+    int ret;                                                                   |
+                                                                               |
+    msg.addr = client->addr;         //地址                                    | 
+    msg.flags = client->flags & I2C_M_TEN;  //判断是否使用10位地址             | 
+    msg.flags |= I2C_M_RD;            //读操作                                 | 
+    msg.len = count;                //发送个数                                 | 
+    msg.buf = buf;                    //发送数据                               | 
+                                                                               |
+    ret = i2c_transfer(adap, &msg, 1);            ---------------------------+ |
+                                                                             | |
+    /* If everything went ok (i.e. 1 msg transmitted), return #bytes         | |
+       transmitted, else error code. */                                      | |
+    return (ret == 1) ? count : ret;                                         | |
+}                                                                            | |
+                                                                             | |
+int i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num) <--+ |
+{                                                                              |
+    unsigned long orig_jiffies;                                                |
+    int ret, try;                                                              |
+                                                                               |
+    /* REVISIT the fault reporting model here is weak:                         |
+     *                                                                         |
+     *  - When we get an error after receiving N bytes from a slave,           |
+     *    there is no way to report "N".                                       |
+     *                                                                         |
+     *  - When we get a NAK after transmitting N bytes to a slave,             |
+     *    there is no way to report "N" ... or to let the master               |
+     *    continue executing the rest of this combined message, if             |
+     *    that's the appropriate response.                                     |
+     *                                                                         |
+     *  - When for example "num" is two and we successfully complete           |
+     *    the first message but get an error part way through the              |
+     *    second, it's unclear whether that should be reported as              |
+     *    one (discarding status on the second message) or errno               |
+     *    (discarding status on the first one).                                |
+     */                                                                        |
+    //判断master_xfer函数指针是否存在，存在的话就是指向i2c_imx_xfer            |
+    if (adap->algo->master_xfer) {                                 <-----------+
+#ifdef DEBUG                                                                   |
+        for (ret = 0; ret < num; ret++) {                                      |
+            dev_dbg(&adap->dev, "master_xfer[%d] %c, addr=0x%02x, "            |
+                "len=%d%s\n", ret, (msgs[ret].flags & I2C_M_RD)                |
+                ? 'R' : 'W', msgs[ret].addr, msgs[ret].len,                    |
+                (msgs[ret].flags & I2C_M_RECV_LEN) ? "+" : "");                |
+        }                                                                      |
+#endif                                                                         |
+                                                                               |
+        if (in_atomic() || irqs_disabled()) {                                  |
+            ret = i2c_trylock_adapter(adap);                                   |
+            if (!ret)                                                          |
+                /* I2C activity is ongoing. */                                 |
+                return -EAGAIN;                                                |
+        } else {                                                               |
+            i2c_lock_adapter(adap);                                            |
+        }                                                                      |
+                                                                               |
+        /* Retry automatically on arbitration loss */                          |
+        orig_jiffies = jiffies;                                                |
+        for (ret = 0, try = 0; try <= adap->retries; try++) {                  |
+            //调用 i2c_imx_xfer函数                                            | 
+            ret = adap->algo->master_xfer(adap, msgs, num);          <---------+
+            if (ret != -EAGAIN)                                                 
+                break;                                                          
+            if (time_after(jiffies, orig_jiffies + adap->timeout))              
+                break;                                                          
+        }                                                                       
+        i2c_unlock_adapter(adap);                                               
+                                                                                
+        return ret;                                                             
+    } else {                                                                    
+        dev_dbg(&adap->dev, "I2C level transfers not supported\n");             
+        return -EOPNOTSUPP;                                                     
+    }                                                                           
+}                                                                               
+//同理write函数也是一样                                                 
+static ssize_t i2cdev_write(struct file *file, const char __user *buf,          
+        size_t count, loff_t *offset)                                           
+{                                                                               
+    int ret;                                                                    
+    char *tmp;                                                                  
+    struct i2c_client *client = file->private_data;                             
+                                                                                
+    if (count > 8192)                                                           
+        count = 8192;                                                           
+                                                                                
+    tmp = memdup_user(buf, count);                                              
+    if (IS_ERR(tmp))                                                            
+        return PTR_ERR(tmp);                                                    
+                                                                                
+    pr_debug("i2c-dev: i2c-%d writing %zu bytes.\n",                            
+        iminor(file->f_path.dentry->d_inode), count);                           
+                                                                                
+    ret = i2c_master_send(client, tmp, count);    -----------+                  
+    kfree(tmp);                                              |                  
+    return ret;                                              |                  
+}                                                            |                  
+                                                             V                  
+int i2c_master_send(const struct i2c_client *client, const char *buf, int count)
+{                                                                               
+    int ret;                                                                    
+    struct i2c_adapter *adap = client->adapter;                                 
+    struct i2c_msg msg;                                                         
+                                                                                
+    msg.addr = client->addr;                                                    
+    msg.flags = client->flags & I2C_M_TEN;                                      
+    msg.len = count;                                                            
+    msg.buf = (char *)buf;                                                      
+                                                                                
+    ret = i2c_transfer(adap, &msg, 1);                                          
+                                                                                
+    /* If everything went ok (i.e. 1 msg transmitted), return #bytes            
+       transmitted, else error code. */                                         
+    return (ret == 1) ? count : ret;                                            
+}                                                                               
