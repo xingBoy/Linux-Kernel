@@ -110,7 +110,7 @@ long gpio_ioctl(struct file * file, unsigned int cmd, unsigned long arg)
 	gpio_index = gpio_arg.gpio_index;
 	value = gpio_arg.value;
 
-    //printk("gpio index: %d, gpio value: %d.\n", gpio_index, value);
+//    printk("gpio index: %d, gpio value: %d.\n", gpio_index, value);
 
 	switch (cmd) {
 		case GPIO_INPUT: 
@@ -128,7 +128,16 @@ long gpio_ioctl(struct file * file, unsigned int cmd, unsigned long arg)
 				printk("gpio request gpio%d fail\n", gpio_arg.gpio_index);
 				return ret;
 			}
-			ret = gpio_direction_output(gpio_index, value);
+//		RELAY_R, RELAY_Y, RELAY_G, RELAY_STOP, SENSOROUT1, SENSOROUT2, SENSOROUT3, 
+//		LAMP1, LAMP2, LAMP3, LAMP4, LAMP5, TP2, EXOUT, TP5, TP7,
+//		DIS_IN1, DIS_IN2, DIS_IN3, DIS_IN4, TP1, TP3, TP4, TP6, 
+//		GPIO_24, GPIO_25, GPIO_26, GPIO_27, GPIO_28, GPIO_29, GPIO_30, GPIO_31, 
+//		GPIO_32, GPIO_33, GPIO_34, GPIO_35, 
+			if (gpio_index == RELAY_R || gpio_index == RELAY_Y || gpio_index == RELAY_G || gpio_index == RELAY_STOP || gpio_index == EXOUT )
+				ret = gpio_direction_output(gpio_index, value == 0 ? 1: 0);
+			else
+				ret = gpio_direction_output(gpio_index, value);
+
 			gpio_free(gpio_index);
 			break;
 		case GPIO_SET: 
@@ -137,7 +146,12 @@ long gpio_ioctl(struct file * file, unsigned int cmd, unsigned long arg)
 				printk("gpio request gpio%d fail\n", gpio_arg.gpio_index);
 				return ret;
 			}
-			gpio_set_value(gpio_index, value != 0 ? 1: 0);
+
+			if (gpio_index == RELAY_R || gpio_index == RELAY_Y || gpio_index == RELAY_G || gpio_index == RELAY_STOP || gpio_index == EXOUT )
+				gpio_set_value(gpio_index, value != 0 ? 0: 1);
+			else
+				gpio_set_value(gpio_index, value != 0 ? 1: 0);
+
 			gpio_free(gpio_index);
 			break;
 		case GPIO_GET:
