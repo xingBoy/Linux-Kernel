@@ -1636,11 +1636,11 @@ static struct ipuv3_fb_platform_data sabresd_fb_data[] = {
  	/**
  	 * zengjf 2015-7-20 modify 16bit to 24bit
  	 */
-	//.interface_pix_fmt = IPU_PIX_FMT_RGB666,
-	.interface_pix_fmt = IPU_PIX_FMT_RGB24,
+	.interface_pix_fmt = IPU_PIX_FMT_RGB666,
+	// .interface_pix_fmt = IPU_PIX_FMT_RGB24,
 	.mode_str = "LDB-XGA",
-	//.default_bpp = 16,
-	.default_bpp = 24,
+	.default_bpp = 16,
+	// .default_bpp = 24,
 	.int_clk = false,
 	.late_init = false,
 	}, 
