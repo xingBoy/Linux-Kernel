@@ -175,6 +175,24 @@ long gpio_ioctl(struct file * file, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
+void init_gpio_value(int gpio_index, int value) 
+{
+	int ret;
+
+	ret = gpio_request(gpio_index, "");
+	if (ret != 0) {
+		printk("gpio request gpio%d fail\n", gpio_index);
+		return ret;
+	}
+
+	if (gpio_index == RELAY_R || gpio_index == RELAY_Y || gpio_index == RELAY_G || gpio_index == RELAY_STOP || gpio_index == EXOUT )
+		ret = gpio_direction_output(gpio_index, value == 0 ? 1: 0);
+	else
+		ret = gpio_direction_output(gpio_index, value);
+
+	gpio_free(gpio_index);
+}
+
 struct file_operations gpio_fops = {
     .owner      = THIS_MODULE,
     .open       = gpio_aplex_open,
@@ -200,6 +218,16 @@ int __init gpio_aplex_init(void)
 		printk("gpio request gpio%d(GPIO_35) success\n", GPIO_35);
 	}
 	ret = gpio_direction_output(GPIO_35, 1);
+
+	init_gpio_value(RELAY_R, 1);
+	init_gpio_value(RELAY_Y, 1);
+	init_gpio_value(RELAY_G, 1);
+	init_gpio_value(RELAY_STOP, 1);
+	init_gpio_value(EXOUT, 1);
+
+	init_gpio_value(SENSOROUT1, 1);
+	init_gpio_value(SENSOROUT2, 1);
+	init_gpio_value(SENSOROUT3, 1);
 
     ret = misc_register(&gpio_misc);
     if(ret)
