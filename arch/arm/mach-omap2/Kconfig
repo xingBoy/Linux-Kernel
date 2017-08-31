@@ -344,10 +344,15 @@ config MACH_TI8148EVM
 	depends on SOC_OMAPTI81XX
 	default y
 
+config MACH_APLEX_ECM_5412
+	bool "Aplex ECM_5412"
+	depends on SOC_OMAPAM33XX
+	default n
+
 config MACH_AM335XEVM
 	bool "AM335X Evaluation Module"
 	depends on SOC_OMAPAM33XX
-	default y
+	default n
 
 config MACH_AM335XEVM_VIBRATOR
 	bool "AM335X EVM Vibrator Support"

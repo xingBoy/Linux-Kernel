@@ -193,6 +193,8 @@ static inline void __arch_decomp_setup(unsigned long arch_id)
 
 		/* AM33XX IA boards using UART4 */
 		DEBUG_LL_AM33XX(4, am335xiaevm);
+
+		DEBUG_LL_AM33XX(1, aplex_ECM_5412);
 	} while (0);
 }
 

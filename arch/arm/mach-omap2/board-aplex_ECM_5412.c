@@ -186,7 +186,7 @@ struct da8xx_lcdc_platform_data  NHD_480272MF_ATXI_pdata_4 = {
 struct da8xx_lcdc_platform_data  NHD_640480MF_ATXI_pdata_5_7 = {
 	.manu_name              = "NHD",
 	.controller_data        = &lcd_cfg,
-	.type                   = "aplex_5_7-640x480@60" , 
+	.type                   = "aplex_5_7-640x480@60" ,
 };
 
 struct da8xx_lcdc_platform_data  NHD_800480MF_ATXI_pdata_7 = {
@@ -297,7 +297,7 @@ static struct adc_data am335x_adc_data = {
 
 static struct mfd_tscadc_board tscadc = {
 	.tsc_init = &am335xevm_touchscreen_data,
-	.adc_init = &am335x_adc_data, 
+	.adc_init = &am335x_adc_data,
 	//.adc_init = NULL,
 };
 
@@ -1088,7 +1088,7 @@ static struct pinmux_config gpio_ddr_vtt_enb_pin_mux[] = {
 };
 
 /*ft5XXX*/
-#if defined(CONFIG_OK335XD)	
+#if defined(CONFIG_OK335XD)
 	static struct pinmux_config tsc_gpio_pin_mux[] = {
 	{"xdma_event_intr0.gpio0_19", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
 	{NULL, 0},
@@ -1277,9 +1277,9 @@ static struct pinmux_config usb0_pin_mux[] = {
 
 /* pinmux for usb1 drvvbus */
 static struct pinmux_config usb1_pin_mux[] = {
-#if defined(CONFIG_OK335XD)	
+#if defined(CONFIG_OK335XD)
 	{"usb1_drvvbus.usb1_drvvbus",	 OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
-#elif defined(CONFIG_OK335XS)	
+#elif defined(CONFIG_OK335XS)
 	{"usb1_drvvbus.gpio3_13",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT | AM33XX_PIN_OUTPUT_PULLUP},
 #endif
 	{NULL, 0},
@@ -1420,7 +1420,7 @@ static int __init backlight_init(void)
 {
 	int index = 0;
 
-#if defined(CONFIG_OK335XD)	
+#if defined(CONFIG_OK335XD)
 	index = 0;
 	am335x_backlight.dev.platform_data = &am335x_backlight_data0;
 #elif defined(CONFIG_OK335XS)
@@ -1493,9 +1493,9 @@ static void lcdc_init(int evm_id, int profile)
 		lcdc_pdata = &NHD_1280800MF_ATXI_pdata_10_1 ;
 	else if(screen_size == SCREEN_SIZE_640x480_5_6 )
 		lcdc_pdata = &NHD_640480MF_ATXI_pdata_5_6 ;
-    else	
+    else
          lcdc_pdata = &NHD_480272MF_ATXI_pdata_4;
-	
+
 	lcdc_pdata->get_context_loss_count = omap_pm_get_dev_context_loss_count;
 
 	if (am33xx_register_lcdc(lcdc_pdata))
@@ -1761,7 +1761,7 @@ static void usb0_init(int evm_id, int profile)
 static void usb1_init(int evm_id, int profile)
 {
 	setup_pin_mux(usb1_pin_mux);
-#if defined(CONFIG_OK335XS)	
+#if defined(CONFIG_OK335XS)
 	//fix usb vbus error by set gpio3_13 high
 	#define GPIO3_13 3<<5|13
 	gpio_request(GPIO3_13,"gpio3_13");
@@ -2301,10 +2301,10 @@ static struct regulator_init_data am335x_vdd1 = {
 	.valid_modes_mask   = REGULATOR_MODE_NORMAL,
 	.valid_ops_mask     = REGULATOR_CHANGE_VOLTAGE,
 	.always_on      = 1,
-	 }, 
+	 },
 	.num_consumer_supplies  = ARRAY_SIZE(am335x_vdd1_supply),
 	.consumer_supplies  = am335x_vdd1_supply,
-	.ignore_check_consumers = 1,   
+	.ignore_check_consumers = 1,
 };
 static struct regulator_consumer_supply am335x_vdd2_supply[] = {
 	    REGULATOR_SUPPLY("vdd_core", NULL),
@@ -2504,7 +2504,7 @@ static void mcasp1_init(int evm_id, int profile)
 /*sbc-7109*/
 static void mmc1_init(int evm_id, int profile)
 {
-	evm_id = BEAGLE_BONE_BLACK;	
+	evm_id = BEAGLE_BONE_BLACK;
 	switch (evm_id) {
 	case BEAGLE_BONE_BLACK:
 		setup_pin_mux(mmc1_common_pin_mux);
@@ -2793,7 +2793,7 @@ static struct i2c_board_info i2c0_boardinfo[] = {
 	},
 	{
 		//I2C_BOARD_INFO("ds1307", 0x68),
-		I2C_BOARD_INFO("24c02", 0x50), 
+		I2C_BOARD_INFO("24c02", 0x50),
 	},
 #if 0
 	{
@@ -3281,9 +3281,9 @@ static int __init screentype_setup(char *str)
 {
 	if(!strncmp(str,"C",1))
 		screen_type = SCREEN_TYPE_C;
-	else 
+	else
 		screen_type = SCREEN_TYPE_R;
-	
+
 	return 1;
 }
 __setup("screentype=", screentype_setup);
@@ -3300,7 +3300,7 @@ static int __init screensize_setup(char *str)
 		screen_size = SCREEN_SIZE_800X600_12_1;
 	else
 		screen_size = SCREEN_SIZE_480X272_4;
-	
+
 	return 1;
 }
 __setup("screensize=", screensize_setup);
@@ -3311,13 +3311,13 @@ __setup("screensize=", screensize_setup);
 int proc_read(char *buffer,char **buffer_location,off_t offset, int buffer_length, int *eof, void *data)
 {
 	int ret;
-	
+
 	if (offset > 0) {
 	/* we have finished to read, return 0 */
 	ret = 0;
 	} else {
 	/* fill the buffer, return the buffer size */
-#if defined(CONFIG_OK335XD)	
+#if defined(CONFIG_OK335XD)
 	ret = sprintf(buffer, "OK335xD");
 #elif defined(CONFIG_OK335XS)
 	ret = sprintf(buffer, "OK335xS");
@@ -3657,7 +3657,6 @@ static void __init am33xx_cpuidle_init(void)
 
 	if (ret)
 		pr_warning("AM33XX cpuidle registration failed\n");
-
 }
 
 static void __init am335x_evm_init(void)
@@ -3669,19 +3668,20 @@ static void __init am335x_evm_init(void)
 	am335x_evm_i2c_init();
 	omap_sdrc_init(NULL, NULL);
 	usb_musb_init(&musb_board_data);
-	
+
 	omap_board_config = am335x_evm_config;
 	omap_board_config_size = ARRAY_SIZE(am335x_evm_config);
 
 	/*根据内核传参决定是否使用电阻屏*/
 	_configure_device(EVM_SK, mfd_dev_cfg, PROFILE_NONE);
-#if 0
 
+#if 0
 	if(screen_type == SCREEN_TYPE_R)
 		_configure_device(EVM_SK, mfd_dev_cfg, PROFILE_NONE);//电阻屏和ad一起注册
 	else
 		_configure_device(EVM_SK, ad_dev_cfg, PROFILE_NONE);//现在使用电容屏，仅注册ad
 #endif
+
 	daughter_brd_detected = false;
 	//setup_sbc_7109();
 	setup_ECM_5412();
@@ -3703,23 +3703,13 @@ static void __init am335x_evm_map_io(void)
 	omapam33xx_map_common_io();
 }
 
-MACHINE_START(AM335XEVM, "am335xevm")
+MACHINE_START(APLEX_ECM_5412, "aplex_ECM_5412")
 	/* Maintainer: Texas Instruments */
 	.atag_offset	= 0x100,
 	.map_io		= am335x_evm_map_io,
 	.init_early	= am33xx_init_early,
 	.init_irq	= ti81xx_init_irq,
 	.handle_irq     = omap3_intc_handle_irq,
-	.timer		= &omap3_am33xx_timer,
-	.init_machine	= am335x_evm_init,
-MACHINE_END
-
-MACHINE_START(AM335XIAEVM, "am335xiaevm")
-	/* Maintainer: Texas Instruments */
-	.atag_offset	= 0x100,
-	.map_io		= am335x_evm_map_io,
-	.init_irq	= ti81xx_init_irq,
-	.init_early	= am33xx_init_early,
 	.timer		= &omap3_am33xx_timer,
 	.init_machine	= am335x_evm_init,
 MACHINE_END
