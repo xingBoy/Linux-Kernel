@@ -186,7 +186,7 @@ struct da8xx_lcdc_platform_data  NHD_480272MF_ATXI_pdata_4 = {
 struct da8xx_lcdc_platform_data  NHD_640480MF_ATXI_pdata_5_7 = {
 	.manu_name              = "NHD",
 	.controller_data        = &lcd_cfg,
-	.type                   = "aplex_5_7-640x480@60" ,
+	.type                   = "aplex_5_7-640x480@60" , 
 };
 
 struct da8xx_lcdc_platform_data  NHD_800480MF_ATXI_pdata_7 = {
@@ -297,7 +297,7 @@ static struct adc_data am335x_adc_data = {
 
 static struct mfd_tscadc_board tscadc = {
 	.tsc_init = &am335xevm_touchscreen_data,
-	.adc_init = &am335x_adc_data,
+	.adc_init = &am335x_adc_data, 
 	//.adc_init = NULL,
 };
 
@@ -712,6 +712,15 @@ static struct pinmux_config spi0_pin_mux[] = {
 	{NULL, 0},
 };
 
+/* Module pin mux for SPI flash */
+static struct pinmux_config spi1_pin_mux[] = {
+	//{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
+	{"mcasp0_fsx.spi1_d0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
+	//{"mcasp0_axr0.spi1_d1", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
+	//{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
+	{NULL, 0},
+};
+
 /* Module pin mux for rgmii1 */
 static struct pinmux_config rgmii1_pin_mux[] = {
 	{"mii1_txen.rgmii1_tctl", OMAP_MUX_MODE2 | AM33XX_PIN_OUTPUT},
@@ -1027,28 +1036,25 @@ static struct pinmux_config uart5_pin_mux[] = {
 };
 
 static struct pinmux_config sbc7816led_pin_mux[] = {
-	{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-	{"mcasp0_aclkx.gpio3_14", OMAP_MUX_MODE7 },
-	{"mcasp0_fsx.gpio3_15",   OMAP_MUX_MODE7 },
-    {"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT },
-    {"mcasp0_axr0.gpio3_16",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-    {"mcasp0_ahclkr.gpio3_17",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-	{NULL, 0},
-};
+	//{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	//{"mcasp0_aclkx.gpio3_14", OMAP_MUX_MODE7 },
+	//{"mcasp0_fsx.gpio3_15",   OMAP_MUX_MODE7 },
+    //{"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT },
+    //{"mcasp0_axr0.gpio3_16",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    //{"mcasp0_ahclkr.gpio3_17",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 
-static struct pinmux_config wk24xx_pin_mux[] = {
-	{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                /* A13 spi_clk */
-	{"mcasp0_fsx.spi1_d0",     OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_PULL_UP | AM33XX_INPUT_EN},/* B13 spi_out */
-	{"mcasp0_axr0.spi1_d1",    OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                /* D12 spi_in  */
-	{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* C12 spi_cs0 */
-	{"xdma_event_intr0.spi1_cs1", OMAP_MUX_MODE4 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* A15 spi_cs1 */
+	{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                    /* A13 spi_clk */
+	{"mcasp0_fsx.spi1_d0",     OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_PULL_UP | AM33XX_INPUT_EN},   /* B13 spi_out */
+	{"mcasp0_axr0.spi1_d1",    OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                    /* D12 spi_in  */
+	{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* C12 spi_cs */
 
     {"gpmc_ad12.gpio1_12",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-    {"gpmc_ad13.gpio1_13",  OMAP_MUX_MODE7 },                           /* R12   wk2414 irq */
-    {"gpmc_ad14.gpio1_14",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP}, /* V13   wk24xx reset */
-    {"gpmc_ad15.gpio1_15",  OMAP_MUX_MODE7 },                           /* U13   wk24xx irq */
+    {"gpmc_ad13.gpio1_13",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},  /* WK24XX reset , low -> reset  */
+    {"gpmc_ad14.gpio1_14",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
+    {"gpmc_ad15.gpio1_15",  OMAP_MUX_MODE7 },                            /* wk24xx irq */
 	{NULL, 0},
 };
+
 
 static struct pinmux_config d_can0_pin_mux[] = {
      {"uart1_ctsn.d_can0_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
@@ -1092,7 +1098,7 @@ static struct pinmux_config gpio_ddr_vtt_enb_pin_mux[] = {
 };
 
 /*ft5XXX*/
-#if defined(CONFIG_OK335XD)
+#if defined(CONFIG_OK335XD)	
 	static struct pinmux_config tsc_gpio_pin_mux[] = {
 	{"xdma_event_intr0.gpio0_19", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
 	{NULL, 0},
@@ -1281,9 +1287,9 @@ static struct pinmux_config usb0_pin_mux[] = {
 
 /* pinmux for usb1 drvvbus */
 static struct pinmux_config usb1_pin_mux[] = {
-#if defined(CONFIG_OK335XD)
+#if defined(CONFIG_OK335XD)	
 	{"usb1_drvvbus.usb1_drvvbus",	 OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
-#elif defined(CONFIG_OK335XS)
+#elif defined(CONFIG_OK335XS)	
 	{"usb1_drvvbus.gpio3_13",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT | AM33XX_PIN_OUTPUT_PULLUP},
 #endif
 	{NULL, 0},
@@ -1424,7 +1430,7 @@ static int __init backlight_init(void)
 {
 	int index = 0;
 
-#if defined(CONFIG_OK335XD)
+#if defined(CONFIG_OK335XD)	
 	index = 0;
 	am335x_backlight.dev.platform_data = &am335x_backlight_data0;
 #elif defined(CONFIG_OK335XS)
@@ -1497,9 +1503,9 @@ static void lcdc_init(int evm_id, int profile)
 		lcdc_pdata = &NHD_1280800MF_ATXI_pdata_10_1 ;
 	else if(screen_size == SCREEN_SIZE_640x480_5_6 )
 		lcdc_pdata = &NHD_640480MF_ATXI_pdata_5_6 ;
-    else
+    else	
          lcdc_pdata = &NHD_480272MF_ATXI_pdata_4;
-
+	
 	lcdc_pdata->get_context_loss_count = omap_pm_get_dev_context_loss_count;
 
 	if (am33xx_register_lcdc(lcdc_pdata))
@@ -1765,7 +1771,7 @@ static void usb0_init(int evm_id, int profile)
 static void usb1_init(int evm_id, int profile)
 {
 	setup_pin_mux(usb1_pin_mux);
-#if defined(CONFIG_OK335XS)
+#if defined(CONFIG_OK335XS)	
 	//fix usb vbus error by set gpio3_13 high
 	#define GPIO3_13 3<<5|13
 	gpio_request(GPIO3_13,"gpio3_13");
@@ -1821,9 +1827,10 @@ static void uart5_init(int evm_id, int profile)
 static void sbc7816led_init(int evm_id, int profile)
 {
 	setup_pin_mux(sbc7816led_pin_mux);
+	spi_register_board_info(am335x_spi1_slave_info,
+			ARRAY_SIZE(am335x_spi1_slave_info));
     return;
 }
-
 /*
  * gpio0_7 was driven HIGH in u-boot before DDR configuration
  *
@@ -1978,6 +1985,7 @@ static const struct flash_platform_data am335x_spi_flash = {
  * So setup Max speed to be less than that of Controller speed
  */
 static struct spi_board_info am335x_spi0_slave_info[] = {
+#if 0
 	{
 		.modalias      = "m25p80",
 		.platform_data = &am335x_spi_flash,
@@ -1986,37 +1994,25 @@ static struct spi_board_info am335x_spi0_slave_info[] = {
 		.bus_num       = 1,
 		.chip_select   = 0,
 	},
+#endif
+    {
+        .modalias = "wk2xxxspi",
+        .mode = SPI_MODE_0,
+        .max_speed_hz = 10000000,
+        .bus_num = 0,
+        .chip_select = 0,
+        .controller_data = 5,
+    },
 };
 
 static struct spi_board_info am335x_spi1_slave_info[] = {
-#if 0
-    {
-        .modalias      = "spidev",
-        .max_speed_hz  = 48000000,//48Mbps
-        .bus_num       = 2,
-        .chip_select   = 0,
-        .mode = SPI_MODE_0,
-    },
-#endif
-#if 1
-    {
-        .modalias = "wk2xxxspi",    // compiler
-        .mode = SPI_MODE_0,
-        .max_speed_hz = 10000000,   // speed 10M hz
-        .bus_num = 2,               //  spi1 bus
-        .chip_select = 0,           //  spi_cs0
-    },
-#endif
-
-#if 1
-    {
-        .modalias = "wk2124spi",    // compiler
-        .mode = SPI_MODE_0,
-        .max_speed_hz = 10000000,   // speed 10M hz
-        .bus_num = 2,               //  spi1 bus
-        .chip_select = 1,           //  spi_cs1
-    },
-#endif
+        {
+                .modalias      = "spidev",
+                .max_speed_hz  = 48000000,//48Mbps
+                .bus_num       = 2,
+                .chip_select   = 0,
+                .mode = SPI_MODE_0,
+        },
 };
 
 static struct gpmc_timings am335x_nand_timings = {
@@ -2080,7 +2076,7 @@ static void evm_nand_init(int evm_id, int profile)
 		&am335x_nand_timings);
 	if (!pdata)
 		return;
-    //	pdata->ecc_opt =OMAP_ECC_BCH8_CODE_HW;
+//	pdata->ecc_opt =OMAP_ECC_BCH8_CODE_HW;
         pdata->ecc_opt =OMAP_ECC_HAMMING_CODE_DEFAULT;
 
 	pdata->elm_used = true;
@@ -2317,10 +2313,10 @@ static struct regulator_init_data am335x_vdd1 = {
 	.valid_modes_mask   = REGULATOR_MODE_NORMAL,
 	.valid_ops_mask     = REGULATOR_CHANGE_VOLTAGE,
 	.always_on      = 1,
-	 },
+	 }, 
 	.num_consumer_supplies  = ARRAY_SIZE(am335x_vdd1_supply),
 	.consumer_supplies  = am335x_vdd1_supply,
-	.ignore_check_consumers = 1,
+	.ignore_check_consumers = 1,   
 };
 static struct regulator_consumer_supply am335x_vdd2_supply[] = {
 	    REGULATOR_SUPPLY("vdd_core", NULL),
@@ -2457,11 +2453,11 @@ static void i2c1_init(int evm_id, int profile)
 	setup_pin_mux(i2c1_pin_mux);
 	#if 0
 	if(screen_type == SCREEN_TYPE_R)
-		omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo1, ARRAY_SIZE(am335x_i2c1_boardinfo1));
+		omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo1,ARRAY_SIZE(am335x_i2c1_boardinfo1));
 	else if(screen_type == SCREEN_TYPE_C)
-		omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo2, ARRAY_SIZE(am335x_i2c1_boardinfo2));
+		omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo2,ARRAY_SIZE(am335x_i2c1_boardinfo2));
 	#else
-	  	omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo2, ARRAY_SIZE(am335x_i2c1_boardinfo2));
+	  	omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo2,ARRAY_SIZE(am335x_i2c1_boardinfo2));
 	#endif
 	return;
 }
@@ -2520,7 +2516,7 @@ static void mcasp1_init(int evm_id, int profile)
 /*sbc-7109*/
 static void mmc1_init(int evm_id, int profile)
 {
-	evm_id = BEAGLE_BONE_BLACK;
+	evm_id = BEAGLE_BONE_BLACK;	
 	switch (evm_id) {
 	case BEAGLE_BONE_BLACK:
 		setup_pin_mux(mmc1_common_pin_mux);
@@ -2809,7 +2805,7 @@ static struct i2c_board_info i2c0_boardinfo[] = {
 	},
 	{
 		//I2C_BOARD_INFO("ds1307", 0x68),
-		I2C_BOARD_INFO("24c02", 0x50),
+		I2C_BOARD_INFO("24c02", 0x50), 
 	},
 #if 0
 	{
@@ -3000,13 +2996,13 @@ static void spi0_init(int evm_id, int profile)
 	return;
 }
 
-/* led1 led2 led3 */
-static void spi_wk24xx_init(int evm_id, int profile)
+/* setup spi1 */
+static void spi1_init(int evm_id, int profile)
 {
-	setup_pin_mux(wk24xx_pin_mux);
+	setup_pin_mux(spi1_pin_mux);
 	spi_register_board_info(am335x_spi1_slave_info,
 			ARRAY_SIZE(am335x_spi1_slave_info));
-    return;
+	return;
 }
 
 static struct pinmux_config uart2_pin_mux_s[] = {
@@ -3019,6 +3015,31 @@ static struct pinmux_config uart2_pin_mux_s[] = {
 static void uart2_init_s(int evm_id, int profile)
 {
         setup_pin_mux(uart2_pin_mux_s);
+        return;
+}
+
+/*spi1  con9*/
+static struct pinmux_config spi1_pin_mux_s[] = {
+        {"mii1_col.spi1_sclk", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
+        {"mii1_crs.spi1_d0", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
+        {"mii1_rxerr.spi1_d1", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL| AM33XX_INPUT_EN},
+        //{"rmii1_refclk.spi1_cs0", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
+        {NULL, 0},
+};
+static struct spi_board_info am335x_spi1_slave_info_s[] = {
+        {
+                .modalias      = "spidev",
+                .max_speed_hz  = 48000000,//48Mbps
+                .bus_num       = 2,
+                .chip_select   = 0,
+                .mode = SPI_MODE_1,
+        },
+};
+static void spi1_init_s(int evm_id, int profile)
+{
+        setup_pin_mux(spi1_pin_mux_s);
+        spi_register_board_info(am335x_spi1_slave_info_s,
+                        ARRAY_SIZE(am335x_spi1_slave_info_s));
         return;
 }
 
@@ -3272,9 +3293,9 @@ static int __init screentype_setup(char *str)
 {
 	if(!strncmp(str,"C",1))
 		screen_type = SCREEN_TYPE_C;
-	else
+	else 
 		screen_type = SCREEN_TYPE_R;
-
+	
 	return 1;
 }
 __setup("screentype=", screentype_setup);
@@ -3291,7 +3312,7 @@ static int __init screensize_setup(char *str)
 		screen_size = SCREEN_SIZE_800X600_12_1;
 	else
 		screen_size = SCREEN_SIZE_480X272_4;
-
+	
 	return 1;
 }
 __setup("screensize=", screensize_setup);
@@ -3302,13 +3323,13 @@ __setup("screensize=", screensize_setup);
 int proc_read(char *buffer,char **buffer_location,off_t offset, int buffer_length, int *eof, void *data)
 {
 	int ret;
-
+	
 	if (offset > 0) {
 	/* we have finished to read, return 0 */
 	ret = 0;
 	} else {
 	/* fill the buffer, return the buffer size */
-#if defined(CONFIG_OK335XD)
+#if defined(CONFIG_OK335XD)	
 	ret = sprintf(buffer, "OK335xD");
 #elif defined(CONFIG_OK335XS)
 	ret = sprintf(buffer, "OK335xS");
@@ -3353,10 +3374,11 @@ static struct evm_dev_cfg ad_dev_cfg[] = {
 	{NULL, 0, 0},
 };
 
-/* ECM_5412 */
+
 static struct evm_dev_cfg ECM_5412_dev_cfg[] = {
 	{mmc0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_ALL},
+	{enable_ecap0,  DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart0_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart1_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart2_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
@@ -3368,8 +3390,8 @@ static struct evm_dev_cfg ECM_5412_dev_cfg[] = {
     {mii1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii2_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	//{am335x_rtc_init, DEV_ON_BASEBOARD, PROFILE_ALL},
+	{sbc7816led_init,   DEV_ON_BASEBOARD, PROFILE_ALL},
     {i2c1_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
-	{spi_wk24xx_init,   DEV_ON_BASEBOARD, PROFILE_ALL},
     {NULL, 0, 0},
 };
 
@@ -3388,7 +3410,7 @@ static struct evm_dev_cfg sbc_7109_dev_cfg[] = {
     {mii1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii2_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	//{am335x_rtc_init, DEV_ON_BASEBOARD, PROFILE_ALL},
-	//{sbc7816led_init,   DEV_ON_BASEBOARD, PROFILE_ALL},
+	{sbc7816led_init,   DEV_ON_BASEBOARD, PROFILE_ALL},
     {i2c1_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
     {NULL, 0, 0},
 };
@@ -3646,6 +3668,7 @@ static void __init am33xx_cpuidle_init(void)
 
 	if (ret)
 		pr_warning("AM33XX cpuidle registration failed\n");
+
 }
 
 static void __init am335x_evm_init(void)
@@ -3657,21 +3680,21 @@ static void __init am335x_evm_init(void)
 	am335x_evm_i2c_init();
 	omap_sdrc_init(NULL, NULL);
 	usb_musb_init(&musb_board_data);
-
+	
 	omap_board_config = am335x_evm_config;
 	omap_board_config_size = ARRAY_SIZE(am335x_evm_config);
 
 	/*根据内核传参决定是否使用电阻屏*/
 	_configure_device(EVM_SK, mfd_dev_cfg, PROFILE_NONE);
-
 #if 0
+
 	if(screen_type == SCREEN_TYPE_R)
 		_configure_device(EVM_SK, mfd_dev_cfg, PROFILE_NONE);//电阻屏和ad一起注册
 	else
 		_configure_device(EVM_SK, ad_dev_cfg, PROFILE_NONE);//现在使用电容屏，仅注册ad
 #endif
-
 	daughter_brd_detected = false;
+	//setup_sbc_7109();
 	setup_ECM_5412();
 
 	/*create  /proc/boardname to export info to userspace*/
@@ -3691,13 +3714,23 @@ static void __init am335x_evm_map_io(void)
 	omapam33xx_map_common_io();
 }
 
-MACHINE_START(APLEX_ECM_5412, "aplex_ECM_5412")
+MACHINE_START(AM335XEVM, "am335xevm")
 	/* Maintainer: Texas Instruments */
 	.atag_offset	= 0x100,
 	.map_io		= am335x_evm_map_io,
 	.init_early	= am33xx_init_early,
 	.init_irq	= ti81xx_init_irq,
 	.handle_irq     = omap3_intc_handle_irq,
+	.timer		= &omap3_am33xx_timer,
+	.init_machine	= am335x_evm_init,
+MACHINE_END
+
+MACHINE_START(AM335XIAEVM, "am335xiaevm")
+	/* Maintainer: Texas Instruments */
+	.atag_offset	= 0x100,
+	.map_io		= am335x_evm_map_io,
+	.init_irq	= ti81xx_init_irq,
+	.init_early	= am33xx_init_early,
 	.timer		= &omap3_am33xx_timer,
 	.init_machine	= am335x_evm_init,
 MACHINE_END

@@ -26,7 +26,7 @@
 #include <asm/mach/map.h>
 #include <asm/irq.h>
 #include <asm/io.h>
-#include "wk2xxx.h"
+#include "wk2124.h"
 
 MODULE_LICENSE("Dual BSD/GPL");
 
@@ -45,9 +45,9 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define WK2XXX_STATUS_BRK   4
 #define WK2XXX_STATUS_OE    8
 
-static DEFINE_MUTEX(wk2xxxs_lock);                /* race on probe */
+static DEFINE_MUTEX(wk2124s_lock);                /* race on probe */
 
-static DEFINE_MUTEX(wk2xxs_work_lock);                /* work on probe */
+static DEFINE_MUTEX(wk2124s_work_lock);                /* work on probe */
 
 struct wk2xxx_port
 {
@@ -213,7 +213,7 @@ static void wk2xxx_work(struct work_struct *w)
     //int work_irq_fail;
     int work_conf_flag;
     do {
-        mutex_lock(&wk2xxs_work_lock);
+        mutex_lock(&wk2124s_work_lock);
         //spin_lock(&s->conf_lock);
         /*work_tx_empty_flag = s->tx_empty_flag;
           if(work_tx_empty_flag)
@@ -240,7 +240,7 @@ static void wk2xxx_work(struct work_struct *w)
         //s->irq_fail = 0;
 
         //spin_unlock(&s->conf_lock);
-        mutex_unlock(&wk2xxs_work_lock);
+        mutex_unlock(&wk2124s_work_lock);
 
         if(work_conf_flag)
         {
@@ -699,13 +699,13 @@ static u_int wk2xxx_tx_empty(struct uart_port *port)// or query the tx fifo is n
 {
     uint8_t rx;
 
-    mutex_lock(&wk2xxxs_lock);
+    mutex_lock(&wk2124s_lock);
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "wk2xxx_tx_empty()---------in---\n");
 #endif
 
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
-    // mutex_lock(&wk2xxxs_lock);
+    // mutex_lock(&wk2124s_lock);
     //s->tx_empty_flag = 1;
 
     if(!(s->tx_empty_flag || s->tx_empty_fail))
@@ -730,7 +730,7 @@ static u_int wk2xxx_tx_empty(struct uart_port *port)// or query the tx fifo is n
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "wk2xxx_tx_empty----------exit---\n");
 #endif
-    mutex_unlock(&wk2xxxs_lock);
+    mutex_unlock(&wk2124s_lock);
     return s->tx_empty;
 }
 
@@ -755,13 +755,13 @@ static u_int wk2xxx_get_mctrl(struct uart_port *port)// since no modem control l
 static void wk2xxx_stop_tx(struct uart_port *port)//
 {
     uint8_t rx;
-    mutex_lock(&wk2xxxs_lock);
+    mutex_lock(&wk2124s_lock);
 
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "-wk2xxx_stop_tx------in---\n");
 #endif
 
-    //mutex_lock(&wk2xxxs_lock);
+    //mutex_lock(&wk2124s_lock);
     //disable the interrupt, clear the corresponding bit in GIR
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
 
@@ -786,11 +786,11 @@ static void wk2xxx_stop_tx(struct uart_port *port)//
             s->stop_tx_flag=0;
         }
     }
-    //mutex_unlock(&wk2xxxs_lock);
+    //mutex_unlock(&wk2124s_lock);
 #ifdef _DEBUG_WK2XXX4
     printk(KERN_ALERT "-wk2xxx_stop_tx------exit---\n");
 #endif
-    mutex_unlock(&wk2xxxs_lock);
+    mutex_unlock(&wk2124s_lock);
 }
 
 /*
@@ -798,11 +798,11 @@ static void wk2xxx_stop_tx(struct uart_port *port)//
  */
 static void wk2xxx_start_tx(struct uart_port *port)
 {
-    //mutex_lock(&wk2xxxs_lock);
+    //mutex_lock(&wk2124s_lock);
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "-wk2xxx_start_tx------in---\n");
 #endif
-    // mutex_lock(&wk2xxxs_lock);
+    // mutex_lock(&wk2124s_lock);
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
     //	uint8_t rx;
     //s->start_tx_flag = 1;
@@ -818,11 +818,11 @@ static void wk2xxx_start_tx(struct uart_port *port)
             s->start_tx_fail = 1;
         }
     }
-    // mutex_unlock(&wk2xxxs_lock);
+    // mutex_unlock(&wk2124s_lock);
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "-wk2xxx_start_tx------exit---\n");
 #endif
-    // mutex_unlock(&wk2xxxs_lock);
+    // mutex_unlock(&wk2124s_lock);
 
     // vk32xx_read_reg(s->spi_vk, s->port.iobase, VK32XX_SIER, &rx);
     // rx |= VK32XX_TRIEN;
@@ -835,14 +835,14 @@ static void wk2xxx_start_tx(struct uart_port *port)
 
 static void wk2xxx_stop_rx(struct uart_port *port)
 {
-    //mutex_lock(&wk2xxxs_lock);
+    //mutex_lock(&wk2124s_lock);
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "-wk2xxx_stop_rx------in---\n");
 #endif
     //	uint8_t rx;
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
     //s->stop_rx_flag = 1;
-    // mutex_lock(&wk2xxxs_lock);
+    // mutex_lock(&wk2124s_lock);
     if(!(s->stop_rx_flag ||s->stop_rx_fail ))
     {
         if(wk2xxx_dowork(s))
@@ -858,7 +858,7 @@ static void wk2xxx_stop_rx(struct uart_port *port)
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "-wk2xxx_stop_rx------exit---\n");
 #endif
-    //mutex_unlock(&wk2xxxs_lock);
+    //mutex_unlock(&wk2124s_lock);
 }
 
 /*
@@ -1129,7 +1129,7 @@ static void wk2xxx_termios( struct uart_port *port, struct ktermios *termios,
 	unsigned short cflag;
 	unsigned short lflag;
 	//u32 param_new, param_mask;
-    //mutex_lock(&wk2xxxs_lock);
+    //mutex_lock(&wk2124s_lock);
 	cflag = termios->c_cflag;
 	lflag = termios->c_lflag;
 #ifdef _DEBUG_WK2XXX
@@ -1377,7 +1377,7 @@ static void wk2xxx_termios( struct uart_port *port, struct ktermios *termios,
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "-vk32xx_termios------exit---\n");
 #endif
-	// mutex_unlock(&wk2xxxs_lock);
+	// mutex_unlock(&wk2124s_lock);
 	return ;
 }
 
@@ -1470,15 +1470,15 @@ static struct uart_ops wk2xxx_pops = {
     verify_port:    wk2xxx_verify_port,
 };
 
-static struct uart_driver wk2xxx_uart_driver = {
+static struct uart_driver wk2124_uart_driver = {
     owner:          THIS_MODULE,
-    major:        	SERIAL_WK2XXX_MAJOR,
+    major:        	SERIAL_WK2124_MAJOR,
 #ifdef CONFIG_DEVFS_FS
-    driver_name:    "ttySWK",
-    dev_name:       "ttysWK",
+    driver_name:    "ttySWK2124",
+    dev_name:       "ttysWK2124",
 #else
-    driver_name:    "ttySWK",
-    dev_name:       "ttysWK",
+    driver_name:    "ttySWK2124",
+    dev_name:       "ttysWK2124",
 #endif
     minor:          MINOR_START,
     nr:             NR_PORTS,
@@ -1487,10 +1487,10 @@ static struct uart_driver wk2xxx_uart_driver = {
 
 static int uart_driver_registered;
 
-static int __devinit wk2xxx_probe(struct spi_device *spi)
+static int __devinit wk2124_probe(struct spi_device *spi)
 {
 #ifdef _DEBUG_WK2XXX
-	printk(KERN_ALERT "-wk2xxx_probe()------in---\n");
+	printk(KERN_ALERT "-wk2124_probe()------in---\n");
 #endif
 	uint8_t i;
     int status;
@@ -1507,18 +1507,18 @@ static int __devinit wk2xxx_probe(struct spi_device *spi)
 
     printk(KERN_ERR "GPB_DRV...........= 0x%X\n", status);
 
-    printk(KERN_ALERT "wk2xxx_probe wk2xxx\n");
+    printk(KERN_ALERT "wk2124_probe wk2124\n");
 
-	mutex_lock(&wk2xxxs_lock);
+	mutex_lock(&wk2124s_lock);
 
 	if(!uart_driver_registered)
 	{
 		uart_driver_registered = 1;
-        status = uart_register_driver(&wk2xxx_uart_driver);
+        status = uart_register_driver(&wk2124_uart_driver);
         if (status)
        	{
-        	printk(KERN_ERR "Couldn't register wk2xxx uart driver\n");
-        	mutex_unlock(&wk2xxxs_lock);
+        	printk(KERN_ERR "Couldn't register wk2124 uart driver\n");
+        	mutex_unlock(&wk2124s_lock);
         	return status;
 		}
     }
@@ -1538,7 +1538,7 @@ static int __devinit wk2xxx_probe(struct spi_device *spi)
 		s->port.iotype = SERIAL_IO_PORT;
 		s->port.flags  = ASYNC_BOOT_AUTOCONF;
 		//s->minor       = i;
-        status = uart_add_one_port(&wk2xxx_uart_driver, &s->port);
+        status = uart_add_one_port(&wk2124_uart_driver, &s->port);
         if(status<0)
         {
             //dev_warn(&spi->dev, "uart_add_one_port failed for line i:= %d with error %d\n", i, status);
@@ -1547,77 +1547,77 @@ static int __devinit wk2xxx_probe(struct spi_device *spi)
 	}
 	printk(KERN_ALERT "uart_add_one_port = 0x%d\n", status);
 
-	mutex_unlock(&wk2xxxs_lock);
+	mutex_unlock(&wk2124s_lock);
 
 #ifdef _DEBUG_WK2XXX
-	printk(KERN_ALERT "-wk2xxx_probe()------exit---\n");
+	printk(KERN_ALERT "-wk2124_probe()------exit---\n");
 #endif
     return 0;
 }
 
-static int __devexit wk2xxx_remove(struct spi_device *spi)
+static int __devexit wk2124_remove(struct spi_device *spi)
 {
 	//struct wk2xxx_port *s = dev_get_drvdata(&spi->dev);
 	int i;
 
 #ifdef _DEBUG_WK2XXX
-	printk(KERN_ALERT "-wk2xxx_remove()------in---\n");
+	printk(KERN_ALERT "-wk2124_remove()------in---\n");
 #endif
-	mutex_lock(&wk2xxxs_lock);
+	mutex_lock(&wk2124s_lock);
     for(i =0; i < NR_PORTS; i++)
     {
         struct wk2xxx_port *s = &wk2xxxs[i];
-	    uart_remove_one_port(&wk2xxx_uart_driver, &s->port);
+	    uart_remove_one_port(&wk2124_uart_driver, &s->port);
 	}
 	printk(KERN_ALERT "removing wk2xxx driver\n");
 
-	uart_unregister_driver(&wk2xxx_uart_driver);
+	uart_unregister_driver(&wk2124_uart_driver);
 
-	mutex_unlock(&wk2xxxs_lock);
+	mutex_unlock(&wk2124s_lock);
 
 #ifdef _DEBUG_WK2XXX
-	printk(KERN_ALERT "-wk2xxx_remove()------exit---\n");
+	printk(KERN_ALERT "-wk2124_remove()------exit---\n");
 #endif
 
 	return 0;
 }
 
-static int wk2xxx_resume(struct spi_device *spi)
+static int wk2124_resume(struct spi_device *spi)
 {
 	printk(KERN_ALERT "resume wk2xxx");
 	return 0;
 }
 
-static struct spi_driver wk2xxx_driver = {
+static struct spi_driver wk2124_driver = {
     .driver = {
-        .name  = "wk2xxxspi",
+        .name  = "wk2124spi",
         .bus   = &spi_bus_type,
         .owner = THIS_MODULE,
     },
 
-    .probe  = wk2xxx_probe,
-    .remove = __devexit_p(wk2xxx_remove),
-    .resume = wk2xxx_resume,
+    .probe  = wk2124_probe,
+    .remove = __devexit_p(wk2124_remove),
+    .resume = wk2124_resume,
 };
 
-static int __init wk2xxx_init(void)
+static int __init wk2124_init(void)
 {
     int retval;
 
-    retval = spi_register_driver(&wk2xxx_driver);
+    retval = spi_register_driver(&wk2124_driver);
     printk(KERN_ALERT "rgister spi return v = :%d\n", retval);
 
 	return retval;
 }
 
-static void __exit wk2xxx_exit(void)
+static void __exit wk2124_exit(void)
 {
-    spi_unregister_driver(&wk2xxx_driver);
+    spi_unregister_driver(&wk2124_driver);
     printk("TEST_REG:quit ");
 }
 
-module_init(wk2xxx_init);
-module_exit(wk2xxx_exit);
+module_init(wk2124_init);
+module_exit(wk2124_exit);
 
 MODULE_AUTHOR("WKIC Ltd");
 MODULE_DESCRIPTION("wk2xxx generic serial port driver");

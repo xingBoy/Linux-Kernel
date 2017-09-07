@@ -1036,12 +1036,28 @@ static struct pinmux_config uart5_pin_mux[] = {
 };
 
 static struct pinmux_config sbc7816led_pin_mux[] = {
-	{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-	{"mcasp0_aclkx.gpio3_14", OMAP_MUX_MODE7 },
-	{"mcasp0_fsx.gpio3_15",   OMAP_MUX_MODE7 },
-    {"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT },
-    {"mcasp0_axr0.gpio3_16",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
-    {"mcasp0_ahclkr.gpio3_17",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	//{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	//{"mcasp0_aclkx.gpio3_14", OMAP_MUX_MODE7 },
+	//{"mcasp0_fsx.gpio3_15",   OMAP_MUX_MODE7 },
+    //{"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT },
+    //{"mcasp0_axr0.gpio3_16",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    //{"mcasp0_ahclkr.gpio3_17",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+
+	//{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                    /* A13 spi_clk */
+	//{"mcasp0_fsx.spi1_d0",     OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_PULL_UP | AM33XX_INPUT_EN},   /* B13 spi_out */
+	//{"mcasp0_axr0.spi1_d1",    OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                    /* D12 spi_in  */
+	//{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* C12 spi_cs */
+
+	{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN | AM33XX_PIN_INPUT_PULLUP},                    /* A13 spi_clk */
+	{"mcasp0_fsx.spi1_d0",     OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN | AM33XX_PIN_INPUT_PULLUP},   /* B13 spi_out */
+	{"mcasp0_axr0.spi1_d1",    OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN | AM33XX_PIN_INPUT_PULLUP},                    /* D12 spi_in  */
+	{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN | AM33XX_PIN_INPUT_PULLDOWN},   /* C12 spi_cs */
+
+
+    {"gpmc_ad12.gpio1_12",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
+    {"gpmc_ad13.gpio1_13",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},  /* WK24XX reset , low -> reset  */
+    {"gpmc_ad14.gpio1_14",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
+    {"gpmc_ad15.gpio1_15",  OMAP_MUX_MODE7 },                            /* wk24xx irq */
 	{NULL, 0},
 };
 
@@ -1813,12 +1829,7 @@ static void uart5_init(int evm_id, int profile)
 	return;
 }
 
-/* led1 led2 led3 */
-static void sbc7816led_init(int evm_id, int profile)
-{
-	setup_pin_mux(sbc7816led_pin_mux);
-    return;
-}
+
 /*
  * gpio0_7 was driven HIGH in u-boot before DDR configuration
  *
@@ -1973,7 +1984,6 @@ static const struct flash_platform_data am335x_spi_flash = {
  * So setup Max speed to be less than that of Controller speed
  */
 static struct spi_board_info am335x_spi0_slave_info[] = {
-#if 0
 	{
 		.modalias      = "m25p80",
 		.platform_data = &am335x_spi_flash,
@@ -1982,15 +1992,6 @@ static struct spi_board_info am335x_spi0_slave_info[] = {
 		.bus_num       = 1,
 		.chip_select   = 0,
 	},
-#endif
-    {
-        .modalias = "wk2xxxspi",
-        .mode = SPI_MODE_0,
-        .max_speed_hz = 10000000,
-        .bus_num = 0,
-        .chip_select = 0,
-        .controller_data = 5,
-    },
 };
 
 static struct spi_board_info am335x_spi1_slave_info[] = {
@@ -1999,9 +2000,18 @@ static struct spi_board_info am335x_spi1_slave_info[] = {
                 .max_speed_hz  = 48000000,//48Mbps
                 .bus_num       = 2,
                 .chip_select   = 0,
-                .mode = SPI_MODE_1,
+                .mode = SPI_MODE_0,
         },
 };
+
+/* led1 led2 led3 */
+static void sbc7816led_init(int evm_id, int profile)
+{
+	setup_pin_mux(sbc7816led_pin_mux);
+	spi_register_board_info(am335x_spi1_slave_info,
+			ARRAY_SIZE(am335x_spi1_slave_info));
+    return;
+}
 
 static struct gpmc_timings am335x_nand_timings = {
     /*
@@ -2984,15 +2994,6 @@ static void spi0_init(int evm_id, int profile)
 	return;
 }
 
-/* setup spi1 */
-static void spi1_init(int evm_id, int profile)
-{
-	setup_pin_mux(spi1_pin_mux);
-	spi_register_board_info(am335x_spi1_slave_info,
-			ARRAY_SIZE(am335x_spi1_slave_info));
-	return;
-}
-
 static struct pinmux_config uart2_pin_mux_s[] = {
         {"spi0_sclk.uart2_rxd", OMAP_MUX_MODE1 | AM33XX_SLEWCTRL_SLOW |AM33XX_PIN_INPUT_PULLUP},
         {"spi0_d0.uart2_txd", OMAP_MUX_MODE1 | AM33XX_PULL_UP |AM33XX_PULL_DISA |AM33XX_SLEWCTRL_SLOW},
@@ -3014,22 +3015,6 @@ static struct pinmux_config spi1_pin_mux_s[] = {
         //{"rmii1_refclk.spi1_cs0", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL| AM33XX_PULL_UP | AM33XX_INPUT_EN},
         {NULL, 0},
 };
-static struct spi_board_info am335x_spi1_slave_info_s[] = {
-        {
-                .modalias      = "spidev",
-                .max_speed_hz  = 48000000,//48Mbps
-                .bus_num       = 2,
-                .chip_select   = 0,
-                .mode = SPI_MODE_1,
-        },
-};
-static void spi1_init_s(int evm_id, int profile)
-{
-        setup_pin_mux(spi1_pin_mux_s);
-        spi_register_board_info(am335x_spi1_slave_info_s,
-                        ARRAY_SIZE(am335x_spi1_slave_info_s));
-        return;
-}
 
 /* keys button */
 static struct pinmux_config gpio_keys_pin_mux_forlinx_s[] = {
@@ -3366,7 +3351,6 @@ static struct evm_dev_cfg ad_dev_cfg[] = {
 static struct evm_dev_cfg ECM_5412_dev_cfg[] = {
 	{mmc0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_ALL},
-	{enable_ecap0,  DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart0_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart1_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart2_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
@@ -3387,7 +3371,6 @@ static struct evm_dev_cfg ECM_5412_dev_cfg[] = {
 static struct evm_dev_cfg sbc_7109_dev_cfg[] = {
 	{mmc0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_ALL},
-	{enable_ecap0,  DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart0_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart1_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart2_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
@@ -3683,8 +3666,8 @@ static void __init am335x_evm_init(void)
 		_configure_device(EVM_SK, ad_dev_cfg, PROFILE_NONE);//现在使用电容屏，仅注册ad
 #endif
 	daughter_brd_detected = false;
-	//setup_sbc_7109();
-	setup_ECM_5412();
+	setup_sbc_7109();
+	//setup_ECM_5412();
 
 	/*create  /proc/boardname to export info to userspace*/
 	proc_init();
