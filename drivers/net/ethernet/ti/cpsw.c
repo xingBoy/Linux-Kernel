@@ -2664,7 +2664,7 @@ static int __devinit cpsw_probe(struct platform_device *pdev)
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get_sync(&pdev->dev);
 	priv->clk = clk_get(&pdev->dev, "fck");
-    printk("zengjf check %s fck: %d.\n", __func__, priv->clk);
+
 	if (IS_ERR(priv->clk)) {
 		dev_err(&pdev->dev, "fck is not found\n");
 		ret = -ENODEV;

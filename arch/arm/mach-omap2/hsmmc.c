@@ -496,7 +496,7 @@ done:
 	kfree(mmc_data);
 }
 
-void __init omap2_hsmmc_init(struct omap2_hsmmc_info *controllers)
+void omap2_hsmmc_init(struct omap2_hsmmc_info *controllers)
 {
 	u32 reg;
 

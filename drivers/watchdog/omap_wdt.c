@@ -342,20 +342,18 @@ err_get_resource:
 
 static void omap_wdt_shutdown(struct platform_device *pdev)
 {
-	printk(" zengjf test for watchdog timeout.\n");
     unsigned int val;
+    struct omap_wdt_dev *wdev = NULL;
+
 #define AM33XX_PRM_RSTTIME 0x44E00F04
-    unsigned int addr = ioremap(0x44E00F04, 4);
-    printk(KERN_ALERT "<<Tony>>");
+    unsigned int *addr = ioremap(0x44E00F04, 4);
     //val = readl(AM33XX_PRM_RSTTIME);
     val = __raw_readl(addr);
-    printk(KERN_ALERT "<<Tony>>---------- RSTTIME:%x\n", val);
 //    writel(0x10ff, AM33XX_PRM_RSTTIME);
     __raw_writel(0x10ff, addr);
     val = __raw_readl(addr);
 //    val = readl(AM33XX_PRM_RSTTIME);
-    printk(KERN_ALERT "<<Tony>>---------- RSTTIME:%x\n", val);
-	struct omap_wdt_dev *wdev = platform_get_drvdata(pdev);
+	wdev = platform_get_drvdata(pdev);
 
 	if (wdev->omap_wdt_users) {
 		omap_wdt_disable(wdev);

@@ -48,6 +48,7 @@ union vfp_state *vfp_current_hw_state[NR_CPUS];
  */
 unsigned int VFP_arch;
 
+#if 0
 static bool vfp_state_in_hw(unsigned int cpu, struct thread_info *thread)
 {
 #ifdef CONFIG_SMP
@@ -72,6 +73,7 @@ static void vfp_force_reload(unsigned int cpu, struct thread_info *thread)
 	thread->vfpstate.hard.cpu = NR_CPUS;
 #endif
 }
+#endif
 
 /*
  * Per-thread VFP initialization.

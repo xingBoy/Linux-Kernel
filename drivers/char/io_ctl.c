@@ -50,7 +50,7 @@ static ssize_t io_ctl_write(struct file *filp,const char *buf,size_t count,loff_
 	return count;
 }
 
-static int io_ctl_ioctl(struct inode * inode, struct file * file, unsigned int cmd, unsigned long arg)
+static long io_ctl_ioctl(struct file * file, unsigned int cmd, unsigned long arg)
 {
 	return 0;
 }
@@ -81,7 +81,7 @@ static ssize_t gpio_state_store(struct device *dev, struct device_attribute *att
 
 struct file_operations io_ctl_fops = {
 	.read		= io_ctl_read,
-	.write		= io_ctl_write,	
+	.write		= io_ctl_write,
 	.unlocked_ioctl	= io_ctl_ioctl,
 	.open		= io_ctl_open,
 	.release	= io_ctl_close,

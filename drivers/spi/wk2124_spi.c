@@ -203,11 +203,11 @@ static void wk2xxx_work(struct work_struct *w)
     struct wk2xxx_port *s = container_of(w, struct wk2xxx_port, work);
     uint8_t rx;
 
-    int work_tx_empty_flag;
+    int work_tx_empty_flag = 0;
     int work_start_tx_flag;
 
     int work_stop_rx_flag;
-    int work_stop_tx_flag;
+    int work_stop_tx_flag = 0;
 
     int work_irq_flag;
     //int work_irq_fail;
@@ -698,13 +698,14 @@ static void wk2xxxirq_app(struct uart_port *port)//
 static u_int wk2xxx_tx_empty(struct uart_port *port)// or query the tx fifo is not empty?
 {
     uint8_t rx;
+    struct wk2xxx_port *s = NULL;
 
     mutex_lock(&wk2124s_lock);
 #ifdef _DEBUG_WK2XXX
     printk(KERN_ALERT "wk2xxx_tx_empty()---------in---\n");
 #endif
 
-    struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
+    s = container_of(port, struct wk2xxx_port, port);
     // mutex_lock(&wk2124s_lock);
     //s->tx_empty_flag = 1;
 
@@ -755,6 +756,8 @@ static u_int wk2xxx_get_mctrl(struct uart_port *port)// since no modem control l
 static void wk2xxx_stop_tx(struct uart_port *port)//
 {
     uint8_t rx;
+    struct wk2xxx_port *s = NULL;
+
     mutex_lock(&wk2124s_lock);
 
 #ifdef _DEBUG_WK2XXX
@@ -763,12 +766,12 @@ static void wk2xxx_stop_tx(struct uart_port *port)//
 
     //mutex_lock(&wk2124s_lock);
     //disable the interrupt, clear the corresponding bit in GIR
-    struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
+    s = container_of(port, struct wk2xxx_port, port);
 
     if(!(s->stop_tx_flag || s->stop_tx_fail))
     {
         wk2xxx_read_reg(s->spi_wk, s->port.iobase, WK2XXX_SIER, (uint8_t *)&rx);
-        s->stop_tx_fail = rx&WK2XXX_TFTRIG_IEN > 0;
+        s->stop_tx_fail = (rx & WK2XXX_TFTRIG_IEN) > 0;
         if(s->stop_tx_fail)
         {
             wk2xxx_read_reg(s->spi_wk, s->port.iobase, WK2XXX_SIER, &rx);

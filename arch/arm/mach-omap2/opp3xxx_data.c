@@ -187,7 +187,6 @@ static struct omap_opp_def __initdata am33xx_es1_0_opp_def_list[] = {
 #define AM33XX_ES2_0_VDD_MPU_OPP120_UV		1200000
 #define AM33XX_ES2_0_VDD_MPU_OPPTURBO_UV	1260000
 #define AM33XX_ES2_0_VDD_MPU_OPPNITRO_UV	1350000
-#define AM33XX_ES2_0_VDD_MPU_OPPNITRO_UV    1325000
 
 static struct omap_opp_def __initdata am33xx_es2_0_opp_def_list[] = {
 	/* MPU OPP1 - OPP50 */

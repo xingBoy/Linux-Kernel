@@ -522,7 +522,7 @@ void __init usbhs_init(const struct usbhs_omap_board_data *pdata)
 		return;
 	}
 
-	od = omap_device_build_ss(OMAP_USBHS_DEVICE, bus_id, oh, 2,
+	od = (struct omap_device *)omap_device_build_ss(OMAP_USBHS_DEVICE, bus_id, oh, 2,
 				(void *)&usbhs_data, sizeof(usbhs_data),
 				omap_uhhtll_latency,
 				ARRAY_SIZE(omap_uhhtll_latency), false);
