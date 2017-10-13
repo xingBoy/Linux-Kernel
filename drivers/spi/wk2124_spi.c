@@ -1477,11 +1477,11 @@ static struct uart_driver wk2124_uart_driver = {
     owner:          THIS_MODULE,
     major:        	SERIAL_WK2124_MAJOR,
 #ifdef CONFIG_DEVFS_FS
-    driver_name:    "ttySWK2124",
-    dev_name:       "ttysWK2124",
+    driver_name:    "ttySWZ",
+    dev_name:       "ttysWZ",
 #else
-    driver_name:    "ttySWK2124",
-    dev_name:       "ttysWK2124",
+    driver_name:    "ttySWZ",
+    dev_name:       "ttysWZ",
 #endif
     minor:          MINOR_START,
     nr:             NR_PORTS,

@@ -255,7 +255,8 @@ obj-$(CONFIG_MACH_TI8168EVM)		+= board-ti8168evm.o
 obj-$(CONFIG_MACH_TI8148EVM)		+= board-ti8168evm.o
 obj-$(CONFIG_MACH_AM335XEVM)		+= board-am335xevm.o
 obj-$(CONFIG_MACH_AM335XIAEVM)		+= board-am335xevm.o
-obj-$(CONFIG_MACH_APLEX_ECM_5412)	+= board-aplex_ECM_5412.o
+obj-$(CONFIG_MACH_APLEX_ECM_5416)	+= board-aplex_ECM_5416.o
+obj-$(CONFIG_MACH_APLEX_CMI_AT101)	+= board-aplex_cmi_at101.o
 
 obj-$(CONFIG_MACH_AM335XEVM_VIBRATOR)	+= board-am335xevm-vibrator.o
 

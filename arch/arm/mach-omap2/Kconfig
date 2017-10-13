@@ -344,8 +344,13 @@ config MACH_TI8148EVM
 	depends on SOC_OMAPTI81XX
 	default y
 
-config MACH_APLEX_ECM_5412
-	bool "Aplex ECM_5412"
+config MACH_APLEX_ECM_5416
+	bool "Aplex ECM_5416"
+	depends on SOC_OMAPAM33XX
+	default n
+
+config MACH_APLEX_CMI_AT101
+	bool "Aplex CMI_AT101"
 	depends on SOC_OMAPAM33XX
 	default n
 

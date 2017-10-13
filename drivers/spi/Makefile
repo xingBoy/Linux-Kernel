@@ -58,5 +58,5 @@ obj-$(CONFIG_SPI_TLE62X0)		+= spi-tle62x0.o
 obj-$(CONFIG_SPI_TOPCLIFF_PCH)		+= spi-topcliff-pch.o
 obj-$(CONFIG_SPI_TXX9)			+= spi-txx9.o
 obj-$(CONFIG_SPI_XILINX)		+= spi-xilinx.o
-obj-$(CONFIG_SPI_WK2124)		+= wk2xxx_spi.o
-obj-$(CONFIG_SPI_WK2124_1)		+= wk2124_spi.o
+obj-$(CONFIG_SPI_WK2XXX)		+= wk2xxx_spi.o
+obj-$(CONFIG_SPI_WK2124)		+= wk2124_spi.o
