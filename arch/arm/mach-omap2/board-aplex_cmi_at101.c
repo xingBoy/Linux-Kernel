@@ -613,16 +613,16 @@ static struct pinmux_config uart3_pin_mux[] = {
 	{NULL, 0},
 };
 
-static struct pinmux_config uart4_pin_mux[] = {
-     {"uart0_ctsn.uart4_rxd", OMAP_MUX_MODE1 | AM33XX_SLEWCTRL_SLOW |AM33XX_PIN_INPUT_PULLUP},
-     {"uart0_rtsn.uart4_txd", OMAP_MUX_MODE1 | AM33XX_PULL_UP | AM33XX_PULL_DISA | AM33XX_SLEWCTRL_SLOW},
+static struct pinmux_config d_can0_pin_mux[] = {
+     {"uart1_ctsn.d_can0_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
+     {"uart1_rtsn.d_can0_rx", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLUP},
      {NULL, 0},
 };
 
-static struct pinmux_config uart5_pin_mux[] = {
-     {"lcd_data9.uart5_rxd", OMAP_MUX_MODE4 | AM33XX_PIN_INPUT_PULLUP},
-     {"lcd_data8.uart5_txd", OMAP_MUX_MODE4 | AM33XX_PULL_ENBL},
-     {NULL, 0},
+static struct pinmux_config d_can1_pin_mux[] = {
+	{"uart0_ctsn.d_can1_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
+	{"uart0_rtsn.d_can1_rx", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLUP},
+	{NULL, 0},
 };
 
 /*
@@ -847,18 +847,84 @@ static void uart3_init(int evm_id, int profile)
 	return;
 }
 
-/* setup uart4 */
-static void uart4_init(int evm_id, int profile)
+static void d_can_init(int evm_id, int profile)
 {
-	setup_pin_mux(uart4_pin_mux);
-	return;
+	setup_pin_mux(d_can0_pin_mux);
+	am33xx_d_can_init(0);
+
+	setup_pin_mux(d_can1_pin_mux);
+	am33xx_d_can_init(1);
 }
 
-/* setup uart4 */
-static void uart5_init(int evm_id, int profile)
+static struct omap_rtc_pdata am335x_rtc_info = {
+	.pm_off		= false,
+	.wakeup_capable	= 0,
+};
+
+static void am335x_rtc_init(int evm_id, int profile)
 {
-	setup_pin_mux(uart5_pin_mux);
-	return;
+	void __iomem *base;
+	struct clk *clk;
+	struct omap_hwmod *oh;
+	struct platform_device *pdev;
+	char *dev_name = "am33xx-rtc";
+
+	clk = clk_get(NULL, "rtc_fck");
+	if (IS_ERR(clk)) {
+		pr_err("rtc : Failed to get RTC clock\n");
+		return;
+	}
+
+	if (clk_enable(clk)) {
+		pr_err("rtc: Clock Enable Failed\n");
+		return;
+	}
+
+	base = ioremap(AM33XX_RTC_BASE, SZ_4K);
+
+	if (WARN_ON(!base))
+		return;
+
+	/* Unlock the rtc's registers */
+	writel(0x83e70b13, base + 0x6c);
+	writel(0x95a4f1e0, base + 0x70);
+
+	/*
+	 * Enable the 32K OSc
+	 * TODO: Need a better way to handle this
+	 * Since we want the clock to be running before mmc init
+	 * we need to do it before the rtc probe happens
+	 */
+	writel(0x48, base + 0x54);
+
+	iounmap(base);
+
+	switch (evm_id) {
+	case BEAGLE_BONE_A3:
+	case BEAGLE_BONE_OLD:
+	case BEAGLE_BONE_BLACK:
+		am335x_rtc_info.pm_off = true;
+		break;
+	default:
+		break;
+	}
+
+	clk_disable(clk);
+	clk_put(clk);
+
+	if (omap_rev() >= AM335X_REV_ES2_0)
+		am335x_rtc_info.wakeup_capable = 1;
+
+	oh = omap_hwmod_lookup("rtc");
+	if (!oh) {
+		pr_err("could not look up %s\n", "rtc");
+		return;
+	}
+
+	pdev = omap_device_build(dev_name, -1, oh, &am335x_rtc_info,
+			sizeof(struct omap_rtc_pdata), NULL, 0, 0);
+	WARN(IS_ERR(pdev), "Can't build omap_device for %s:%s.\n",
+			dev_name, oh->name);
 }
 
 /* setup haptics */
@@ -1133,17 +1199,6 @@ static struct regulator_init_data am335x_vdd2 = {
 
 /*使用电容屏时注册*/
 static struct i2c_board_info am335x_i2c1_boardinfo2[] = {
-	{
-		I2C_BOARD_INFO("ds1337", 0x68),
-	},
-#if 0
-	{
-		I2C_BOARD_INFO("tlv320aic3x", 0x1b),
-	},
-	{
-		I2C_BOARD_INFO("ft5x0x_ts", 0x38),
-	},
-#endif
 };
 
 static void i2c1_init(int evm_id, int profile)
@@ -1378,14 +1433,13 @@ static struct evm_dev_cfg cmi_at101_dev_cfg[] = {
 	{uart1_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart2_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart3_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart4_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart5_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{usb0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{usb1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii2_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
-	//{am335x_rtc_init, DEV_ON_BASEBOARD, PROFILE_ALL},
+	{am335x_rtc_init, DEV_ON_BASEBOARD, PROFILE_ALL},
     {i2c1_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
+    {d_can_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
     {NULL, 0, 0},
 };
 
@@ -1506,7 +1560,7 @@ char sbc_7109_phy2[10] = {"0:01"};
 
 static void setup_cmi_at101(void)
 {
-	pr_info("The board is a ECM_5412.\n");
+	pr_info("The board is a CMI_AT101.\n");
 
 	/*which doesn't have Write Protect pin LAN8710A_PHY_ID */
 	am335x_mmc[0].gpio_wp = -EINVAL;
