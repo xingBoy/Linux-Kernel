@@ -29,6 +29,7 @@
 #include <asm/byteorder.h>
 
 #include "usb.h"
+
 /* if we are in debug mode, always announce new devices */
 #ifdef DEBUG
 #ifndef CONFIG_USB_ANNOUNCE_NEW_DEVICES

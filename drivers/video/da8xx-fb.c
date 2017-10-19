@@ -416,7 +416,7 @@ static struct da8xx_panel known_lcd_panels[] = {
 	},
 	[12] = {
 		 /* SBC-7109-10.1 SIZE */
-	   	
+
         .name = "NHD-10.1-ATXI#-T-1",
 		.width = 1024,
 		.height = 600,
@@ -431,7 +431,7 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.pxl_clk = 63000000,//512000000
 		.invert_pxl_clk = 1,//0,
     },
-      [13] = {  
+      [13] = {
         /* SBC-7109-10.1 SIZE */
 	   	.name = "NHD-10.1-ATXI#-T-2",
 		.width = 1280,
@@ -445,24 +445,7 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.pxl_clk = 71100000,
 		.invert_pxl_clk = 0,
 	},
-#if 0
-      [14] = {  
-        /* SBC-7109-5.6 SIZE */
-	   	.name = "NHD-5.6-ATXI#-T-1",
-		.width = 640,
-		.height = 480,
-		.hfp = 16,/*70*/
-		.hbp = 134,/*70*/
-		.hsw = 10,
-		.vfp = 20,/*20*/
-		.vbp = 11,/*20*/
-		.vsw = 2,
-		.pxl_clk = 39700000,
-		.invert_pxl_clk = 0,
-	},
-#else
-      // HV mode, typical value
-      [14] = {  
+      [14] = {
         /* SBC-7109-5.6 SIZE */
 	   	.name = "NHD-5.6-ATXI#-T-1",
 		.width = 640,
@@ -476,7 +459,20 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.pxl_clk = 35500000, //48000000, 42000000, //33300000, //39700000,
 		.invert_pxl_clk = 0,
 	},
-#endif
+	  [15] = {
+         /* SBC-7109-12.1 SIZE */
+         .name = "APLEX_12_1_1024_768",
+         .width = 1024,
+         .height = 768,
+         .hfp = 16,
+         .hbp = 150,
+         .hsw = 150,
+         .vfp = 15,
+         .vbp = 15,
+         .vsw = 8,
+         .pxl_clk = 64900000,
+         .invert_pxl_clk = 1,
+     },
 };
 /* Enable the Raster Engine of the LCD Controller */
 static inline void lcd_enable_raster(void)

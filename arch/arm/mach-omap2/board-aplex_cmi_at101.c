@@ -130,22 +130,8 @@ static const struct display_panel disp_panel = {
 	COLOR_ACTIVE,
 };
 
-/* LCD backlight platform Data */
-#define AM335X_BACKLIGHT_MAX_BRIGHTNESS        100
-#define AM335X_BACKLIGHT_DEFAULT_BRIGHTNESS    60
-// normal
-//#define AM335X_PWM_PERIOD_NANO_SECONDS        (5000 * 10)
 // 2015-9-21 zengjf set for 12.1'' display
 #define AM335X_PWM_PERIOD_NANO_SECONDS        (5000 * 10 * 100)
-
-static struct platform_pwm_backlight_data am335x_backlight_data0 = {
-	.pwm_id         = "ecap.0",
-	.ch             = -1,
-	.lth_brightness	= 21,
-	.max_brightness = AM335X_BACKLIGHT_MAX_BRIGHTNESS,
-	.dft_brightness = AM335X_BACKLIGHT_DEFAULT_BRIGHTNESS,
-	.pwm_period_ns  = AM335X_PWM_PERIOD_NANO_SECONDS,
-};
 
 static struct lcd_ctrl_config lcd_cfg = {
 	&disp_panel,
@@ -249,48 +235,6 @@ struct da8xx_lcdc_platform_data hdmi_pdata = {
 	.manu_name    = "NXP HDMI",
 	.controller_data  = &dvi_cfg,
 	.type      = "nxp-1280x720@60",
-};
-
-/* Touchscreen Controller Data for AM335xEVM */
-/* Calibrated on AM335xEVM Rev. 1.1A and 1.2A */
-/* The values have to be fine tuned for other revisions, if requred */
-static struct tsc_data am335xevm_touchscreen_data = {
-	.wires = 5,
-	.x = {
-		.min = 0x1f4,
-		.max = 0xe10,
-		.inverted = 0,
-	},
-	.y = {
-		.min = 0x28a,
-		.max = 0xdd4,
-		.inverted = 0,
-	},
-#if 0
-	.x = {
-		.min = 0xCB,
-		.max = 0xF9B,
-		.inverted = 0,
-	},
-	.y = {
-		.min = 0xC8,
-		.max = 0xE93,
-		.inverted = 0,
-	},
-#endif
-	//.x_plate_resistance = 70,
-	.x_plate_resistance = 82,
-	.steps_to_configure = 5,
-};
-
-static struct adc_data am335x_adc_data = {
-	.adc_channels = 3,
-};
-
-static struct mfd_tscadc_board tscadc = {
-	.tsc_init = &am335xevm_touchscreen_data,
-	.adc_init = &am335x_adc_data,
-	//.adc_init = NULL,
 };
 
 static struct omap2_hsmmc_info am335x_mmc[] = {
@@ -589,6 +533,43 @@ static struct pinmux_config mmc0_common_pin_mux[] = {
 	{NULL, 0},
 };
 
+/* Module pin mux for LCDC */
+static struct pinmux_config lcdc_pin_mux[] = {
+	{"lcd_data0.lcd_data0",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data1.lcd_data1",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data2.lcd_data2",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data3.lcd_data3",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data4.lcd_data4",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data5.lcd_data5",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data6.lcd_data6",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data7.lcd_data7",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data10.lcd_data10",	OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data11.lcd_data11",	OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data12.lcd_data12",	OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data13.lcd_data13",	OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data14.lcd_data14",	OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_data15.lcd_data15",	OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT
+						       | AM33XX_PULL_DISA},
+	{"lcd_vsync.lcd_vsync",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	{"lcd_hsync.lcd_hsync",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	{"lcd_pclk.lcd_pclk",		OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	{"lcd_ac_bias_en.lcd_ac_bias_en", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	{NULL, 0},
+};
+
 static struct pinmux_config uart0_pin_mux[] = {
     {"uart0_rxd.uart0_rxd", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLUP},
     {"uart0_txd.uart0_txd", OMAP_MUX_MODE0 | AM33XX_PULL_ENBL},
@@ -623,6 +604,11 @@ static struct pinmux_config d_can1_pin_mux[] = {
 	{"uart0_ctsn.d_can1_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
 	{"uart0_rtsn.d_can1_rx", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLUP},
 	{NULL, 0},
+};
+
+static struct pinmux_config cmi_at101_gpio_pin_mux[] = {
+	{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {NULL, 0},
 };
 
 /*
@@ -713,9 +699,9 @@ static struct pinmux_config usb0_pin_mux[] = {
 /* pinmux for usb1 drvvbus */
 static struct pinmux_config usb1_pin_mux[] = {
 #if defined(CONFIG_OK335XD)
-	{"usb1_drvvbus.usb1_drvvbus",	 OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	{"usb1_drvvbus.usb1_drvvbus", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
 #elif defined(CONFIG_OK335XS)
-	{"usb1_drvvbus.gpio3_13",OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT | AM33XX_PIN_OUTPUT_PULLUP},
+	{"usb1_drvvbus.gpio3_13", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT | AM33XX_PIN_OUTPUT_PULLUP},
 #endif
 	{NULL, 0},
 };
@@ -735,52 +721,6 @@ struct wl12xx_platform_data am335xevm_wlan_data = {
 	.bt_enable_gpio = GPIO_TO_PIN(3, 21),
 	.wlan_enable_gpio = GPIO_TO_PIN(1, 16),
 };
-
-/* Setup pwm-backlight */
-static struct platform_device am335x_backlight = {
-	.name           = "pwm-backlight",
-	.id             = -1,
-};
-
-static struct pwmss_platform_data  pwm_pdata[3] = {
-	{
-		.version = PWM_VERSION_1,
-	},
-	{
-		.version = PWM_VERSION_1,
-	},
-	{
-		.version = PWM_VERSION_1,
-	},
-};
-
-static int __init backlight_init(void)
-{
-	int index = 0;
-
-#if defined(CONFIG_OK335XD)
-	index = 0;
-	am335x_backlight.dev.platform_data = &am335x_backlight_data0;
-#elif defined(CONFIG_OK335XS)
-	index = 2;
-	am335x_backlight.dev.platform_data = &am335x_backlight_data2;
-#endif
-
-	am33xx_register_ecap(index, &pwm_pdata[index]);
-	platform_device_register(&am335x_backlight);
-
-	return 0;
-}
-late_initcall(backlight_init);
-
-static void mfd_tscadc_init(int evm_id, int profile)
-{
-	int err;
-
-	err = am33xx_register_mfd_tscadc(&tscadc);
-	if (err)
-		pr_err("failed to register touchscreen device\n");
-}
 
 #define BEAGLEBONE_CAMERA_ORIENTATION GPIO_TO_PIN(0, 30)
 
@@ -819,6 +759,69 @@ static void usb1_init(int evm_id, int profile)
 	return;
 }
 
+static int __init conf_disp_pll(int rate)
+{
+	struct clk *disp_pll;
+	int ret = -EINVAL;
+
+	disp_pll = clk_get(NULL, "dpll_disp_ck");
+	if (IS_ERR(disp_pll)) {
+		pr_err("Cannot clk_get disp_pll\n");
+		goto out;
+	}
+
+	ret = clk_set_rate(disp_pll, rate);
+	clk_put(disp_pll);
+out:
+	return ret;
+}
+
+static void lcdc_init(int evm_id, int profile)
+{
+	struct da8xx_lcdc_platform_data *lcdc_pdata;
+	setup_pin_mux(lcdc_pin_mux);
+
+	if (conf_disp_pll(300000000)) {
+		pr_info("Failed configure display PLL, not attempting to"
+				"register LCDC\n");
+		return;
+	}
+
+//  screen_size = SCREEN_SIZE_640x480_5_6;
+//	screen_size = SCREEN_SIZE_640X480_5_7;
+	screen_size = SCREEN_SIZE_800X480_7;
+//  screen_size = SCREEN_SIZE_800X600_8;
+//  screen_size = SCREEN_SIZE_1024x600_10_1;
+//  screen_size = SCREEN_SIZE_1280x800_10_1;
+//	screen_size = SCREEN_SIZE_800X600_12_1;
+
+	if(screen_size == SCREEN_SIZE_800X600_8)
+		lcdc_pdata = &NHD_800600MF_ATXI_pdata_8;
+	else if(screen_size == SCREEN_SIZE_800X480_5)
+		lcdc_pdata = &NHD_800480MF_ATXI_pdata_5;
+	else if(screen_size == SCREEN_SIZE_800X480_7)
+		lcdc_pdata = &NHD_800480MF_ATXI_pdata_7;
+	else if(screen_size == SCREEN_SIZE_800X600_12_1)
+		lcdc_pdata = &NHD_800600MF_ATXI_pdata_12_1;
+	else if(screen_size == SCREEN_SIZE_640X480_5_7 )
+		lcdc_pdata = &NHD_640480MF_ATXI_pdata_5_7 ;
+	else if(screen_size == SCREEN_SIZE_1024x600_10_1 )
+		lcdc_pdata = &NHD_1024600MF_ATXI_pdata_10_1 ;
+	else if(screen_size == SCREEN_SIZE_1280x800_10_1 )
+		lcdc_pdata = &NHD_1280800MF_ATXI_pdata_10_1 ;
+	else if(screen_size == SCREEN_SIZE_640x480_5_6 )
+		lcdc_pdata = &NHD_640480MF_ATXI_pdata_5_6 ;
+    else
+         lcdc_pdata = &NHD_480272MF_ATXI_pdata_4;
+
+	lcdc_pdata->get_context_loss_count = omap_pm_get_dev_context_loss_count;
+
+	if (am33xx_register_lcdc(lcdc_pdata))
+		pr_info("Failed to register LCDC device\n");
+
+	return;
+}
+
 /* setup uart0 for sbc-7109 */
 static void uart0_init(int evm_id, int profile)
 {
@@ -854,6 +857,17 @@ static void d_can_init(int evm_id, int profile)
 
 	setup_pin_mux(d_can1_pin_mux);
 	am33xx_d_can_init(1);
+}
+
+static void cmi_at101_gpio(int evm_id, int profile)
+{
+    setup_pin_mux(cmi_at101_gpio_pin_mux);
+
+    /* led init   */
+	#define GPIO0_29 29
+	gpio_request(GPIO0_29,"gpio0_29");
+	gpio_direction_output(GPIO0_29, 1);
+	gpio_set_value(GPIO0_29, 1);
 }
 
 static struct omap_rtc_pdata am335x_rtc_info = {
@@ -1336,6 +1350,10 @@ static struct i2c_board_info i2c0_boardinfo[] = {
 		//I2C_BOARD_INFO("ds1307", 0x68),
 		I2C_BOARD_INFO("24c02", 0x50),
 	},
+	{
+		//I2C_BOARD_INFO("ds1307", 0x68),
+		I2C_BOARD_INFO("tda998x", 0x70),
+	},
 #if 0
 	{
 		  I2C_BOARD_INFO("ds1307", 0x68),
@@ -1419,16 +1437,11 @@ int proc_init(void)
 	return 0; /* everything is ok */
 }
 
-/*电阻屏设备注册*/
-static struct evm_dev_cfg mfd_dev_cfg[] = {
-	{mfd_tscadc_init,		 DEV_ON_BASEBOARD, PROFILE_ALL},
-	{NULL, 0, 0},
-};
-
 /* ECM_5412 */
 static struct evm_dev_cfg cmi_at101_dev_cfg[] = {
 	{mmc0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_ALL},
+    {lcdc_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart0_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart1_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart2_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
@@ -1438,17 +1451,19 @@ static struct evm_dev_cfg cmi_at101_dev_cfg[] = {
     {mii1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii2_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
 	{am335x_rtc_init, DEV_ON_BASEBOARD, PROFILE_ALL},
-    {i2c1_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
+    {i2c1_init,      DEV_ON_BASEBOARD, PROFILE_ALL},
     {d_can_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
+    {cmi_at101_gpio, DEV_ON_BASEBOARD, PROFILE_ALL},
     {NULL, 0, 0},
 };
 
 static int am33xx_evm_tx_clk_dly_phy_fixup(struct phy_device *phydev)
 {
-    //phy is LAN8710, not AR8051, so comment it
-//	phy_write(phydev, AR8051_PHY_DEBUG_ADDR_REG,
-//		  AR8051_DEBUG_RGMII_CLK_DLY_REG);
-//	phy_write(phydev, AR8051_PHY_DEBUG_DATA_REG, AR8051_RGMII_TX_CLK_DLY);
+    // phy is LAN8710, not AR8051, so comment it
+    // phy_write(phydev, AR8051_PHY_DEBUG_ADDR_REG,
+    // AR8051_DEBUG_RGMII_CLK_DLY_REG);
+    // phy_write(phydev, AR8051_PHY_DEBUG_DATA_REG, AR8051_RGMII_TX_CLK_DLY);
+
 	return 0;
 }
 
@@ -1465,89 +1480,7 @@ static int am33xx_evm_tx_clk_dly_phy_fixup(struct phy_device *phydev)
 #define AM33XX_ES2_1_OPP120_FREQ	720000000
 #define AM33XX_ES2_1_OPPTURBO_FREQ	800000000
 #define AM33XX_ES2_1_OPPNITRO_FREQ	1000000000
-#if 0
-static void am335x_opp_update(void)
-{
-	u32 rev;
-	int voltage_uv = 0;
-	struct device *core_dev, *mpu_dev;
-	struct regulator *core_reg;
 
-	core_dev = omap_device_get_by_hwmod_name("l3_main");
-	mpu_dev = omap_device_get_by_hwmod_name("mpu");
-
-	if (!mpu_dev || !core_dev) {
-		pr_err("%s: Aiee.. no mpu/core devices? %p %p\n", __func__,
-		       mpu_dev, core_dev);
-		return;
-	}
-
-	core_reg = regulator_get(core_dev, "vdd_core");
-	if (IS_ERR(core_reg)) {
-		pr_err("%s: unable to get core regulator\n", __func__);
-		return;
-	}
-
-	/*
-	 * Ensure physical regulator is present.
-	 * (e.g. could be dummy regulator.)
-	 */
-	voltage_uv = regulator_get_voltage(core_reg);
-	if (voltage_uv < 0) {
-		pr_err("%s: physical regulator not present for core" \
-		       "(%d)\n", __func__, voltage_uv);
-		regulator_put(core_reg);
-		return;
-	}
-
-	pr_debug("%s: core regulator value %d\n", __func__, voltage_uv);
-	if (voltage_uv > 0) {
-		rev = omap_rev();
-		switch (rev) {
-		case AM335X_REV_ES1_0:
-			if (voltage_uv <= AM33XX_VDD_CORE_OPP50_UV) {
-				/*
-				 * disable the higher freqs - we dont care about
-				 * the results
-				 */
-				opp_disable(mpu_dev, AM33XX_OPP120_FREQ);
-				opp_disable(mpu_dev, AM33XX_OPPTURBO_FREQ);
-			}
-			break;
-		case AM335X_REV_ES2_0:
-			if (voltage_uv <= AM33XX_ES2_0_VDD_CORE_OPP50_UV) {
-				/*
-				 * disable the higher freqs - we dont care about
-				 * the results
-				 */
-				opp_disable(mpu_dev,
-					    AM33XX_ES2_0_OPP120_FREQ);
-				opp_disable(mpu_dev,
-					    AM33XX_ES2_0_OPPTURBO_FREQ);
-				opp_disable(mpu_dev,
-					    AM33XX_ES2_0_OPPNITRO_FREQ);
-			}
-			break;
-		case AM335X_REV_ES2_1:
-		/* FALLTHROUGH */
-		default:
-			if (voltage_uv <= AM33XX_ES2_1_VDD_CORE_OPP50_UV) {
-				/*
-				 * disable the higher freqs - we dont care about
-				 * the results
-				 */
-				opp_disable(mpu_dev,
-					    AM33XX_ES2_1_OPP120_FREQ);
-				opp_disable(mpu_dev,
-					    AM33XX_ES2_1_OPPTURBO_FREQ);
-				opp_disable(mpu_dev,
-					    AM33XX_ES2_1_OPPNITRO_FREQ);
-			}
-			break;
-		}
-	}
-}
-#endif
 #ifdef CONFIG_MACH_AM335XEVM_VIBRATOR
 int am335xevm_vibrator_init(void);
 #endif
@@ -1670,9 +1603,6 @@ static void __init am335x_evm_init(void)
 
 	omap_board_config = am335x_evm_config;
 	omap_board_config_size = ARRAY_SIZE(am335x_evm_config);
-
-	/*根据内核传参决定是否使用电阻屏*/
-	_configure_device(EVM_SK, mfd_dev_cfg, PROFILE_NONE);
 
 	daughter_brd_detected = false;
 	setup_cmi_at101();

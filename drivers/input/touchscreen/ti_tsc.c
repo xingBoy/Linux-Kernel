@@ -143,6 +143,7 @@ static void tsc_step_config(struct tscadc *ts_dev)
 	 * Subtract 1 because in the Step enable register the last bit is
 	 * used to set the charge bit.
 	 */
+
 	tscadc_writel(ts_dev, TSCADC_REG_SE, tscadc_readl
 			(ts_dev, TSCADC_REG_SE) |
 			((1 << ((ts_dev->steps_to_config * 2)  + 3)) - 1));

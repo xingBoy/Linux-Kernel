@@ -36,6 +36,7 @@
 #include <linux/io.h>
 #include <linux/pm_runtime.h>
 #include <linux/davinci_emac.h>
+
 /*
  * This timeout definition is a worst-case ultra defensive measure against
  * unexpected controller lock ups.  Ideally, we should never ever hit this
