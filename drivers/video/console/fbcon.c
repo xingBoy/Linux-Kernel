@@ -149,7 +149,7 @@ static int fbcon_set_origin(struct vc_data *);
 
 #define CURSOR_DRAW_DELAY		(1)
 
-static int vbl_cursor_cnt;
+//static int vbl_cursor_cnt;
 static int fbcon_cursor_noblink;
 
 #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)

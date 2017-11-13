@@ -55,5 +55,5 @@ obj-$(CONFIG_APANIC)		+= apanic.o
 obj-$(CONFIG_SENSORS_AK8975)	+= akm8975.o
 obj-$(CONFIG_PWM_BUZZER)        += pwm_buzzer.o
 obj-$(CONFIG_LED_DEV)        += led_dev.o
-obj-y += sdDetect.o
+# obj-m += sdDetect.o
 

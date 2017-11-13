@@ -103,7 +103,7 @@ static struct miscdevice buzzer_miscdev =
 
 static int __init buzzer_init(void)
 {
-    printk(" zengjf check buzzer init.\n");
+    printk(" chen check buzzer init.\n");
     misc_register(&buzzer_miscdev);
     return 0;
 }

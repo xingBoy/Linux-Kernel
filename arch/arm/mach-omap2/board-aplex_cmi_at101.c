@@ -509,6 +509,7 @@ static struct pinmux_config mii2_pin_mux[] = {
     {"gpmc_a10.mii2_rxd1", OMAP_MUX_MODE1 |  AM33XX_PIN_INPUT },
     {"gpmc_a11.mii2_rxd0", OMAP_MUX_MODE1 |  AM33XX_PIN_INPUT },
     {"gpmc_wpn.mii2_rxerr", OMAP_MUX_MODE1 | AM33XX_PIN_INPUT_PULLDOWN},
+    {"gpmc_ben1.mii2_col",OMAP_MUX_MODE1 | AM33XX_PIN_OUTPUT},
     {"mdio_data.mdio_data", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLUP},
     {"mdio_clk.mdio_clk", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT_PULLUP},
     {NULL, 0},
@@ -595,9 +596,9 @@ static struct pinmux_config uart3_pin_mux[] = {
 };
 
 static struct pinmux_config d_can0_pin_mux[] = {
-     {"uart1_ctsn.d_can0_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
-     {"uart1_rtsn.d_can0_rx", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLUP},
-     {NULL, 0},
+    {"uart1_ctsn.d_can0_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
+    {"uart1_rtsn.d_can0_rx", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLUP},
+    {NULL, 0},
 };
 
 static struct pinmux_config d_can1_pin_mux[] = {
@@ -608,6 +609,7 @@ static struct pinmux_config d_can1_pin_mux[] = {
 
 static struct pinmux_config cmi_at101_gpio_pin_mux[] = {
 	{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"gpmc_ad8.gpio0_22", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {NULL, 0},
 };
 
@@ -692,17 +694,14 @@ static void _configure_device(int evm_id, struct evm_dev_cfg *dev_cfg,
 
 /* pinmux for usb0 drvvbus */
 static struct pinmux_config usb0_pin_mux[] = {
-	{"usb0_drvvbus.usb0_drvvbus",    OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	{"usb0_drvvbus.usb0_drvvbus", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
 	{NULL, 0},
 };
 
 /* pinmux for usb1 drvvbus */
 static struct pinmux_config usb1_pin_mux[] = {
-#if defined(CONFIG_OK335XD)
 	{"usb1_drvvbus.usb1_drvvbus", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
-#elif defined(CONFIG_OK335XS)
-	{"usb1_drvvbus.gpio3_13", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT | AM33XX_PIN_OUTPUT_PULLUP},
-#endif
+	//{"usb1_drvvbus.gpio3_13", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT | AM33XX_PIN_OUTPUT_PULLUP},
 	{NULL, 0},
 };
 
@@ -729,14 +728,33 @@ static void mii1_init(int evm_id, int profile)
 	setup_pin_mux(mii1_pin_mux);
 	return;
 }
-static struct pinmux_config mii2_non_pin_mux[] = {
-    {"gpmc_ben1.mii2_col",OMAP_MUX_MODE1 | AM33XX_PIN_OUTPUT},
-    {NULL, 0},
-};
+
 static void mii2_init(int evm_id, int profile)
 {
-	setup_pin_mux(mii2_non_pin_mux);
 	setup_pin_mux(mii2_pin_mux);
+	return;
+}
+
+static int am33xx_evm_tx_clk_dly_phy_fixup(struct phy_device *phydev)
+{
+    // phy is LAN8710, not AR8051, so comment it
+    // phy_write(phydev, AR8051_PHY_DEBUG_ADDR_REG,
+    // AR8051_DEBUG_RGMII_CLK_DLY_REG);
+    // phy_write(phydev, AR8051_PHY_DEBUG_DATA_REG, AR8051_RGMII_TX_CLK_DLY);
+
+	return 0;
+}
+
+#define LAN8710A_PHY_ID       0x7c0f1
+char sbc_7109_phy1[10] = {"0:00"};
+char sbc_7109_phy2[10] = {"0:01"};
+
+static void cmi_at101_cpsw_init(int evm_id, int profile)
+{
+	am33xx_cpsw_init(AM33XX_CPSW_MODE_MII, sbc_7109_phy1, sbc_7109_phy2);
+	phy_register_fixup_for_uid(LAN8710A_PHY_ID , AM335X_EVM_PHY_MASK,
+			                     am33xx_evm_tx_clk_dly_phy_fixup);
+    printk("cmi_at101 cpsw init .....................\n");
 	return;
 }
 
@@ -749,13 +767,6 @@ static void usb0_init(int evm_id, int profile)
 static void usb1_init(int evm_id, int profile)
 {
 	setup_pin_mux(usb1_pin_mux);
-#if defined(CONFIG_OK335XS)
-	//fix usb vbus error by set gpio3_13 high
-	#define GPIO3_13 3<<5|13
-	gpio_request(GPIO3_13,"gpio3_13");
-	gpio_direction_output(GPIO3_13,1);
-	gpio_set_value(GPIO3_13,1);
-#endif
 	return;
 }
 
@@ -862,12 +873,13 @@ static void d_can_init(int evm_id, int profile)
 static void cmi_at101_gpio(int evm_id, int profile)
 {
     setup_pin_mux(cmi_at101_gpio_pin_mux);
-
+#if 0
     /* led init   */
 	#define GPIO0_29 29
-	gpio_request(GPIO0_29,"gpio0_29");
+	gpio_request(GPIO0_29, "gpio0_29");
 	gpio_direction_output(GPIO0_29, 1);
 	gpio_set_value(GPIO0_29, 1);
+#endif
 }
 
 static struct omap_rtc_pdata am335x_rtc_info = {
@@ -1351,17 +1363,8 @@ static struct i2c_board_info i2c0_boardinfo[] = {
 		I2C_BOARD_INFO("24c02", 0x50),
 	},
 	{
-		//I2C_BOARD_INFO("ds1307", 0x68),
 		I2C_BOARD_INFO("tda998x", 0x70),
 	},
-#if 0
-	{
-		  I2C_BOARD_INFO("ds1307", 0x68),
-	},
-   {
-            I2C_BOARD_INFO("24c256", 0x50),
-   },
-#endif
 };
 
 static int __init screentype_setup(char *str)
@@ -1437,35 +1440,26 @@ int proc_init(void)
 	return 0; /* everything is ok */
 }
 
-/* ECM_5412 */
+/* cmi_at101 */
 static struct evm_dev_cfg cmi_at101_dev_cfg[] = {
-	{mmc0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_ALL},
-    {lcdc_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart0_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart1_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart2_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart3_init,    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{usb0_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{usb1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
-    {mii1_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
-    {mii2_init,	    DEV_ON_BASEBOARD, PROFILE_ALL},
-	{am335x_rtc_init, DEV_ON_BASEBOARD, PROFILE_ALL},
-    {i2c1_init,      DEV_ON_BASEBOARD, PROFILE_ALL},
-    {d_can_init,     DEV_ON_BASEBOARD, PROFILE_ALL},
-    {cmi_at101_gpio, DEV_ON_BASEBOARD, PROFILE_ALL},
+	{mmc0_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{evm_nand_init,         DEV_ON_BASEBOARD, PROFILE_ALL},
+    {lcdc_init,             DEV_ON_BASEBOARD, PROFILE_ALL},
+	{uart0_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{uart1_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{uart2_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{uart3_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+    {mii1_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
+    {mii2_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
+    {cmi_at101_cpsw_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
+	{usb0_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{usb1_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{am335x_rtc_init,       DEV_ON_BASEBOARD, PROFILE_ALL},
+    {i2c1_init,             DEV_ON_BASEBOARD, PROFILE_ALL},
+    {d_can_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+    {cmi_at101_gpio,        DEV_ON_BASEBOARD, PROFILE_ALL},
     {NULL, 0, 0},
 };
-
-static int am33xx_evm_tx_clk_dly_phy_fixup(struct phy_device *phydev)
-{
-    // phy is LAN8710, not AR8051, so comment it
-    // phy_write(phydev, AR8051_PHY_DEBUG_ADDR_REG,
-    // AR8051_DEBUG_RGMII_CLK_DLY_REG);
-    // phy_write(phydev, AR8051_PHY_DEBUG_DATA_REG, AR8051_RGMII_TX_CLK_DLY);
-
-	return 0;
-}
 
 #define AM33XX_VDD_CORE_OPP50_UV		1100000
 #define AM33XX_OPP120_FREQ		600000000
@@ -1487,9 +1481,7 @@ int am335xevm_vibrator_init(void);
 
 /* sbc-7109 */
 #define TLK110_PHY_ID       0x2000a211
-#define LAN8710A_PHY_ID       0x7c0f1
-char sbc_7109_phy1[10] = {"0:00"};
-char sbc_7109_phy2[10] = {"0:01"};
+
 
 static void setup_cmi_at101(void)
 {
@@ -1499,10 +1491,6 @@ static void setup_cmi_at101(void)
 	am335x_mmc[0].gpio_wp = -EINVAL;
 
 	_configure_device(EVM_SK, cmi_at101_dev_cfg, PROFILE_NONE);
-
-	am33xx_cpsw_init(AM33XX_CPSW_MODE_MII, sbc_7109_phy1, sbc_7109_phy2);
-	phy_register_fixup_for_uid(LAN8710A_PHY_ID , AM335X_EVM_PHY_MASK,
-			                     am33xx_evm_tx_clk_dly_phy_fixup);
 }
 
 static struct omap_musb_board_data musb_board_data = {

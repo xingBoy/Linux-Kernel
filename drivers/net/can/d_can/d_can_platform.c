@@ -70,7 +70,6 @@ static int __devinit d_can_plat_probe(struct platform_device *pdev)
 	struct d_can_platform_data *pdata;
 	struct clk *fck;
 
-    printk("zengjf check can plat probed.\n");
 	pdata = pdev->dev.platform_data;
 	if (!pdata) {
 		dev_err(&pdev->dev, "No platform data\n");
