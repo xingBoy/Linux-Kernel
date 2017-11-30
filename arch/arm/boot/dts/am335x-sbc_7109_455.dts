@@ -26,8 +26,8 @@
 
 	memory {
 		device_type = "memory";
-		//reg = <0x80000000 0x20000000>; /* 512 MB */
-		reg = <0x40000000 0x20000000>; /* 256 MB */
+		reg = <0x80000000 0x20000000>; /* 512 MB */
+		//reg = <0x40000000 0x20000000>; /* 256 MB */
 	};
 
 	vbat: fixedregulator@0 {
@@ -197,6 +197,7 @@
 			0xfc (PIN_INPUT_PULLUP | MUX_MODE0)	/* mmc0_dat0 */
 			0x100 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mmc0_clk */
 			0x104 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mmc0_cmd */
+			0x8c (PIN_INPUT | MUX_MODE7)	/* gpmc_clk.gpio2_1  sd_cs */
 		>;
 	};
 
@@ -364,6 +365,7 @@
 			0xd4 ( PIN_OUTPUT | MUX_MODE0 ) /* (V3) lcd_data13.lcd_data13 */
 			0xd8 ( PIN_OUTPUT | MUX_MODE0 ) /* (V4) lcd_data14.lcd_data14 */
 			0xdc ( PIN_OUTPUT | MUX_MODE0 ) /* (T5) lcd_data15.lcd_data15 */
+			0x1b4 (PIN_OUTPUT_PULLUP | MUX_MODE7 ) /* xdma_event_intr1.gpio0_20   lvds_logic_pwr_en    */
 		>;
 	};
 
@@ -742,7 +744,7 @@
 	bus-width = <0x4>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc1_pins>;
-	cd-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+	cd-gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
 };
 
 &mmc2 {
