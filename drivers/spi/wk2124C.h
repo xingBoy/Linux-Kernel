@@ -1,5 +1,5 @@
-#ifndef	 _SERIAL_WK2XXX_H
-#define  _SERIAL_WK2XXX_H
+#ifndef	 _SERIAL_WK2124C_H__
+#define  _SERIAL_WK2124C_H__
 
 /*
 *	WKIC Ltd.
@@ -142,8 +142,8 @@ ion :1.0 Data:2014-05-20
 
 #define 	NR_PORTS 	4
 
-#define 	SERIAL_WK2XXX_MAJOR	    	207
-#define 	CALLOUT_WK2XXX_MAJOR		208
+#define 	SERIAL_WK2124C_MAJOR	    	210
+#define 	CALLOUT_WK2124C_MAJOR		    211
 #define 	MINOR_START		        5
 
 /* am33xx irq   */
@@ -159,7 +159,7 @@ ion :1.0 Data:2014-05-20
 				 IH_GPIO_BASE + (nr))
 
 //wk2xxx hardware configuration
-#define 	IRQ_WK2XXX		        OMAP_GPIO_IRQ(GPIO_TO_PIN(1, 15))
+#define 	IRQ_WK2124C		        OMAP_GPIO_IRQ(GPIO_TO_PIN(1, 14))
 #define 	WK_CS_PIN 		        GPIO_G11//should be GPB
 #define 	WK_CRASTAL_CLK		    (3686400*2)
 #define 	WK2XXX_CS            	(GPIO_MODE_OUT | GPIO_PULLUP_DIS | VK_CS_PIN)

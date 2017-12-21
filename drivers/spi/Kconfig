@@ -426,18 +426,23 @@ config SPI_TLE62X0
 	  sysfs interface, with each line presented as a kind of GPIO
 	  exposing both switch control and diagnostic feedback.
 
-config SPI_WK2XXX
-	tristate "WK2XXX spi to 4 uart drvier"
-	depends on SPI
-	help
-	  SPI driver for  wk2xxx  cs0  spi to 4 wire uart IC driver.
-
-config SPI_WK2124
-	tristate "WK2124 spi to 4 uart drvier"
+config SPI_WK2124A
+	tristate "WK2124A spi to 4 uart drvier"
 	depends on SPI
 	help
 	  SPI driver for  wk2124  cs1  spi to 4 wire uart IC driver.
 
+config SPI_WK2124B
+	tristate "WK2124B spi to 4 uart drvier"
+	depends on SPI
+	help
+	  SPI driver for  wk2124  cs1  spi to 4 wire uart IC driver.
+
+config SPI_WK2124C
+	tristate "WK2124C spi to 4 uart drvier"
+	depends on SPI
+	help
+	  SPI driver for  wk2124  cs1  spi to 4 wire uart IC driver.
 #
 # Add new SPI protocol masters in alphabetical order above this line
 #
