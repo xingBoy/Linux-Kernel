@@ -303,11 +303,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 	if (status & IRQENB_PENUP) {
 		fsm = titsc_readl(ts_dev, REG_ADCFSM);
 		if (fsm == ADCFSM_STEPID) {
-		  ts_dev->pen_down = false;
-		  //input_report_key(input_dev, BTN_TOUCH, 0);
-		  //input_report_abs(input_dev, ABS_PRESSURE, 0);
-		  //input_sync(input_dev);
-		  pm_relax(ts_dev->mfd_tscadc->dev);
+			ts_dev->pen_down = false;
+			input_report_key(input_dev, BTN_TOUCH, 0);
+			input_report_abs(input_dev, ABS_PRESSURE, 0);
+			input_sync(input_dev);
+			pm_relax(ts_dev->mfd_tscadc->dev);
 		} else {
 			ts_dev->pen_down = true;
 		}
@@ -335,7 +335,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 			z *= ts_dev->x_plate_resistance;
 			z /= z1;
 			z = (z + 2047) >> 12;
-
+			//printk("(%d,%d)\n",val_x,val_y);
 			/*
 			 * Sample found inconsistent by debouncing
 			 * or pressure is beyond the maximum.
@@ -344,7 +344,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 
 			//100,100
 			//1024*600 300,300
-			if ((val_x > 300) && (val_y > 300))
+			if ((val_x > 300) && (val_y > 300) && ts_dev->pen_down==true)
 			{
 				if ( pen_up_event_flag == 0)
 				{
