@@ -835,6 +835,7 @@ int mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,
 		/*
 		 * Fetch switch information from card.
 		 */
+		mdelay(10);
 		err = mmc_read_switch(card);
 		if (err)
 			return err;

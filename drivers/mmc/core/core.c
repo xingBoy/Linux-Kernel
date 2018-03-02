@@ -1735,6 +1735,7 @@ void mmc_power_up(struct mmc_host *host, u32 ocr)
 
 	mmc_pwrseq_post_power_on(host);
 
+	mmc_delay(100);
 	host->ios.clock = host->f_init;
 
 	host->ios.power_mode = MMC_POWER_ON;

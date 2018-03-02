@@ -235,7 +235,14 @@ int mmc_of_parse(struct mmc_host *host)
 			host->caps2 |= MMC_CAP2_CD_ACTIVE_HIGH;
 	}
 
-	/* Parse Write Protection */
+	/* Parse Write Protection leelin*/
+	if (of_property_read_bool(np, "disable-wp"))
+	{
+		host->caps2 |= MMC_CAP2_NO_WRITE_PROTECT;
+		dev_info(host->parent, "Disable WP GPIO\n");
+	}
+	else
+	{
 	ro_cap_invert = of_property_read_bool(np, "wp-inverted");
 
 	ret = mmc_gpiod_request_ro(host, "wp", 0, false, 0, &ro_gpio_invert);
@@ -243,9 +250,7 @@ int mmc_of_parse(struct mmc_host *host)
 		dev_info(host->parent, "Got WP GPIO\n");
 	else if (ret != -ENOENT && ret != -ENOSYS)
 		return ret;
-
-	if (of_property_read_bool(np, "disable-wp"))
-		host->caps2 |= MMC_CAP2_NO_WRITE_PROTECT;
+	}
 
 	/* See the comment on CD inversion above */
 	if (ro_cap_invert ^ ro_gpio_invert)

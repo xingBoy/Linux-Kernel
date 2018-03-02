@@ -24,6 +24,12 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
+#define COMMANDLINE_FINDER
+#ifdef COMMANDLINE_FINDER
+extern char *saved_command_line;
+#define PWM_BACKLIGHT_GPIO_ACTIVE_LOW	1
+#endif
+
 struct pwm_bl_data {
 	struct pwm_device	*pwm;
 	struct device		*dev;
@@ -41,6 +47,10 @@ struct pwm_bl_data {
 					int brightness);
 	int			(*check_fb)(struct device *, struct fb_info *);
 	void			(*exit)(struct device *);
+#ifdef COMMANDLINE_FINDER
+	unsigned char		Backlight_polarity;
+	unsigned int		Backlight_min;
+#endif
 };
 
 static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
@@ -66,11 +76,30 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
 	if (!pb->enabled)
 		return;
 
+#ifdef COMMANDLINE_FINDER
+	if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+	{
+		pwm_config(pb->pwm,  pb->period, pb->period);
+		pwm_enable(pb->pwm);
+	}
+	else
+	{
+		pwm_config(pb->pwm, 0, pb->period);
+		pwm_disable(pb->pwm);
+	}
+	if (pb->enable_gpio) {
+		if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+			gpiod_set_value(pb->enable_gpio, 1);
+		else
+			gpiod_set_value(pb->enable_gpio, 0);
+	}
+#else
 	pwm_config(pb->pwm, 0, pb->period);
 	pwm_disable(pb->pwm);
 
 	if (pb->enable_gpio)
 		gpiod_set_value(pb->enable_gpio, 0);
+#endif
 
 	regulator_disable(pb->power_supply);
 	pb->enabled = false;
@@ -86,7 +115,14 @@ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
 	else
 		duty_cycle = brightness;
 
+#ifdef COMMANDLINE_FINDER
+	if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+		return pb->period-lth -(duty_cycle * (pb->period - lth) / pb->scale);
+	else
+		return (duty_cycle * (pb->period - lth) / pb->scale) + lth;
+#else
 	return (duty_cycle * (pb->period - lth) / pb->scale) + lth;
+#endif
 }
 
 static int pwm_backlight_update_status(struct backlight_device *bl)
@@ -200,6 +236,29 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	struct backlight_device *bl;
 	struct pwm_bl_data *pb;
 	int ret;
+#ifdef COMMANDLINE_FINDER
+	char * cmdfinder;
+	int cmd_Backlight_polarity=0;
+	int cmd_Backlight_min=0;
+	int cmd_Backlight_frequency=0;
+
+	//default:cmd_data_width=18; in dts file
+	cmdfinder=strstr(saved_command_line,"Backlight_polarity=1");
+	if(cmdfinder!=NULL)
+		cmd_Backlight_polarity=1;
+	cmdfinder=strstr(saved_command_line,"Backlight_min=");
+	if(cmdfinder!=NULL)
+	{
+		cmdfinder +=14;
+		cmd_Backlight_min=simple_strtol(cmdfinder, &cmdfinder, 10);
+	}
+	cmdfinder=strstr(saved_command_line,"Backlight_frequency=");
+	if(cmdfinder!=NULL)
+	{
+		cmdfinder +=20;
+		cmd_Backlight_frequency=simple_strtol(cmdfinder, &cmdfinder, 10);
+	}
+#endif
 
 	if (!data) {
 		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
@@ -210,6 +269,20 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 
 		data = &defdata;
 	}
+#ifdef COMMANDLINE_FINDER
+	//printk("%s(%d): %d, %d, %ld\n", __func__, __LINE__,data->pwm_period_ns,data->lth_brightness,data->enable_gpio_flags);
+	if(cmd_Backlight_frequency>100 && cmd_Backlight_frequency<=50000)
+	{
+		data->pwm_period_ns=(1000000/cmd_Backlight_frequency)*1000;
+	}
+	if(cmd_Backlight_min>0 && cmd_Backlight_min<=40)//255*0.2=51
+	{
+		data->lth_brightness=cmd_Backlight_min;
+	}
+	//if(cmd_Backlight_polarity)
+	//	data->enable_gpio_flags |= PWM_BACKLIGHT_GPIO_ACTIVE_LOW;
+	//printk("%s(%d): %d, %d, %d\n", __func__, __LINE__ ,cmd_Backlight_min,cmd_Backlight_frequency,cmd_Backlight_polarity);
+#endif
 
 	if (data->init) {
 		ret = data->init(&pdev->dev);
@@ -233,7 +306,11 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 		pb->levels = data->levels;
 	} else
 		pb->scale = data->max_brightness;
-
+#ifdef COMMANDLINE_FINDER
+	pb->Backlight_polarity = 0;
+	if(cmd_Backlight_polarity)
+		pb->Backlight_polarity |= PWM_BACKLIGHT_GPIO_ACTIVE_LOW;
+#endif
 	pb->notify = data->notify;
 	pb->notify_after = data->notify_after;
 	pb->check_fb = data->check_fb;
@@ -293,11 +370,27 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	 * set the period from platform data if it has not already been set
 	 * via the PWM lookup table.
 	 */
+#ifdef COMMANDLINE_FINDER
+	pb->period = data->pwm_period_ns;
+	if(pb->period<6000000 && pb->period>50000)
+	{
+		pwm_set_period(pb->pwm, data->pwm_period_ns);
+	}
+	else
+	{
+		pb->period = pwm_get_period(pb->pwm);
+		if (!pb->period && (data->pwm_period_ns > 0)) {
+			pb->period = data->pwm_period_ns;
+			pwm_set_period(pb->pwm, data->pwm_period_ns);
+		}
+	}
+#else
 	pb->period = pwm_get_period(pb->pwm);
 	if (!pb->period && (data->pwm_period_ns > 0)) {
 		pb->period = data->pwm_period_ns;
 		pwm_set_period(pb->pwm, data->pwm_period_ns);
 	}
+#endif
 
 	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
 

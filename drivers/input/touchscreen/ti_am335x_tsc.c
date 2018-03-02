@@ -165,12 +165,13 @@ static void titsc_step_config(struct titsc *ts_dev)
 		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
 		break;
 	case 5:
-        /*
+#if 0
 		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
 				ts_dev->bit_xn | ts_dev->bit_yp;
-                */
+#else
 		config |= ts_dev->bit_xp | STEPCONFIG_INP_AN4 |
 				(1 << 9) | (1 << 10);
+#endif
 		break;
 	case 8:
 		config |= ts_dev->bit_yp | STEPCONFIG_INP(ts_dev->inp_xp);
@@ -344,7 +345,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 
 			//100,100
 			//1024*600 300,300
-			if ((val_x > 300) && (val_y > 300) && ts_dev->pen_down==true)
+			if ((val_x > 240) && (val_y > 240) && ts_dev->pen_down==true)
 			{
 				if ( pen_up_event_flag == 0)
 				{
