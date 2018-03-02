@@ -760,8 +760,9 @@ static void evm_nand_init(int evm_id, int profile)
 		&am335x_nand_timings);
 	if (!pdata)
 		return;
-    //	pdata->ecc_opt =OMAP_ECC_BCH8_CODE_HW;
-        pdata->ecc_opt =OMAP_ECC_HAMMING_CODE_DEFAULT;
+
+    pdata->ecc_opt =OMAP_ECC_BCH8_CODE_HW;
+    //pdata->ecc_opt =OMAP_ECC_HAMMING_CODE_DEFAULT;
 
 	pdata->elm_used = true;
 	gpmc_device[0].pdata = pdata;
