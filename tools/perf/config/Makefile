@@ -676,7 +676,7 @@ bindir_relative = bin
 bindir = $(abspath $(prefix)/$(bindir_relative))
 mandir = share/man
 infodir = share/info
-perfexecdir = libexec/perf-core
+perfexecdir ?= libexec/perf-core
 sharedir = $(prefix)/share
 template_dir = share/perf-core/templates
 STRACE_GROUPS_DIR = share/perf-core/strace/groups
@@ -695,7 +695,7 @@ else
 lib = lib
 endif
 endif # lib
-libdir = $(prefix)/$(lib)
+libdir ?= $(prefix)/$(lib)
 
 # Shell quote (do not use $(call) to accommodate ancient setups);
 ETC_PERFCONFIG_SQ = $(subst ','\'',$(ETC_PERFCONFIG))
