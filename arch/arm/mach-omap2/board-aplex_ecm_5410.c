@@ -285,7 +285,7 @@ static struct pinmux_config spi0_pin_mux[] = {
 	{"spi0_d0.spi0_d0",    OMAP_MUX_MODE0 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},        /* D12 spi_in  */
 	{"spi0_cs0.spi0_cs0",  OMAP_MUX_MODE0 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},        /* C12 spi_cs0 */
 	{"gpmc_ad8.gpio0_22",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-	{"gpmc_ad9.gpio0_23",  OMAP_MUX_MODE7},
+	{"gpmc_ad9.gpio0_23",  OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
 
 	{NULL, 0},
 };
@@ -300,9 +300,9 @@ static struct pinmux_config spi1_pin_mux[] = {
 	{"xdma_event_intr0.spi1_cs1", OMAP_MUX_MODE4 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* A15 spi_cs1 */
 
 	{"gpmc_ad10.gpio0_26", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-	{"gpmc_ad11.gpio0_27", OMAP_MUX_MODE7},
+	{"gpmc_ad11.gpio0_27", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
 	{"gpmc_ad13.gpio1_13", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-	{"gpmc_ad14.gpio1_14", OMAP_MUX_MODE7},
+	{"gpmc_ad14.gpio1_14", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
 
 	{NULL, 0},
 };

@@ -892,7 +892,7 @@ static int wk2xxx_startup(struct uart_port *port)//i
 
     uint8_t gena, grst, gier, sier, scr, dat[1];
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
-    char b[12];
+    char b[64];
 
     if (s->suspending)
         return 0;

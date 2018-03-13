@@ -892,7 +892,7 @@ static int wk2xxx_startup(struct uart_port *port)//i
 
     uint8_t gena, grst, gier, sier, scr, dat[1];
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
-    char b[12];
+    char b[64];
 
     if (s->suspending)
         return 0;
@@ -1049,7 +1049,7 @@ static void wk2xxx_shutdown(struct uart_port *port)//
 
 	if (s->port.irq)
 	{
-        disable_irq_nosync(s->port.irq);
+        //disable_irq_nosync(s->port.irq);
 		free_irq(s->port.irq, s);
 	}
     //printk("work_pending() =: %d tx_empty_flag = : %d start_tx_flag = :%d
