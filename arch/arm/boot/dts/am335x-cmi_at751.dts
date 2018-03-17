@@ -11,8 +11,8 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 
 / {
-	model = "APLEX SBC7109";
-	compatible = "ti,am335x-sbc_7109_455", "ti,am33xx";
+	model = "APLEX CMI_AT751";
+	compatible = "ti,am335x-cmi_at751", "ti,am33xx";
 
 	chosen {
 		linux,stdout-path = &uart1;
@@ -72,7 +72,6 @@
 			0xd4 ( PIN_OUTPUT | MUX_MODE0 ) /* (V3) lcd_data13.lcd_data13 */
 			0xd8 ( PIN_OUTPUT | MUX_MODE0 ) /* (V4) lcd_data14.lcd_data14 */
 			0xdc ( PIN_OUTPUT | MUX_MODE0 ) /* (T5) lcd_data15.lcd_data15 */
-
 		>;
 	};
 
@@ -83,12 +82,29 @@
 		>;
 	};
 
+	i2c2_pins: pinmux_i2c1_pins {
+		pinctrl-single,pins = <
+			0x150 (PIN_INPUT_PULLUP | MUX_MODE2)	/* spi0_sclk.i2c2_sda */
+			0x154 (PIN_INPUT_PULLUP | MUX_MODE2)	/* spi0_d0.i2c2_scl */
+		>;
+	};
+
 	uart0_pins: pinmux_uart0_pins {
 		pinctrl-single,pins = <
 			0x170 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart0_rxd.uart0_rxd */
 			0x174 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart0_txd.uart0_txd */
 
-            0x144 (PIN_OUTPUT | MUX_MODE7)  /* mii1_refclk.gpio0_29 */
+            0x144 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mii1_refclk.gpio0_29 */
+            0x20  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* gpmc_ad8.gpio0_22 */
+            0x24  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* gpmc_ad9.gpio0_23 */
+            0x30  (PIN_INPUT_PULLUP    | MUX_MODE7)  /* gpmc_ad12.gpio1_12 */
+            0x34  (PIN_INPUT_PULLDOWN | MUX_MODE7)  /* gpmc_ad13.gpio1_13 */
+            0x38  (PIN_INPUT_PULLDOWN | MUX_MODE7)  /* gpmc_ad14.gpio1_14 */
+
+            0x1AC  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_ahclkx.gpio3_21 */
+            0x1A0  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_aclkr.gpio3_18 */
+            0x1A4  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_fsr.gpio3_19 */
+            0x1A8  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_axr1.gpio3_20 */
 		>;
 	};
 
@@ -96,20 +112,8 @@
 		pinctrl-single,pins = <
 			0x180 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart1_rxd.uart1_rxd */
 			0x184 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_txd.uart1_txd */
-		>;
-	};
-
-    uart2_pins: pinmux_uart2_pins {
-		pinctrl-single,pins = <
-			0x150 (PIN_INPUT_PULLUP | MUX_MODE1)	/* spi0_sclk.uart2_rxd */
-			0x154 (PIN_OUTPUT_PULLDOWN | MUX_MODE1)	/* spi0_d0.uart2_txd */
-		>;
-	};
-
-    uart3_pins: pinmux_uart3_pins {
-		pinctrl-single,pins = <
-			0x160 (PIN_INPUT_PULLUP | MUX_MODE1)	/* spi0_cs1.uart3_rxd */
-			0x164 (PIN_OUTPUT_PULLDOWN | MUX_MODE1)	/* ecap0_in_pwm0_out.uart3_txd */
+			0x178 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_cts.uart1_cts */
+			0x17C (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_rts.uart1_rts */
 		>;
 	};
 
@@ -315,20 +319,6 @@
 	status = "okay";
 };
 
-&uart2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart2_pins>;
-
-	status = "okay";
-};
-
-&uart3 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart3_pins>;
-
-	status = "okay";
-};
-
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins>;
@@ -370,6 +360,14 @@
         compatible = "dallas,ds1337";
         reg = <0x68>;
     };
+};
+
+&i2c2 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&i2c2_pins>;
+
+    status = "okay";
+    clock-frequency = <100000>;
 };
 
 &usb {
@@ -617,6 +615,14 @@
 	phy_id = <&davinci_mdio>, <1>;
 	phy-mode = "mii";
 	dual_emac_res_vlan = <2>;
+};
+
+&tscadc {
+	status = "okay";
+
+	adc {
+		ti,adc-channels = <7>;
+	};
 };
 
 &mmc1 {
