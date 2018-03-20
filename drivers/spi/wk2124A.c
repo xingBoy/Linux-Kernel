@@ -526,6 +526,7 @@ static u_int wk2xxx_tx_empty(struct uart_port *port)
     }
 
     mutex_unlock(&wk2124s_lock);
+
     return s->tx_empty;
 }
 
@@ -761,6 +762,8 @@ static int wk2xxx_startup(struct uart_port *port)
 static void wk2xxx_shutdown(struct uart_port *port)
 {
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
+
+    mutex_lock(&wk2124s_lock);
 	if (s->suspending)
 		return;
 	s->force_end_work = 1;
@@ -777,6 +780,7 @@ static void wk2xxx_shutdown(struct uart_port *port)
         //disable_irq_nosync(s->port.irq);
 		free_irq(s->port.irq, s);
 	}
+    mutex_unlock(&wk2124s_lock);
 
     return;
 }

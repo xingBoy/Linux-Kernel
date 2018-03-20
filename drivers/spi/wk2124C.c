@@ -1037,6 +1037,9 @@ static void wk2xxx_shutdown(struct uart_port *port)//
 #endif
 
     struct wk2xxx_port *s = container_of(port, struct wk2xxx_port, port);
+
+    mutex_lock(&wk2xxxs_lock);
+
 	if (s->suspending)
 		return;
 	s->force_end_work = 1;
@@ -1049,7 +1052,7 @@ static void wk2xxx_shutdown(struct uart_port *port)//
 
 	if (s->port.irq)
 	{
-        disable_irq_nosync(s->port.irq);
+        //disable_irq_nosync(s->port.irq);
 		free_irq(s->port.irq, s);
 	}
     //printk("work_pending() =: %d tx_empty_flag = : %d start_tx_flag = :%d
@@ -1059,6 +1062,8 @@ static void wk2xxx_shutdown(struct uart_port *port)//
 #ifdef _DEBUG_WK2XXX
 	printk(KERN_ALERT "-wk2xxx_shutdown-----exit---\n");
 #endif
+
+    mutex_unlock(&wk2xxxs_lock);
 
     return;
 }
