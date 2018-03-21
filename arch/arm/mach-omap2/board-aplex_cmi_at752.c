@@ -279,35 +279,6 @@ static struct pinmux_config mii2_pin_mux[] = {
     {NULL, 0},
 };
 
-static struct pinmux_config spi0_pin_mux[] = {
-	{"spi0_sclk.spi0_sclk", OMAP_MUX_MODE0 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},          /* A13 spi_clk */
-	{"spi0_d1.spi0_d1",    OMAP_MUX_MODE0 | AM33XX_PULL_ENBL | AM33XX_PULL_UP | AM33XX_INPUT_EN},/* B13 spi_out */
-	{"spi0_d0.spi0_d0",    OMAP_MUX_MODE0 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},        /* D12 spi_in  */
-	{"spi0_cs0.spi0_cs0",  OMAP_MUX_MODE0 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},        /* C12 spi_cs0 */
-	{"gpmc_ad8.gpio0_22",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-	{"gpmc_ad9.gpio0_23",  OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
-
-	{NULL, 0},
-};
-
-static struct pinmux_config spi1_pin_mux[] = {
-	{"mcasp0_aclkx.spi1_sclk", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                /* A13 spi_clk */
-	{"mcasp0_axr0.spi1_d1",     OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_PULL_UP | AM33XX_INPUT_EN},/* B13 spi_out */
-	{"mcasp0_fsx.spi1_d0",    OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                /* D12 spi_in  */
-	//{"mcasp0_fsx.spi1_d0",     OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_PULL_UP | AM33XX_INPUT_EN},/* B13 spi_out */
-	//{"mcasp0_axr0.spi1_d1",    OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},                /* D12 spi_in  */
-	{"mcasp0_ahclkr.spi1_cs0", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* C12 spi_cs0 */
-	{"xdma_event_intr0.spi1_cs1", OMAP_MUX_MODE4 | AM33XX_PULL_ENBL | AM33XX_INPUT_EN},   /* A15 spi_cs1 */
-
-	{"gpmc_ad10.gpio0_26", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-	{"gpmc_ad11.gpio0_27", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
-	{"gpmc_ad13.gpio1_13", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT_PULLUP},
-	{"gpmc_ad14.gpio1_14", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLUP},
-
-	{NULL, 0},
-};
-
-
 /* Module pin mux for mmc0 */
 static struct pinmux_config mmc0_common_pin_mux[] = {
 	{"mmc0_dat3.mmc0_dat3",	OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLUP},
@@ -332,26 +303,19 @@ static struct pinmux_config uart1_pin_mux[] = {
     {NULL, 0},
 };
 
-/* Module pin mux for uart3 */
-static struct pinmux_config uart3_pin_mux[] = {
-    {"spi0_cs1.uart3_rxd",  OMAP_MUX_MODE1 | AM33XX_PIN_INPUT_PULLUP},
-    {"ecap0_in_pwm0_out.uart3_txd", OMAP_MUX_MODE1 | AM33XX_PULL_ENBL},
-    {NULL, 0},
+static struct pinmux_config uart2_pin_mux[] = {
+	{"spi0_sclk.uart2_rxd", OMAP_MUX_MODE1 | AM33XX_SLEWCTRL_SLOW |AM33XX_PIN_INPUT_PULLUP},
+	{"spi0_d0.uart2_txd", OMAP_MUX_MODE1 | AM33XX_PULL_UP |AM33XX_PULL_DISA |AM33XX_SLEWCTRL_SLOW},
+	{NULL, 0},
 };
 
-/* Module pin mux for uart4 */
-static struct pinmux_config uart4_pin_mux[] = {
-    {"uart0_ctsn.uart4_rxd", OMAP_MUX_MODE1 | AM33XX_PIN_INPUT_PULLUP},
-    {"uart0_rtsn.uart4_txd", OMAP_MUX_MODE1 | AM33XX_PULL_ENBL},
-    {NULL, 0},
+static struct pinmux_config i2c1_pin_mux[] = {
+	{"spi0_d1.i2c1_sda",    OMAP_MUX_MODE2 | AM33XX_SLEWCTRL_SLOW |
+					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
+	{"spi0_cs0.i2c1_scl",   OMAP_MUX_MODE2 | AM33XX_SLEWCTRL_SLOW |
+					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
+	{NULL, 0},
 };
-
-static struct pinmux_config uart5_pin_mux[] = {
-     {"lcd_data9.uart5_rxd", OMAP_MUX_MODE4 | AM33XX_PIN_INPUT_PULLUP},
-     {"lcd_data8.uart5_txd", OMAP_MUX_MODE4 | AM33XX_PULL_ENBL},
-     {NULL, 0},
-};
-
 
 static struct pinmux_config d_can0_pin_mux[] = {
     {"uart1_ctsn.d_can0_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
@@ -359,28 +323,29 @@ static struct pinmux_config d_can0_pin_mux[] = {
     {NULL, 0},
 };
 
-static struct pinmux_config ecm_5410_gpio_pin_mux[] = {
-	{"gpmc_csn1.gpio1_30", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},     // V5  GPIO_A
-	{"gpmc_csn2.gpio1_31", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},     // V9  GPIO_B
-	{"gpmc_ben1.gpio1_28", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},     // U18 LED_GPIO_0
-	{"gpmc_wpn.gpio0_31", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},      // T17 LED_GPIO_1
-	{"gpmc_ad12.gpio1_12", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},      // T12 RESET_IP
-	{"gpmc_ad15.gpio1_15", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},     // U13 PMIC_PWR_INT
-	{"gpmc_a0.gpio1_16", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},        // R13 DI0
-	{"gpmc_a1.gpio1_17", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},        // V14 DI1
-	{"gpmc_a2.gpio1_18", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},        // U14 DI2
-	{"gpmc_a3.gpio1_19", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},        // T14 DI3
-	{"gpmc_a4.gpio1_20", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // R14 DO1
-	{"gpmc_a5.gpio1_21", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // V15 DO2
-	{"gpmc_a6.gpio1_22", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // U15 DO3
-	{"gpmc_a7.gpio1_23", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // T15 DO4
-	{"gpmc_a8.gpio1_24", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // V16 GPIO1
-	{"gpmc_a9.gpio1_25", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // U16 GPIO2
-	{"gpmc_a10.gpio1_26", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},      // T16 GPIO3
-	{"gpmc_a11.gpio1_27", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},      // V17 GPIO4
-	{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},  // H18 IO_LED1
+static struct pinmux_config d_can1_pin_mux[] = {
+	{"uart0_ctsn.d_can1_tx", OMAP_MUX_MODE2 | AM33XX_PULL_ENBL},
+	{"uart0_rtsn.d_can1_rx", OMAP_MUX_MODE2 | AM33XX_PIN_INPUT_PULLUP},
+	{NULL, 0},
+};
+
+static struct pinmux_config cmi_at752_gpio_pin_mux[] = {
+    {"mcasp0_ahclkx.gpio3_21",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_aclkx.gpio3_14",   OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_fsx.gpio3_15",     OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_axr0.gpio3_16",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_ahclkr.gpio3_17",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_aclkr.gpio3_18",   OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_axr1.gpio3_20",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"rmii1_refclk.gpio0_29",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
 
     {NULL, 0},
+};
+
+static struct pinmux_config ecap1_pin_mux[] = {
+	{"spi0_cs1.ecap1_in_pwm1_out",
+		OMAP_MUX_MODE2 | AM33XX_PIN_OUTPUT},
+	{NULL, 0},
 };
 
 /*
@@ -479,7 +444,7 @@ static int am33xx_evm_tx_clk_dly_phy_fixup(struct phy_device *phydev)
 char sbc_7109_phy1[10] = {"0:00"};
 char sbc_7109_phy2[10] = {"0:01"};
 
-static void cmi_at101_cpsw_init(int evm_id, int profile)
+static void cmi_at752_cpsw_init(int evm_id, int profile)
 {
 	am33xx_cpsw_init(AM33XX_CPSW_MODE_MII, sbc_7109_phy1, sbc_7109_phy2);
 	phy_register_fixup_for_uid(LAN8710A_PHY_ID , AM335X_EVM_PHY_MASK,
@@ -500,23 +465,6 @@ static void usb1_init(int evm_id, int profile)
 	return;
 }
 
-static int __init conf_disp_pll(int rate)
-{
-	struct clk *disp_pll;
-	int ret = -EINVAL;
-
-	disp_pll = clk_get(NULL, "dpll_disp_ck");
-	if (IS_ERR(disp_pll)) {
-		pr_err("Cannot clk_get disp_pll\n");
-		goto out;
-	}
-
-	ret = clk_set_rate(disp_pll, rate);
-	clk_put(disp_pll);
-out:
-	return ret;
-}
-
 /* setup uart0 for sbc-7109 */
 static void uart0_init(int evm_id, int profile)
 {
@@ -524,29 +472,15 @@ static void uart0_init(int evm_id, int profile)
 	return;
 }
 
-/* setup uart1 for sbc-7109 */
 static void uart1_init(int evm_id, int profile)
 {
 	setup_pin_mux(uart1_pin_mux);
 	return;
 }
 
-/* setup uart3 */
-static void uart3_init(int evm_id, int profile)
+static void uart2_init(int evm_id, int profile)
 {
-	setup_pin_mux(uart3_pin_mux);
-	return;
-}
-
-static void uart4_init(int evm_id, int profile)
-{
-	setup_pin_mux(uart4_pin_mux);
-	return;
-}
-
-static void uart5_init(int evm_id, int profile)
-{
-	setup_pin_mux(uart5_pin_mux);
+	setup_pin_mux(uart2_pin_mux);
 	return;
 }
 
@@ -554,18 +488,62 @@ static void d_can_init(int evm_id, int profile)
 {
 	setup_pin_mux(d_can0_pin_mux);
 	am33xx_d_can_init(0);
+
+	setup_pin_mux(d_can1_pin_mux);
+	am33xx_d_can_init(1);
 }
 
-static void ecm_5410_gpio(int evm_id, int profile)
+static struct i2c_board_info am335x_i2c1_boardinfo2[] = {
+    {
+		I2C_BOARD_INFO("ds1307", 0x68),
+    },
+};
+
+static void i2c1_init(int evm_id, int profile)
 {
-    setup_pin_mux(ecm_5410_gpio_pin_mux);
-#if 0
-    /* led init   */
-	#define GPIO0_29 29
-	gpio_request(GPIO0_29, "gpio0_29");
-	gpio_direction_output(GPIO0_29, 1);
-	gpio_set_value(GPIO0_29, 1);
-#endif
+	setup_pin_mux(i2c1_pin_mux);
+	omap_register_i2c_bus(2, 100, am335x_i2c1_boardinfo2, ARRAY_SIZE(am335x_i2c1_boardinfo2));
+	return;
+}
+
+static void cmi_at752_gpio(int evm_id, int profile)
+{
+    setup_pin_mux(cmi_at752_gpio_pin_mux);
+}
+
+static struct adc_data am335x_adc_data = {
+	.adc_channels = 8,
+};
+
+static struct mfd_tscadc_board adc = {
+	.adc_init = &am335x_adc_data,
+};
+
+static void mfd_adc_init(int evm_id, int profile)
+{
+	int err;
+
+	err = am33xx_register_mfd_tscadc(&adc);
+	if (err)
+		pr_err("failed to register touchscreen device\n");
+}
+
+static struct pwmss_platform_data  pwm_pdata[3] = {
+	{
+		.version = PWM_VERSION_1,
+	},
+	{
+		.version = PWM_VERSION_1,
+	},
+	{
+		.version = PWM_VERSION_1,
+	},
+};
+
+static void buzzer_init(int evm_id, int profile)
+{
+    setup_pin_mux(ecap1_pin_mux);
+    am33xx_register_ecap(1, &pwm_pdata[1]);
 }
 
 /* setup haptics */
@@ -660,44 +638,6 @@ static struct mtd_partition am335x_nand_partitions[] = {
 	},
 };
 #endif
-
-/* SPI 0/1 Platform Data */
-/* SPI flash information */
-static struct mtd_partition am335x_spi_partitions[] = {
-	/* All the partition sizes are listed in terms of erase size */
-	{
-		.name       = "SPL",
-		.offset     = 0,			/* Offset = 0x0 */
-		.size       = SZ_128K,
-	},
-	{
-		.name       = "U-Boot",
-		.offset     = MTDPART_OFS_APPEND,	/* Offset = 0x20000 */
-		.size       = 2 * SZ_128K,
-	},
-	{
-		.name       = "U-Boot Env",
-		.offset     = MTDPART_OFS_APPEND,	/* Offset = 0x60000 */
-		.size       = 2 * SZ_4K,
-	},
-	{
-		.name       = "Kernel",
-		.offset     = MTDPART_OFS_APPEND,	/* Offset = 0x62000 */
-		.size       = 28 * SZ_128K,
-	},
-	{
-		.name       = "File System",
-		.offset     = MTDPART_OFS_APPEND,	/* Offset = 0x3E2000 */
-		.size       = MTDPART_SIZ_FULL,		/* size ~= 4.1 MiB */
-	}
-};
-
-static const struct flash_platform_data am335x_spi_flash = {
-	.type      = "w25q64",
-	.name      = "spi_flash",
-	.parts     = am335x_spi_partitions,
-	.nr_parts  = ARRAY_SIZE(am335x_spi_partitions),
-};
 
 static struct gpmc_timings am335x_nand_timings = {
     /*
@@ -839,74 +779,6 @@ static struct regulator_init_data am335x_vdd2 = {
     .tps65910_pmic_init_data[TPS65910_REG_VMMC] = &am335x_dummy,
 };
 
-static struct spi_board_info am335x_spi0_slave_info[] = {
-#if 0
-    {
-        .modalias      = "spidev",
-        .max_speed_hz  = 10000000,//48Mbps
-        .bus_num       = 1,
-        .chip_select   = 0,
-        .mode = SPI_MODE_0,
-    },
-#endif
-#if 1
-    {
-        .modalias = "wk2124A",    // compiler
-        .mode = SPI_MODE_0,
-        .max_speed_hz = 10000000,   // speed 10Mbps
-        .bus_num = 1,               //  spi0 bus
-        .chip_select = 0,           //  spi_cs0
-    },
-#endif
-};
-
-static struct spi_board_info am335x_spi1_slave_info[] = {
-#if 0
-    {
-        .modalias      = "spidev",
-        .max_speed_hz  = 10000000,//48Mbps
-        .bus_num       = 2,
-        .chip_select   = 0,
-        .mode = SPI_MODE_0,
-    },
-#endif
-#if 1
-    {
-        .modalias = "wk2124B",    // compiler
-        .mode = SPI_MODE_0,
-        .max_speed_hz = 10000000,   // speed 10Mbps
-        .bus_num = 2,               //  spi1 bus
-        .chip_select = 0,           //  spi_cs0
-    },
-#endif
-
-#if 1
-    {
-        .modalias = "wk2124C",    // compiler
-        .mode = SPI_MODE_0,
-        .max_speed_hz = 10000000,   // speed 10Mbps
-        .bus_num = 2,               //  spi1 bus
-        .chip_select = 1,           //  spi_cs1
-    },
-#endif
-};
-
-static void spi0_init(int evm_id, int profile)
-{
-	setup_pin_mux(spi0_pin_mux);
-	spi_register_board_info(am335x_spi0_slave_info,
-			ARRAY_SIZE(am335x_spi0_slave_info));
-    return;
-}
-
-static void spi1_init(int evm_id, int profile)
-{
-	setup_pin_mux(spi1_pin_mux);
-	spi_register_board_info(am335x_spi1_slave_info,
-			ARRAY_SIZE(am335x_spi1_slave_info));
-    return;
-}
-
 #define GPIO_TO_PIN(bank, gpio) (32 * (bank) + (gpio))
 
 #ifdef CONFIG_TI_ST
@@ -1034,12 +906,7 @@ static struct i2c_board_info i2c0_boardinfo[] = {
 	{
 		I2C_BOARD_INFO("24c02", 0x50),
 	},
-    {
-		I2C_BOARD_INFO("ds1307", 0x68),
-    },
-	//{
-	//	I2C_BOARD_INFO("tda998x", 0x70),
-	//},
+
 };
 
 #define procfs_name "boardname"
@@ -1086,24 +953,24 @@ int proc_init(void)
 	return 0; /* everything is ok */
 }
 
-/* cmi_at101 */
-static struct evm_dev_cfg ecm_5410_dev_cfg[] = {
+/* cmi_at752 */
+static struct evm_dev_cfg cmi_at752_dev_cfg[] = {
 	{mmc0_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
 	{evm_nand_init,         DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart0_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart1_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart3_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart4_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
-	{uart5_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{uart2_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii1_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
-    //{mii2_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
-    {cmi_at101_cpsw_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
+    {mii2_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
+    {cmi_at752_cpsw_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
 	{usb0_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
 	{usb1_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
     {d_can_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
-	{spi0_init,             DEV_ON_BASEBOARD, PROFILE_ALL},
-	{spi1_init,             DEV_ON_BASEBOARD, PROFILE_ALL},
-    {ecm_5410_gpio,        DEV_ON_BASEBOARD, PROFILE_ALL},
+    {i2c1_init,             DEV_ON_BASEBOARD, PROFILE_ALL},
+    {cmi_at752_gpio,        DEV_ON_BASEBOARD, PROFILE_ALL},
+    {mfd_adc_init,          DEV_ON_BASEBOARD, PROFILE_ALL},
+    {buzzer_init,          DEV_ON_BASEBOARD, PROFILE_ALL},
+
     {NULL, 0, 0},
 };
 
@@ -1129,14 +996,14 @@ int am335xevm_vibrator_init(void);
 #define TLK110_PHY_ID       0x2000a211
 
 
-static void setup_ecm_5410(void)
+static void setup_cmi_at752(void)
 {
-	pr_info("The board is a ecm_5410.\n");
+	pr_info("The board is cmi_at752.\n");
 
 	/*which doesn't have Write Protect pin LAN8710A_PHY_ID */
 	am335x_mmc[0].gpio_wp = -EINVAL;
 
-	_configure_device(EVM_SK, ecm_5410_dev_cfg, PROFILE_NONE);
+	_configure_device(EVM_SK, cmi_at752_dev_cfg, PROFILE_NONE);
 }
 
 static struct omap_musb_board_data musb_board_data = {
@@ -1239,7 +1106,7 @@ static void __init am335x_evm_init(void)
 	omap_board_config_size = ARRAY_SIZE(am335x_evm_config);
 
 	daughter_brd_detected = false;
-	setup_ecm_5410();
+	setup_cmi_at752();
 
 	/*create  /proc/boardname to export info to userspace*/
 	proc_init();
