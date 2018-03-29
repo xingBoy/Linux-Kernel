@@ -1,5 +1,3 @@
-#ifndef	 _SERIAL_WK2124A_SPI_H_
-#define  _SERIAL_WK2124A_SPI_H_
 
 /*
 *	WKIC Ltd.
@@ -10,6 +8,8 @@ ion :1.0 Data:2014-05-20
 *	By  xuxunwei Tech
 *
 */
+#ifndef	_SERIAL_WK2124A_H       //_SERIAL_WK2XXX_H
+#define  _SERIAL_WK2124A_H
 
 //#include <linux/config.h>
 #include <linux/module.h>
@@ -122,6 +122,7 @@ ion :1.0 Data:2014-05-20
 #define 	WK2XXX_RXOVT_INT     0x02
 #define 	WK2XXX_RFTRIG_INT    0x01
 
+
 //TFCNT
 //RFCNT
 //FSR
@@ -138,11 +139,13 @@ ion :1.0 Data:2014-05-20
 #define 	WK2XXX_BI       0x04
 #define 	WK2XXX_FE       0x02
 #define 	WK2XXX_PE       0x01
+//FWCR
+//RS485
 
 #define 	NR_PORTS 	4
 
-#define 	SERIAL_WK2124A_MAJOR	    190
-#define 	CALLOUT_WK2124A_MAJOR		191
+#define 	SERIAL_WK2XXX_MAJOR	    190
+#define 	CALLOUT_WK2XXX_MAJOR		191
 #define 	MINOR_START		        5
 
 /* am33xx irq   */
@@ -158,7 +161,7 @@ ion :1.0 Data:2014-05-20
 				 IH_GPIO_BASE + (nr))
 
 //wk2xxx hardware configuration
-#define 	IRQ_WK2124A		        OMAP_GPIO_IRQ(GPIO_TO_PIN(0, 23))
+#define 	IRQ_WK2XXX		        OMAP_GPIO_IRQ(GPIO_TO_PIN(0, 23))
 #define 	WK_CS_PIN 		        GPIO_G11//should be GPB
 #define 	WK_CRASTAL_CLK		    (3686400*2)
 #define 	WK2XXX_CS            	(GPIO_MODE_OUT | GPIO_PULLUP_DIS | VK_CS_PIN)
@@ -166,6 +169,9 @@ ion :1.0 Data:2014-05-20
 
 #define 	WK2XXX_ISR_PASS_LIMIT	50
 
-#define		PORT_WK2XXX         1
+//#define _DEBUG_WK2XXX
 
-#endif  /* _SERIAL_WK2124_SPI_H_*/
+#define		PORT_WK2XXX             1
+
+#endif
+
