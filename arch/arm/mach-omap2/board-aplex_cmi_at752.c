@@ -309,6 +309,13 @@ static struct pinmux_config uart2_pin_mux[] = {
 	{NULL, 0},
 };
 
+static struct pinmux_config uart5_pin_mux[] = {
+     {"lcd_data9.uart5_rxd", OMAP_MUX_MODE4 | AM33XX_PIN_INPUT_PULLUP},
+     {"lcd_data8.uart5_txd", OMAP_MUX_MODE4 | AM33XX_PULL_ENBL},
+     {NULL, 0},
+};
+
+
 static struct pinmux_config i2c1_pin_mux[] = {
 	{"spi0_d1.i2c1_sda",    OMAP_MUX_MODE2 | AM33XX_SLEWCTRL_SLOW |
 					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
@@ -338,6 +345,7 @@ static struct pinmux_config cmi_at752_gpio_pin_mux[] = {
     {"mcasp0_aclkr.gpio3_18",   OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {"mcasp0_axr1.gpio3_20",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {"rmii1_refclk.gpio0_29",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 
     {NULL, 0},
 };
@@ -481,6 +489,12 @@ static void uart1_init(int evm_id, int profile)
 static void uart2_init(int evm_id, int profile)
 {
 	setup_pin_mux(uart2_pin_mux);
+	return;
+}
+
+static void uart5_init(int evm_id, int profile)
+{
+	setup_pin_mux(uart5_pin_mux);
 	return;
 }
 
@@ -960,6 +974,7 @@ static struct evm_dev_cfg cmi_at752_dev_cfg[] = {
 	{uart0_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart1_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
 	{uart2_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+	{uart5_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii1_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
     {mii2_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
     {cmi_at752_cpsw_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
