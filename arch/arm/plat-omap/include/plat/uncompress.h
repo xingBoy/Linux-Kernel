@@ -199,6 +199,8 @@ static inline void __arch_decomp_setup(unsigned long arch_id)
 		DEBUG_LL_AM33XX(1, aplex_CMI_AT101);
 
 		DEBUG_LL_AM33XX(1, aplex_ECM_5410);
+
+		DEBUG_LL_AM33XX(1, aplex_ECM_5206);
 	} while (0);
 }
 

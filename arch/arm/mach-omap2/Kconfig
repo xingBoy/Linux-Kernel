@@ -359,6 +359,11 @@ config MACH_APLEX_ECM_5410
 	depends on SOC_OMAPAM33XX
 	default n
 
+config MACH_APLEX_ECM_5206
+	bool "Aplex ECM 5206"
+	depends on SOC_OMAPAM33XX
+	default n
+
 config MACH_AM335XEVM
 	bool "AM335X Evaluation Module"
 	depends on SOC_OMAPAM33XX
