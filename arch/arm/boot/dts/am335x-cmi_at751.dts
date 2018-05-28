@@ -101,6 +101,7 @@
             0x34  (PIN_INPUT_PULLDOWN | MUX_MODE7)  /* gpmc_ad13.gpio1_13 */
             0x38  (PIN_INPUT_PULLDOWN | MUX_MODE7)  /* gpmc_ad14.gpio1_14 */
 
+            // 0x1AC  (PIN_INPUT_PULLUP | MUX_MODE7)  /* mcasp0_ahclkx.gpio3_21 */
             0x1AC  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_ahclkx.gpio3_21 */
             0x1A0  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_aclkr.gpio3_18 */
             0x1A4  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)  /* mcasp0_fsr.gpio3_19 */
@@ -245,6 +246,7 @@
 
 	lcd_pins_s0: lcd_pins_s0 {
 		pinctrl-single,pins = <
+            0x1b0 0x03      /* xdma_event_intr0, OMAP_MUX_MODE3 | AM33XX_PIN_OUTPUT */
 			0xe0 ( PIN_OUTPUT | MUX_MODE0 ) /* (U5) lcd_vsync.lcd_vsync */
 			0xe4 ( PIN_OUTPUT | MUX_MODE0 ) /* (R5) lcd_hsync.lcd_hsync */
 			0xe8 ( PIN_OUTPUT | MUX_MODE0 ) /* (V5) lcd_pclk.lcd_pclk */
@@ -267,6 +269,12 @@
 			0xdc ( PIN_OUTPUT | MUX_MODE0 ) /* (T5) lcd_data15.lcd_data15 */
 		>;
 	};
+
+    nxp_hdmi_cmi_at751_off_pins: nxp_hdmi_bonelt_off_pins {
+                        pinctrl-single,pins = <
+                                                0x1b0 0x03      /* xdma_event_intr0, OMAP_MUX_MODE3 | AM33XX_PIN_OUTPUT */
+                                                >;
+    };
 
 	mcasp1_pins: mcasp1_pins {
 		pinctrl-single,pins = <
@@ -333,6 +341,12 @@
 	tda19988: tda19988 {
 		compatible = "nxp,tda998x";
 		reg = <0x70>;
+        interrupt-parent = <&gpio0>;
+        interrupts = <27 2>;
+        video-ports = <0x234501>;
+        pinctrl-names = "default", "off";
+        pinctrl-0 = <&i2c0_pins>;
+        pinctrl-1 = <&nxp_hdmi_cmi_at751_off_pins>;
 
 		ports {
 			port@0 {
@@ -368,6 +382,16 @@
 
     status = "okay";
     clock-frequency = <100000>;
+
+    am2315@5c {
+        compatible = "am2315,am2315";
+        reg = <0x5c>;
+    };
+    tmpx75@4c {
+        compatible = "tmp75";
+        reg = <0x4c>;
+        status = "okay";
+    };
 };
 
 &usb {
@@ -403,7 +427,7 @@
 &lcdc {
 	status = "okay";
 
-	blue-and-red-wiring = "straight";
+	blue-and-red-wiring = "crossed";
 
 	port {
 		lcdc_0: endpoint@0 {
@@ -621,7 +645,10 @@
 	status = "okay";
 
 	adc {
-		ti,adc-channels = <7>;
+		ti,adc-channels = <0 1 2>;
+        ti,chan-step-opendelay = <0x11D 0x11D 0x11D>;
+        ti,chan-step-sampledelay = <0x1 0x1 0x1>;
+        ti,chan-step-avg = <3 3 3>;
 	};
 };
 
