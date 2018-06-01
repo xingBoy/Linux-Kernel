@@ -343,7 +343,9 @@ static struct pinmux_config cmi_at752_gpio_pin_mux[] = {
     {"mcasp0_axr0.gpio3_16",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {"mcasp0_ahclkr.gpio3_17",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {"mcasp0_aclkr.gpio3_18",   OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+    {"mcasp0_fsr.gpio3_19",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {"mcasp0_axr1.gpio3_20",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+
     {"rmii1_refclk.gpio0_29",    OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
     {"gpmc_ad12.gpio1_12",    OMAP_MUX_MODE7 | AM33XX_PIN_INPUT},
 

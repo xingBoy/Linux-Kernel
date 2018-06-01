@@ -67,3 +67,4 @@ obj-$(CONFIG_JS_RTC)		+= js-rtc.o
 js-rtc-y = rtc.o
 # obj-y                       +=io_ctl.o
 obj-$(CONFIG_TILE_SROM)		+= tile-srom.o
+#obj-y +=buzz.o

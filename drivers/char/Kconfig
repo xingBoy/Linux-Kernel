@@ -19,7 +19,7 @@ config DEVMEM
 	  system and most users should say Y here. You might say N if very
 	  security conscience or memory is tight.
 
-# source "drivers/char/aplex/Kconfig"
+#source "drivers/char/aplex/Kconfig"
 
 config DEVKMEM
 	bool "/dev/kmem virtual device support"
