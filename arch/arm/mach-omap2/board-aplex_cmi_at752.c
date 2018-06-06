@@ -982,7 +982,7 @@ static struct evm_dev_cfg cmi_at752_dev_cfg[] = {
     {cmi_at752_cpsw_init,	DEV_ON_BASEBOARD, PROFILE_ALL},
 	{usb0_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
 	{usb1_init,	            DEV_ON_BASEBOARD, PROFILE_ALL},
-    {d_can_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
+    //{d_can_init,            DEV_ON_BASEBOARD, PROFILE_ALL},
     {i2c1_init,             DEV_ON_BASEBOARD, PROFILE_ALL},
     {cmi_at752_gpio,        DEV_ON_BASEBOARD, PROFILE_ALL},
     {mfd_adc_init,          DEV_ON_BASEBOARD, PROFILE_ALL},
