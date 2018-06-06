@@ -374,10 +374,10 @@ static struct pinmux_config ecm_5410_gpio_pin_mux[] = {
 	{"gpmc_a5.gpio1_21", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // V15 DO2
 	{"gpmc_a6.gpio1_22", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // U15 DO3
 	{"gpmc_a7.gpio1_23", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // T15 DO4
-	{"gpmc_a8.gpio1_24", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // V16 GPIO1
-	{"gpmc_a9.gpio1_25", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},       // U16 GPIO2
-	{"gpmc_a10.gpio1_26", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},      // T16 GPIO3
-	{"gpmc_a11.gpio1_27", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},      // V17 GPIO4
+	{"gpmc_a8.gpio1_24", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLDOWN},       // V16 GPIO1
+	{"gpmc_a9.gpio1_25", OMAP_MUX_MODE7 | AM33XX_PIN_INPUT_PULLDOWN},       // U16 GPIO2
+	{"gpmc_a10.gpio1_26", OMAP_MUX_MODE7 |AM33XX_PIN_INPUT_PULLDOWN},      // T16 GPIO3
+	{"gpmc_a11.gpio1_27", OMAP_MUX_MODE7 |AM33XX_PIN_INPUT_PULLDOWN},      // V17 GPIO4
 	{"rmii1_refclk.gpio0_29", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},  // H18 IO_LED1
 
     {NULL, 0},
