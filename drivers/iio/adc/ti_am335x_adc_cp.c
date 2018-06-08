@@ -30,7 +30,6 @@
 #include <linux/iio/buffer.h>
 #include <linux/iio/kfifo_buf.h>
 
-struct mutex mutex;
 struct tiadc_device {
 	struct ti_tscadc_dev *mfd_tscadc;
 	int channels;
@@ -366,8 +365,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 	bool found = false;
 	u32 step_en;
 	unsigned long timeout;
-    unsigned int data = 0;
-    int data_count = 10;
+
 	if (iio_buffer_enabled(indio_dev))
 		return -EBUSY;
 
@@ -375,67 +373,50 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 	if (!step_en)
 		return -EINVAL;
 
-    mutex_lock(&mutex);
+	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+	while (fifo1count--)
+		tiadc_readl(adc_dev, REG_FIFO1);
 
-    while(data_count--)
-    {
+	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
 
-        fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-        while (fifo1count--)
-            tiadc_readl(adc_dev, REG_FIFO1);
+	timeout = jiffies + usecs_to_jiffies
+				(IDLE_TIMEOUT * adc_dev->channels);
+	/* Wait for Fifo threshold interrupt */
+	while (1) {
+		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+		if (fifo1count)
+			break;
 
-        am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
+		if (time_after(jiffies, timeout)) {
+			am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
+			return -EAGAIN;
+		}
+	}
+	map_val = adc_dev->channel_step[chan->scan_index];
 
-        timeout = jiffies + usecs_to_jiffies
-                    (IDLE_TIMEOUT * adc_dev->channels);
-        /* Wait for Fifo threshold interrupt */
-        while (1) {
-            fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-            if (fifo1count)
-                break;
+	/*
+	 * We check the complete FIFO. We programmed just one entry but in case
+	 * something went wrong we left empty handed (-EAGAIN previously) and
+	 * then the value apeared somehow in the FIFO we would have two entries.
+	 * Therefore we read every item and keep only the latest version of the
+	 * requested channel.
+	 */
+	for (i = 0; i < fifo1count; i++) {
+		read = tiadc_readl(adc_dev, REG_FIFO1);
+		stepid = read & FIFOREAD_CHNLID_MASK;
+		stepid = stepid >> 0x10;
 
-            if (time_after(jiffies, timeout)) {
-                am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
-                mutex_unlock(&mutex);
-                return -EAGAIN;
-                
-            }
-        }
-        map_val = adc_dev->channel_step[chan->scan_index];
+		if (stepid == map_val) {
+			read = read & FIFOREAD_DATA_MASK;
+			found = true;
+			*val = (u16) read;
+            printk("-----adc_test----:fifo1count = %d --read = %d \n",fifo1count,read);
+		}
+	}
+	am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
 
-        /*
-         * We check the complete FIFO. We programmed just one entry but in case
-         * something went wrong we left empty handed (-EAGAIN previously) and
-         * then the value apeared somehow in the FIFO we would have two entries.
-         * Therefore we read every item and keep only the latest version of the
-         * requested channel.
-         */
-        for (i = 0; i < fifo1count; i++) {
-            read = tiadc_readl(adc_dev, REG_FIFO1);
-            stepid = read & FIFOREAD_CHNLID_MASK;
-            stepid = stepid >> 0x10;
-
-            if (stepid == map_val) {
-                read = read & FIFOREAD_DATA_MASK;
-                found = true;
-                *val = (u16) read;
-               // printk("-----adc_test----:fifo1count = %d --read = %d \n",fifo1count,read);
-            }
-        }
-        data += read;
-        am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
-
-        if (found == false)
-        {
-            mutex_unlock(&mutex);
-            return -EBUSY;
-            
-        }
-    }
-
-    *val = (u16)data/10;
-    //printk("--------avg = %d \n",*val = (u16)data/10);
-    mutex_unlock(&mutex);
+	if (found == false)
+		return -EBUSY;
 	return IIO_VAL_INT;
 }
 
@@ -525,7 +506,6 @@ static int tiadc_probe(struct platform_device *pdev)
 		goto err_buffer_unregister;
 
 	platform_set_drvdata(pdev, indio_dev);
-    mutex_init(&mutex);
 
 	return 0;
 

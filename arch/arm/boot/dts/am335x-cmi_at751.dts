@@ -647,9 +647,9 @@
 
 	adc {
 		ti,adc-channels = <0 1 2>;
-        ti,chan-step-opendelay = <0x11D 0x11D 0x11D>;
-        ti,chan-step-sampledelay = <0x1 0x1 0x1>;
-        ti,chan-step-avg = <3 3 3>;
+        ti,chan-step-opendelay = <0x98 0x98 0x98>;
+        ti,chan-step-sampledelay = <0x9 0x9 0x9>;
+        ti,chan-step-avg = <0x03 0x03 0x03>;
 	};
 };
 

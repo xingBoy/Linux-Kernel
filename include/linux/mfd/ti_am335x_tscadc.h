@@ -131,7 +131,9 @@
 #define SEQ_STATUS BIT(5)
 #define CHARGE_STEP		0x11
 
+//#define ADC_CLK			    3400000
 #define ADC_CLK			3000000
+//#define ADC_CLK			24000000
 #define TOTAL_STEPS		16
 #define TOTAL_CHANNELS		8
 #define FIFO1_THRESHOLD		19
