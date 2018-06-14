@@ -10,7 +10,7 @@
 #include <linux/mutex.h>
 
 MODULE_LICENSE("GPL");
-struct mutex  mutex;
+struct mutex  sht30_mutex;
 static int sht30_read(struct i2c_client *client,char * result);
 struct i2c_client *sht30_client;
 struct kobject *sht30_kobj;
@@ -52,9 +52,9 @@ ssize_t static sht30_show(struct kobject *kobj, struct attribute *attr, char *bu
 
     if(!sht30_client)
         return -1;
-    mutex_lock(&mutex);
+    mutex_lock(&sht30_mutex);
     ret = sht30_read(sht30_client,buf);
-    mutex_unlock(&mutex);
+    mutex_unlock(&sht30_mutex);
     if(ret != 6)
     {
         return -1;
@@ -147,7 +147,7 @@ static int sht30_probe(struct i2c_client *client, const struct i2c_device_id *id
    if (ret < 0)
         kfree(sht30_kobj);
 
-    mutex_init(&mutex);
+    mutex_init(&sht30_mutex);
     return ret;
 }
 

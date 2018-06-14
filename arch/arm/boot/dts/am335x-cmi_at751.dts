@@ -403,7 +403,7 @@
         compatible = "sht30";
         reg = <0x44>;
         status = "okay";
-    }
+    };
 };
 
 &usb {
