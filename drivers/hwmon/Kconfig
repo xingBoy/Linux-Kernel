@@ -1235,6 +1235,16 @@ config SENSORS_SHT21
 	  This driver can also be built as a module.  If so, the module
 	  will be called sht21.
 
+config SENSORS_SHT30
+	tristate "Sensiron humidity and temperature sensors. SHT30 and compat."
+	depends on I2C
+	help
+	  If you say yes here you get support for the Sensiron SHT30,
+	  humidity and temperature sensors.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called sht30.
+
 config SENSORS_SHTC1
 	tristate "Sensiron humidity and temperature sensors. SHTC1 and compat."
 	depends on I2C

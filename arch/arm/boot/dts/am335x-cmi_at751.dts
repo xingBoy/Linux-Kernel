@@ -44,6 +44,12 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
+
+    gpio_to_irq {
+        compatible = "gpio_to_irq";
+        gpio_nu = <44  IRQ_TYPE_EDGE_FALLING>;
+    };  
+
 };
 
 &am33xx_pinmux {
@@ -113,7 +119,7 @@
 		pinctrl-single,pins = <
 			0x180 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart1_rxd.uart1_rxd */
 			0x184 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_txd.uart1_txd */
-			0x178 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_cts.uart1_cts */
+			0x178 (PIN_INPUT | MUX_MODE0)	/* uart1_cts.uart1_cts */
 			0x17C (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_rts.uart1_rts */
 		>;
 	};
@@ -393,6 +399,11 @@
         reg = <0x4c>;
         status = "okay";
     };
+    sht30@44 {
+        compatible = "sht30";
+        reg = <0x44>;
+        status = "okay";
+    }
 };
 
 &usb {
