@@ -172,9 +172,7 @@
 
 	cpsw_default: cpsw_default {
 		pinctrl-single,pins = <
-			/* Slave 1---15pin */
-			0x108 ( PIN_INPUT_PULLDOWN | MUX_MODE0 )    /* (h16) ggmii1_col */
-			0x10c ( PIN_INPUT_PULLDOWN | MUX_MODE0 )    /* (h17) ggmii1_crs */
+			/* Slave 1 */
 			0x110 ( PIN_INPUT_PULLDOWN | MUX_MODE0 )    /* (J15) ggmii1_rxer */
 			0x114 ( PIN_OUTPUT         | MUX_MODE0 )	/* (J16) gmii1_txen */
 			0x118 ( PIN_INPUT_PULLDOWN | MUX_MODE0 )	/* (J17) gmii1_rxdv */
@@ -188,8 +186,6 @@
 			0x138 ( PIN_INPUT_PULLDOWN | MUX_MODE0 )	/* (L16) gmii1_rxd2 */
 			0x13c ( PIN_INPUT_PULLDOWN | MUX_MODE0 )	/* (L15) gmii1_rxd1 */
 			0x140 ( PIN_INPUT_PULLDOWN | MUX_MODE0 )	/* (M16) gmii1_rxd0 */
-			/*slave 2*/
-            0x78 ( PIN_INPUT_PULLDOWN  | MUX_MODE1 )    /* (U17) gpmc_wpn.gmii2_col */
 			0x74 ( PIN_INPUT_PULLDOWN  | MUX_MODE1 )    /* (U17) gpmc_wpn.gmii2_rxerr */
 			0x40 ( PIN_OUTPUT          | MUX_MODE1 )    /* (R13) gpmc_a0.gmii2_txen */
 			0x44 ( PIN_INPUT_PULLDOWN  | MUX_MODE1 )    /* (V14) gpmc_a1.gmii2_rxdv */
@@ -648,7 +644,6 @@
 &cpsw_emac0 {
 	phy_id = <&davinci_mdio>, <0>;
 	phy-mode = "mii";
-    managed = "auto";
 	dual_emac_res_vlan = <1>;
 };
 
