@@ -78,6 +78,7 @@ static void omap_prcm_arch_reset(char mode, const char *cmd)
         */
 		omap2_prm_set_mod_reg_bits(OMAP4430_RST_GLOBAL_WARM_SW_MASK,
 					prcm_offs, AM33XX_PRM_RSTCTRL_OFFSET);
+        printk("reset ----- \n");
 	} else if (cpu_is_omap34xx()) {
 		prcm_offs = OMAP3430_GR_MOD;
 		omap3_ctrl_write_boot_mode((cmd ? (u8)*cmd : 0));

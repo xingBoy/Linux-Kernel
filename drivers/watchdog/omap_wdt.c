@@ -26,6 +26,7 @@
  *	Use the driver model and standard identifiers; handle bigger timeouts.
  */
 
+#include <plat/irqs.h>
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -85,7 +86,24 @@ static void omap_wdt_ping(struct omap_wdt_dev *wdev)
 static void omap_wdt_enable(struct omap_wdt_dev *wdev)
 {
 	void __iomem *base = wdev->base;
+    static void *prm_reg_mem;
 
+#define PRM_REG_MEM  0x44E00F00
+
+    if (!request_mem_region(PRM_REG_MEM, 8, "prm_reg_mem")){
+        printk("request mem error\n");
+        goto JUMP;
+    }
+    prm_reg_mem = ioremap(PRM_REG_MEM, 8);
+
+    __raw_writel(0xff, prm_reg_mem + 4);
+    /* __raw_writel(0x1, prm_reg_mem); */
+    /* reset code */
+
+    iounmap(prm_reg_mem);
+    release_mem_region(PRM_REG_MEM, 8);
+
+JUMP:
 	/* Sequence to enable the watchdog */
 	__raw_writel(0xBBBB, base + OMAP_WATCHDOG_SPR);
 	while ((__raw_readl(base + OMAP_WATCHDOG_WPS)) & 0x10)
