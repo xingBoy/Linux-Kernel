@@ -29,7 +29,7 @@
 #define GPIOF_EXPORT_CHANGEABLE	(1 << 6)
 #define GPIOF_EXPORT_DIR_FIXED	(GPIOF_EXPORT)
 #define GPIOF_EXPORT_DIR_CHANGEABLE (GPIOF_EXPORT | GPIOF_EXPORT_CHANGEABLE)
-
+#define IMX_GPIO_NR(bank, nr)		(((bank) - 1) * 32 + (nr))
 /**
  * struct gpio - a structure describing a GPIO with configuration
  * @gpio:	the GPIO number

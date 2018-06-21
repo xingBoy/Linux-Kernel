@@ -13,10 +13,11 @@
 #include "imx6qdl.dtsi"
 
 / {
+#if 0
 	aliases {
 		i2c3 = &i2c4;
 	};
-
+#endif
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -139,7 +140,7 @@
 				clock-names = "pxp-axi", "disp-axi";
 				status = "disabled";
 			};
-
+#if 0
 			epdc: epdc@020f4000 {
 				compatible = "fsl,imx6dl-epdc";
 				reg = <0x020f4000 0x4000>;
@@ -147,7 +148,7 @@
 				clocks = <&clks IMX6QDL_CLK_IPU2>, <&clks IMX6QDL_CLK_IPU2_DI1>;
 				clock-names = "epdc_axi", "epdc_pix";
 			};
-
+#endif
 			lcdif: lcdif@020f8000 {
 				reg = <0x020f8000 0x4000>;
 				interrupts = <0 39 IRQ_TYPE_LEVEL_HIGH>;
@@ -164,7 +165,7 @@
 				clock-names = "mipi_pllref_clk", "mipi_cfg_clk";
 				status = "disabled";
 			};
-
+#if 0
 			i2c4: i2c@021f8000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -174,6 +175,7 @@
 				clocks = <&clks IMX6DL_CLK_I2C4>;
 				status = "disabled";
 			};
+#endif
 		};
 	};
 

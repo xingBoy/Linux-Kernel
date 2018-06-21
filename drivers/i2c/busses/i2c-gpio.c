@@ -139,6 +139,7 @@ static int i2c_gpio_probe(struct platform_device *pdev)
 					   &sda_pin, &scl_pin);
 		if (ret)
 			return ret;
+		pdev->id = of_alias_get_id(pdev->dev.of_node, "i2c-gpio");
 	} else {
 		if (!dev_get_platdata(&pdev->dev))
 			return -ENXIO;

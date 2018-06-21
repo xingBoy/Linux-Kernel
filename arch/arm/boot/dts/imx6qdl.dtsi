@@ -47,6 +47,11 @@
 		usbphy0 = &usbphy1;
 		usbphy1 = &usbphy2;
 	};
+#if 1
+	aliases {
+		i2c-gpio3 = &i2c_gpio;
+	};
+#endif
 
 	clocks {
 		#address-cells = <1>;
@@ -845,16 +850,16 @@
 				clocks = <&clks IMX6QDL_CLK_USBPHY1>;
 				clock-names = "main_clk";
 			};
-
+#if 1
 			caam_snvs: caam-snvs@020cc000 {
 				compatible = "fsl,imx6q-caam-snvs";
 				reg = <0x020cc000 0x4000>;
 			};
-
+#endif
 			snvs: snvs@020cc000 {
 				compatible = "fsl,sec-v4.0-mon", "syscon", "simple-mfd";
 				reg = <0x020cc000 0x4000>;
-
+#if 1
 				snvs_rtc: snvs-rtc-lp {
 					compatible = "fsl,sec-v4.0-mon-rtc-lp";
 					regmap = <&snvs>;
@@ -862,7 +867,7 @@
 					interrupts = <0 19 IRQ_TYPE_LEVEL_HIGH>,
 						     <0 20 IRQ_TYPE_LEVEL_HIGH>;
 				};
-
+#endif
 				snvs_poweroff: snvs-poweroff {
 					compatible = "syscon-poweroff";
 					regmap = <&snvs>;
@@ -1214,7 +1219,13 @@
 				clocks = <&clks IMX6QDL_CLK_I2C3>;
 				status = "disabled";
 			};
-
+#if 1
+			i2c_gpio: i2c@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				status = "disabled";
+			};
+#endif
 			romcp@021ac000 {
 				reg = <0x021ac000 0x4000>;
 			};

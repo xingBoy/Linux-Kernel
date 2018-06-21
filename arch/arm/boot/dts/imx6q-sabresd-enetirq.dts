@@ -7,12 +7,12 @@
  */
 
 #include "imx6q-sabresd.dts"
-
+#if 0
 &fec {
 	pinctrl-0 = <&pinctrl_enet &pinctrl_enet_irq>;
 	interrupts-extended = <&gpio1 6 0x04>, <&gpc 0 119 0x04>;
 };
-
+#endif
 &i2c3 {
 	status = "disabled";
 };

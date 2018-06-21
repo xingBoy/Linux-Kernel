@@ -119,11 +119,11 @@ static const struct reg_default wm8962_reg[] = {
 	{ 1, 0x049F },   /* R1     - Right Input volume */
 	{ 2, 0x0000 },   /* R2     - HPOUTL volume */
 	{ 3, 0x0000 },   /* R3     - HPOUTR volume */
-
+	{ 4, 0x0020 },   /* R4     - Clocking1 */
 	{ 5, 0x0018 },   /* R5     - ADC & DAC Control 1 */
 	{ 6, 0x2008 },   /* R6     - ADC & DAC Control 2 */
 	{ 7, 0x000A },   /* R7     - Audio Interface 0 */
-
+	{ 8, 0x01E4 },   /* R8     - Clocking2 */
 	{ 9, 0x0300 },   /* R9     - Audio Interface 1 */
 	{ 10, 0x00C0 },  /* R10    - Left DAC volume */
 	{ 11, 0x00C0 },  /* R11    - Right DAC volume */
@@ -156,9 +156,12 @@ static const struct reg_default wm8962_reg[] = {
 	{ 40, 0x0000 },   /* R40    - SPKOUTL volume */
 	{ 41, 0x0000 },   /* R41    - SPKOUTR volume */
 
-	{ 49, 0x0010 },   /* R49    - Class D Control 1 */
-	{ 51, 0x0003 },   /* R51    - Class D Control 2 */
-
+	{ 47, 0x0000 },   /* R47    - Thermal Shutdown Status */
+	{ 48, 0x8027 },   /* R48    - Additional Control (4) */
+	//{ 49, 0x0010 },   /* R49    - Class D Control 1 */
+	{ 49, 0x00D0 },   /* R49    - Class D Control 1 */
+	//{ 51, 0x0003 },   /* R51    - Class D Control 2 */
+	{ 51, 0x0007 },   /* R51    - Class D Control 2 */
 	{ 56, 0x0506 },   /* R56    - Clocking 4 */
 	{ 57, 0x0000 },   /* R57    - DAC DSP Mixing (1) */
 	{ 58, 0x0000 },   /* R58    - DAC DSP Mixing (2) */
@@ -167,6 +170,8 @@ static const struct reg_default wm8962_reg[] = {
 	{ 61, 0x0300 },   /* R61    - DC Servo 1 */
 
 	{ 64, 0x0810 },   /* R64    - DC Servo 4 */
+
+	{ 66, 0x0000 },   /* R66    - DC Servo 6 */
 
 	{ 68, 0x001B },   /* R68    - Analogue PGA Bias */
 	{ 69, 0x0000 },   /* R69    - Analogue HP 0 */
@@ -205,6 +210,8 @@ static const struct reg_default wm8962_reg[] = {
 	{ 125, 0x004B },   /* R125   - Analogue Clocking2 */
 	{ 126, 0x000D },   /* R126   - Analogue Clocking3 */
 	{ 127, 0x0000 },   /* R127   - PLL Software Reset */
+
+	{ 129, 0x0000 },   /* R129   - PLL2 */
 
 	{ 131, 0x0000 },   /* R131   - PLL 4 */
 
@@ -300,6 +307,9 @@ static const struct reg_default wm8962_reg[] = {
 	{ 516, 0x8100 },   /* R516   - GPIO 5 */
 	{ 517, 0x8100 },   /* R517   - GPIO 6 */
 
+	{ 560, 0x0000 },   /* R560   - Interrupt Status 1 */
+	{ 561, 0x0000 },   /* R561   - Interrupt Status 2 */
+
 	{ 568, 0x0030 },   /* R568   - Interrupt Status 1 Mask */
 	{ 569, 0xFFED },   /* R569   - Interrupt Status 2 Mask */
 
@@ -310,6 +320,8 @@ static const struct reg_default wm8962_reg[] = {
 	{ 586, 0x0000 },   /* R586   -  MICINT Source Pol */
 
 	{ 768, 0x1C00 },   /* R768   - DSP2 Power Management */
+
+	{ 1037, 0x0000 },   /* R1037  - DSP2_ExecControl */
 
 	{ 8192, 0x0000 },   /* R8192  - DSP2 Instruction RAM 0 */
 
@@ -2188,7 +2200,8 @@ SND_SOC_DAPM_MIXER("Speaker Mixer", WM8962_MIXER_ENABLES, 1, 0,
 		   spkmixl, ARRAY_SIZE(spkmixl)),
 SND_SOC_DAPM_MUX_E("Speaker PGA", WM8962_PWR_MGMT_2, 4, 0, &spkoutl_mux,
 		   out_pga_event, SND_SOC_DAPM_POST_PMU),
-SND_SOC_DAPM_PGA("Speaker Output", WM8962_CLASS_D_CONTROL_1, 7, 0, NULL, 0),
+//SND_SOC_DAPM_PGA("Speaker Output", WM8962_CLASS_D_CONTROL_1, 7, 0, NULL, 0),
+SND_SOC_DAPM_PGA("Speaker Output", WM8962_CLASS_D_CONTROL_1, 6, 0, NULL, 0),
 SND_SOC_DAPM_OUTPUT("SPKOUT"),
 };
 

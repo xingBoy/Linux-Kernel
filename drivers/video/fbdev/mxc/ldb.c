@@ -22,6 +22,7 @@
 #include <linux/regmap.h>
 #include <linux/types.h>
 #include <video/of_videomode.h>
+#include <video/of_display_timing.h>
 #include <video/videomode.h>
 #include "mxc_dispdrv.h"
 
@@ -78,6 +79,8 @@ struct ldb_chan {
 	struct ldb_data *ldb;
 	struct fb_info *fbi;
 	struct videomode vm;
+	unsigned long serial_clk;
+	struct display_timings *timings;
 	enum crtc crtc;
 	int chno;
 	bool is_used;
@@ -294,6 +297,25 @@ static const struct of_device_id ldb_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, ldb_dt_ids);
 
+static void ldb_dump_fb_videomode(struct fb_videomode fb_vm)
+{
+	printk("fb_vm.name(%s)\n",fb_vm.name);
+	printk("fb_vm.refresh(%u)\n",fb_vm.refresh);
+	printk("fb_vm.xres(%u)\n",fb_vm.xres);
+	printk("fb_vm.yres(%u)\n",fb_vm.yres);
+	printk("fb_vm.pixclock(%u)\n",fb_vm.pixclock);
+	
+	printk("fb_vm.left_margin(%u)\n",fb_vm.left_margin);
+	printk("fb_vm.right_margin(%u)\n",fb_vm.right_margin);
+	printk("fb_vm.upper_margin(%u)\n",fb_vm.upper_margin);
+	printk("fb_vm.lower_margin(%u)\n",fb_vm.lower_margin);
+	printk("fb_vm.hsync_len(%u)\n",fb_vm.hsync_len);
+	printk("fb_vm.vsync_len(%u)\n",fb_vm.vsync_len);
+	printk("fb_vm.sync(%u)\n",fb_vm.sync);
+	printk("fb_vm.vmode(%u)\n",fb_vm.vmode);
+	printk("fb_vm.flag(%u)\n",fb_vm.flag);
+}
+
 static int ldb_init(struct mxc_dispdrv_handle *mddh,
 		    struct mxc_dispdrv_setting *setting)
 {
@@ -303,6 +325,8 @@ static int ldb_init(struct mxc_dispdrv_handle *mddh,
 	struct ldb_chan *chan;
 	struct fb_videomode fb_vm;
 	int chno;
+	struct fb_videomode native_mode;
+	unsigned long pixelclock;
 
 	chno = ldb->chan[ldb->primary_chno].is_used ?
 		!ldb->primary_chno : ldb->primary_chno;
@@ -321,12 +345,41 @@ static int ldb_init(struct mxc_dispdrv_handle *mddh,
 	chan->is_used = true;
 
 	chan->fbi = fbi;
-
+#if 0
 	fb_videomode_from_videomode(&chan->vm, &fb_vm);
 	fb_videomode_to_var(&fbi->var, &fb_vm);
 
 	setting->crtc = chan->crtc;
+#endif
+#if 0
+	if(ldb->spl_mode)
+	{
+		fb_videomode_from_videomode(&chan->vm, &fb_vm);
 
+		INIT_LIST_HEAD(&fbi->modelist);
+		fb_add_videomode(&fb_vm, &fbi->modelist);
+		fb_videomode_to_var(&fbi->var, &fb_vm);
+
+		setting->crtc = chan->crtc;
+	}
+	else
+#endif
+	{
+		setting->crtc = chan->crtc;
+
+		INIT_LIST_HEAD(&fbi->modelist);
+		fb_find_mode(&fbi->var, fbi, setting->dft_mode_str, &fb_vm,
+				chan->timings->num_timings, &native_mode,
+				setting->default_bpp);
+
+		/* Calculate the LVDS clock */
+		fb_var_to_videomode(&fb_vm, &fbi->var);
+		//ldb_dump_fb_videomode(fb_vm);
+		fb_add_videomode(&fb_vm, &fbi->modelist);
+		fb_videomode_to_var(&fbi->var, &fb_vm);
+		pixelclock = fb_vm.pixclock ? (1000000000UL/(fb_vm.pixclock)) * 1000: 0;
+		chan->serial_clk = ldb->spl_mode ? pixelclock * 7 / 2 : pixelclock * 7;
+	}
 	return 0;
 }
 
@@ -455,8 +508,17 @@ static int ldb_setup(struct mxc_dispdrv_handle *mddh,
 	ldb_di_sel_parent = clk_get_parent(ldb_di_sel);
 	serial_clk = ldb->spl_mode ? chan.vm.pixelclock * 7 / 2 :
 			chan.vm.pixelclock * 7;
-	clk_set_rate(ldb_di_sel_parent, serial_clk);
-
+#if 0
+	if(ldb->spl_mode)
+	{
+		clk_set_rate(ldb_di_sel_parent, serial_clk);
+	}
+	else
+#endif
+	{
+		clk_set_rate(ldb_di_sel_parent, chan.serial_clk);
+	}
+	//printk("%s(%d):serial_clk(%d),chan.serial_clk(%ld)\n", __func__, __LINE__,serial_clk, chan.serial_clk);
 	/*
 	 * split mode or dual mode:
 	 * clock tree for the other channel
@@ -685,6 +747,11 @@ static bool is_valid_crtc(struct ldb_data *ldb, enum crtc crtc,
 	return false;
 }
 
+#define COMMANDLINE_FINDER
+#ifdef COMMANDLINE_FINDER
+	extern char *saved_command_line; //leelin
+#endif
+
 static int ldb_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -697,7 +764,16 @@ static int ldb_probe(struct platform_device *pdev)
 	bool ext_ref;
 	int i, data_width, mapping, child_count = 0;
 	char clkname[16];
+#ifdef COMMANDLINE_FINDER
+	char * cmdfinder;
+	int cmd_data_width=18;
+	int split_count=0;
 
+	//default:cmd_data_width=18; in dts file
+	cmdfinder=strstr(saved_command_line,"if=RGB24");
+	if(cmdfinder!=NULL)
+		cmd_data_width=24;
+#endif
 	ldb = devm_kzalloc(dev, sizeof(*ldb), GFP_KERNEL);
 	if (!ldb)
 		return -ENOMEM;
@@ -720,6 +796,17 @@ static int ldb_probe(struct platform_device *pdev)
 		ldb->ctrl |= LDB_BGREF_RMODE_INT;
 
 	ldb->spl_mode = of_property_read_bool(np, "split-mode");
+#ifdef COMMANDLINE_FINDER
+	//default:split_count=0;
+	cmdfinder=strstr(saved_command_line,"spl0");
+	if(cmdfinder!=NULL)
+		split_count++;
+	cmdfinder=strstr(saved_command_line,"spl1");
+	if(cmdfinder!=NULL)
+		split_count++;
+	if(split_count>0)
+		ldb->spl_mode=true;
+#endif
 	if (ldb->spl_mode) {
 		if (ldb_info->split_cap) {
 			ldb->ctrl |= LDB_SPLIT_MODE_EN;
@@ -794,6 +881,10 @@ static int ldb_probe(struct platform_device *pdev)
 
 		ret = of_property_read_u32(child, "fsl,data-width",
 					   &data_width);
+#ifdef COMMANDLINE_FINDER
+		if(cmd_data_width!= data_width)
+			data_width=cmd_data_width;
+#endif
 		if (ret || (data_width != 18 && data_width != 24)) {
 			dev_err(dev, "data width not specified or invalid\n");
 			return -EINVAL;
@@ -833,7 +924,13 @@ static int ldb_probe(struct platform_device *pdev)
 			dev_err(dev, "crtc not specified or invalid\n");
 			return -EINVAL;
 		}
-
+#ifdef COMMANDLINE_FINDER
+		chan->timings = of_get_display_timings(child);
+		if (!chan->timings) {
+			dev_err(ldb->dev, "failed to get display timings\n");
+			ret = -ENOENT;
+		}
+#endif
 		ret = of_get_videomode(child, &chan->vm, 0);
 		if (ret)
 			return -EINVAL;
