@@ -1096,8 +1096,9 @@ tda998x_connector_detect(struct drm_connector *connector, bool force)
 	struct tda998x_priv *priv = conn_to_tda998x_priv(connector);
 	u8 val = cec_read(priv, REG_CEC_RXSHPDLEV);
 
-	return (val & CEC_RXSHPDLEV_HPD) ? connector_status_connected :
-			connector_status_disconnected;
+//	return (val & CEC_RXSHPDLEV_HPD) ? connector_status_connected :
+//			connector_status_disconnected;
+    return connector_status_connected;
 }
 
 static int read_edid_block(void *data, u8 *buf, unsigned int blk, size_t length)
