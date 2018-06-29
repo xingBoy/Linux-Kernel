@@ -31,6 +31,100 @@
 #include <linux/iio/kfifo_buf.h>
 
 struct mutex mutex;
+
+ssize_t adc_calibration_show(struct kobject *kobj, struct attribute *attr, char *buffer);
+ssize_t adc_calibration_store(struct kobject *kobj, struct attribute *attr, const char *buffer, size_t size);
+
+struct ADC_calibration
+{
+    int   d1_theoretical_value;
+    int   d1_measurements_value;
+    int   d2_theoretical_value;
+    int   d2_measurements_value;
+    int   channel;
+    bool  calibration_flags;
+    struct kobject kobj;
+};
+
+int d1in[8] = {0};
+int d2in[8] = {0};
+int d1out[8] = {0};
+int d2out[8] = {0};
+bool cahnnel_flagss[8] = {false,false,false,false,false,false,false,false};
+struct attribute d1_theoretical_val_file = 
+{
+    .name = "d1in",
+    .mode = 0666,
+};
+struct attribute d1_measurements_val_file = 
+{
+    .name = "d1out",
+    .mode = 0666,
+};
+struct attribute d2_theoretical_val_file = 
+{
+    .name = "d2in",
+    .mode = 0666,
+};
+struct attribute d2_measurements_val_file = 
+{
+    .name = "d2out",
+    .mode = 0666,
+};
+
+struct attribute calibration_flags_file = 
+{
+    .name = "calibration",
+    .mode = 0666,
+};
+struct attribute re_calibration_flags_file = 
+{
+    .name = "re_calibration",
+    .mode = 0666,
+};
+struct attribute re_calibration_all_flags_file = 
+{
+    .name = "re_calibration_all",
+    .mode = 0666,
+};
+struct attribute remade_file = 
+{
+    .name = "REMADE",
+    .mode = 0666,
+};
+struct attribute channel_file = 
+{
+    .name = "channel",
+    .mode = 0666,
+};
+struct attribute *my_attrs[] = 
+{
+    &d1_theoretical_val_file,
+    &d1_measurements_val_file,
+    &d2_theoretical_val_file,
+    &d2_measurements_val_file,
+    &calibration_flags_file,
+    &remade_file,
+    &channel_file,
+    &re_calibration_flags_file,
+    &re_calibration_all_flags_file,
+    NULL,
+};
+
+struct sysfs_ops my_sysfsops = 
+{
+    .show  =    &adc_calibration_show,
+    .store =    &adc_calibration_store,
+};
+
+struct kobj_type my_type = {
+    .default_attrs =  my_attrs,
+    .sysfs_ops = &my_sysfsops,
+};
+struct ADC_calibration *adc_calibration;
+
+
+
 struct tiadc_device {
 	struct ti_tscadc_dev *mfd_tscadc;
 	int channels;
@@ -41,6 +135,188 @@ struct tiadc_device {
 	u32 open_delay[8], sample_delay[8], step_avg[8];
 };
 
+
+
+
+ssize_t adc_calibration_show(struct kobject *kobj, struct attribute *attr, char *buffer)
+{
+    struct  ADC_calibration *obj = container_of(kobj, struct ADC_calibration, kobj);
+    ssize_t count = 0;
+    int i = 0;
+    if (strcmp(attr->name, "d1in") == 0) {
+        count = sprintf(buffer, "%d\n",obj->d1_theoretical_value);
+    } else if (strcmp(attr->name, "d2in") == 0) {
+        count = sprintf(buffer, "%d\n", obj->d2_theoretical_value);
+    }else if (strcmp(attr->name, "d1out") == 0) {
+        count = sprintf(buffer, "%d\n", obj->d1_measurements_value);
+    } else if (strcmp(attr->name, "d2out") == 0) {
+        count = sprintf(buffer, "%d\n", obj->d2_measurements_value);
+    }else if(strcmp(attr->name, "channel") == 0){
+        count = sprintf(buffer, "%d\n", obj->channel);
+    }else if(strcmp(attr->name, "REMADE") == 0)
+    {
+        count = sprintf(buffer, "%s\n", "adc calibration");
+    }else if(strcmp(attr->name, "re_calibration_all") == 0)
+    {
+       for(i=0;i<8;i++)
+       {
+            if(i<3)
+            {
+                
+                printk("d1in[%d] = %d,d2in[%d] = %d,d1out[%d] = %d,d2out[%d] = %d\n", \
+                           i,d1in[i],i,d2in[i],i,d1out[i],i,d2out[i]);
+            }
+
+       }
+    }else if(strcmp(attr->name, "re_calibration") == 0)
+    {
+        for(i = 0;i<8;i++)
+        {
+            if(adc_calibration->channel == i)
+            {
+              
+                printk("d1in[%d] = %d,d2in[%d] = %d,d1out[%d] = %d,d2out[%d] = %d\n", \
+                           i,d1in[i],i,d2in[i],i,d1out[i],i,d2out[i]);
+                break;
+            }
+        }
+
+    }else if (strcmp(attr->name, "calibration") == 0) {
+        if(obj->calibration_flags)
+        {
+            count = sprintf(buffer, "%s\n", "true");
+        }else
+        {
+            count = sprintf(buffer, "%s\n", "false");
+        }
+    }
+
+    return count;
+}
+
+ssize_t adc_calibration_store(struct kobject *kobj, struct attribute *attr, const char *buffer, size_t size)
+{
+    struct ADC_calibration *obj = container_of(kobj, struct ADC_calibration, kobj);
+
+    int i = 0;
+    if (strcmp(attr->name, "d1in") == 0) 
+    {
+        sscanf(buffer, "%d",&obj->d1_theoretical_value);
+    } else if (strcmp(attr->name, "d2in") == 0) {
+        sscanf(buffer, "%d",&obj->d2_theoretical_value);
+    }else if (strcmp(attr->name, "d1out") == 0) {
+        sscanf(buffer, "%d",&obj->d1_measurements_value);
+    } else if (strcmp(attr->name, "d2out") == 0) {
+        sscanf(buffer, "%d",&obj->d2_measurements_value);
+    }else if(strcmp(attr->name, "channel") == 0)
+    {
+        sscanf(buffer, "%d",&obj->channel);
+    }else if(strcmp(attr->name, "re_calibration_all") == 0)
+    {
+        if(strncmp(buffer, "true",4) == 0)
+        {
+            for(i=0;i<8;i++)
+            {
+                d1in[i] = d2in[i] = d2out[i] = d1out[i] = 0;
+                if(i<3)
+                {
+
+                    printk("d1in[%d] = %d,d2in[%d] = %d,d1out[%d] = %d,d2out[%d] = %d\n", \
+                           i,d1in[i],i,d2in[i],i,d1out[i],i,d2out[i]);
+                }
+
+            }
+        }
+    }else if(strcmp(attr->name, "re_calibration") == 0)
+    {
+        if(strncmp(buffer, "true",4) == 0)
+        {
+            for(i = 0;i<8;i++)
+            {
+                if(adc_calibration->channel == i)
+                {
+                    d1in[i] = d2in[i] = d2out[i] = d1out[i] = 0;
+
+                    printk("d1in[%d] = %d,d2in[%d] = %d,d1out[%d] = %d,d2out[%d] = %d\n", \
+                           i,d1in[i],i,d2in[i],i,d1out[i],i,d2out[i]);
+                    break;
+                }
+            }
+        }
+
+    }else if (strcmp(attr->name, "calibration") == 0) {
+        if(strncmp(buffer, "true",4) == 0)
+        {
+            obj->calibration_flags = true;
+
+
+            if(adc_calibration->channel < 0 || adc_calibration->channel > 7)
+            {
+                adc_calibration->calibration_flags = false;
+                printk("The number of channels is between 0, 1, 2, 3,4,5,6,7\n");
+                return -EINVAL;
+            }
+
+
+            for(i = 0;i<8;i++)
+            {
+
+                if(adc_calibration->d2_measurements_value == adc_calibration->d1_measurements_value)
+                {
+                    printk("d2out cannot be equal to d1out\n");
+                    return -EINVAL;
+                }
+                if(adc_calibration->channel == i)
+                {
+                    d1in[i]  = adc_calibration->d1_theoretical_value;
+                    d2in[i]  = adc_calibration->d2_theoretical_value;
+                    d1out[i] = adc_calibration->d1_measurements_value;
+                    d2out[i] = adc_calibration->d2_measurements_value;
+                    printk("d1in[%d] = %d,d2in[%d] = %d,d1out[%d] = %d,d2out[%d] = %d\n", \
+                           i,d1in[i],i,d2in[i],i,d1out[i],i,d2out[i]);
+                    break;
+                }
+            }
+
+            obj->calibration_flags = false;
+
+        }else if(strncmp(buffer, "false",5) == 0)
+        {
+            obj->calibration_flags = false;
+        }else
+        {
+            return -EINVAL;
+        }
+    }
+
+
+
+
+    return size;
+}
+
+int  adc_calibration_init(struct iio_dev *indio_dev)
+{
+    
+    adc_calibration =  kzalloc(sizeof(struct ADC_calibration), GFP_KERNEL);
+    if(!adc_calibration)
+    {
+        return -ENOMEM;
+    }
+
+     adc_calibration->calibration_flags              = false;
+     adc_calibration->channel = 0;
+     
+   // kobject_init_and_add(&adc_calibration.kobj, &adc_calibration.my_type,&indio_dev->dev.kobj , "adc_calibration");
+    kobject_init_and_add(&adc_calibration->kobj, &my_type,&indio_dev->dev.kobj, "adc_calibration");
+
+    return 0;
+}
+
+
+
+
+
 static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
 {
 	return readl(adc->mfd_tscadc->tscadc_base + reg);
@@ -48,7 +324,7 @@ static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
 
 static void tiadc_writel(struct tiadc_device *adc, unsigned int reg,
 					unsigned int val)
-{
+{  
 	writel(val, adc->mfd_tscadc->tscadc_base + reg);
 }
 
@@ -232,7 +508,6 @@ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
 				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
 	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
 				| IRQENB_FIFO1OVRRUN);
-
 	return 0;
 }
 
@@ -365,9 +640,11 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 	unsigned int fifo1count, read, stepid;
 	bool found = false;
 	u32 step_en;
+    int value_average = 0;
 	unsigned long timeout;
     unsigned int data = 0;
     int data_count = 10;
+    //printk("-----ADC---channel--%d--channel2--%d\n",chan->channel,chan->channel2);
 	if (iio_buffer_enabled(indio_dev))
 		return -EBUSY;
 
@@ -433,9 +710,30 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
         }
     }
 
-    *val = (u16)data/10;
-    //printk("--------avg = %d \n",*val = (u16)data/10);
-    mutex_unlock(&mutex);
+
+    value_average = (u16)data/10; 
+
+
+    // x = (y-b)/k  .....    ->x = (y-y1)(x2-x1)/(y2-y1) + yx;
+    for(i =0;i<8;i++)
+    {
+        if(chan->channel == i)
+        {
+            if((d2out[i] - d1out[i] ==0) || (d2out[i] ==0) ||( d1out[i] ==0) ||(d2in[i] == 0) || (d1in[i] ==0))
+            {
+                *val = value_average;
+            }else
+            {
+                *val = (value_average - d1out[i]) * (d2in[i]-d1in[i]) / (d2out[i] - d1out[i]) + d1in[i];
+            }
+            if(*val< 50)
+            {
+                *val = 0;
+            }
+            break;
+        }
+    }
+        mutex_unlock(&mutex);
 	return IIO_VAL_INT;
 }
 
@@ -525,6 +823,7 @@ static int tiadc_probe(struct platform_device *pdev)
 		goto err_buffer_unregister;
 
 	platform_set_drvdata(pdev, indio_dev);
+    adc_calibration_init(indio_dev);
     mutex_init(&mutex);
 
 	return 0;
@@ -542,6 +841,8 @@ static int tiadc_remove(struct platform_device *pdev)
 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
 	u32 step_en;
 
+    kobject_del(&adc_calibration->kobj);
+    kobject_put(&adc_calibration->kobj);
 	iio_device_unregister(indio_dev);
 	tiadc_iio_buffered_hardware_remove(indio_dev);
 	tiadc_channels_remove(indio_dev);
