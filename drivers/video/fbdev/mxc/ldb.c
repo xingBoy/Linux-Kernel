@@ -872,13 +872,25 @@ static int ldb_probe(struct platform_device *pdev)
 		chan->chno = i;
 		chan->ldb = ldb;
 		chan->online = true;
-
 		is_primary = of_property_read_bool(child, "primary");
 
 		if (ldb->bus_mux_num == 1 || (ldb->primary_chno == -1 &&
 		    (is_primary || ldb->spl_mode || ldb->dual_mode)))
 			ldb->primary_chno = chan->chno;
-
+#ifdef COMMANDLINE_FINDER
+		cmdfinder=strstr(saved_command_line,"sin0");
+		if(cmdfinder!=NULL)
+			ldb->primary_chno = 0;
+		cmdfinder=strstr(saved_command_line,"sin1");
+		if(cmdfinder!=NULL)
+			ldb->primary_chno = 1;
+		cmdfinder=strstr(saved_command_line,"spl0");
+		if(cmdfinder!=NULL)
+			ldb->primary_chno = 0;
+		cmdfinder=strstr(saved_command_line,"spl1");
+		if(cmdfinder!=NULL)
+			ldb->primary_chno = 1;
+#endif
 		ret = of_property_read_u32(child, "fsl,data-width",
 					   &data_width);
 #ifdef COMMANDLINE_FINDER
