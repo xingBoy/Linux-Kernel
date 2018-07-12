@@ -748,7 +748,7 @@ static struct regulator_consumer_supply am335x_vdd1_supply[] = {
 static struct regulator_init_data am335x_vdd1 = {
     .constraints = {
     .min_uV         = 600000,
-    .max_uV         = 1500000,
+    .max_uV         = 1100000,
 	.valid_modes_mask   = REGULATOR_MODE_NORMAL,
 	.valid_ops_mask     = REGULATOR_CHANGE_VOLTAGE,
 	.always_on      = 1,
@@ -993,17 +993,17 @@ static struct evm_dev_cfg cmi_at752_dev_cfg[] = {
 
 #define AM33XX_VDD_CORE_OPP50_UV		1100000
 #define AM33XX_OPP120_FREQ		600000000
-#define AM33XX_OPPTURBO_FREQ		720000000
+#define AM33XX_OPPTURBO_FREQ		600000000
 
 #define AM33XX_ES2_0_VDD_CORE_OPP50_UV	950000
-#define AM33XX_ES2_0_OPP120_FREQ	720000000
-#define AM33XX_ES2_0_OPPTURBO_FREQ	800000000
-#define AM33XX_ES2_0_OPPNITRO_FREQ	1000000000
+#define AM33XX_ES2_0_OPP120_FREQ	600000000
+#define AM33XX_ES2_0_OPPTURBO_FREQ	600000000
+#define AM33XX_ES2_0_OPPNITRO_FREQ	600000000
 
 #define AM33XX_ES2_1_VDD_CORE_OPP50_UV	950000
-#define AM33XX_ES2_1_OPP120_FREQ	720000000
-#define AM33XX_ES2_1_OPPTURBO_FREQ	800000000
-#define AM33XX_ES2_1_OPPNITRO_FREQ	1000000000
+#define AM33XX_ES2_1_OPP120_FREQ	600000000
+#define AM33XX_ES2_1_OPPTURBO_FREQ	600000000
+#define AM33XX_ES2_1_OPPNITRO_FREQ	600000000
 
 #ifdef CONFIG_MACH_AM335XEVM_VIBRATOR
 int am335xevm_vibrator_init(void);
