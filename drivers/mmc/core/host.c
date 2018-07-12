@@ -191,6 +191,7 @@ int mmc_of_parse(struct mmc_host *host)
 
 	/* f_max is obtained from the optional "max-frequency" property */
 	of_property_read_u32(np, "max-frequency", &host->f_max);
+    printk("sd speed : %d \n", host->f_max);
 
 	/*
 	 * Configure CD and WP pins. They are both by default active low to
