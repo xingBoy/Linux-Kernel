@@ -344,7 +344,7 @@ static irqreturn_t titsc_irq(int irq, void *dev)
 
 			//100,100
 			//1024*600 300,300
-			if ((val_x > 300) && (val_y > 300))
+			if ((val_x > 100) && (val_y > 100))
 			{
 				if ( pen_up_event_flag == 0)
 				{
