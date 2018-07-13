@@ -627,8 +627,6 @@ int opp_init_cpufreq_table(struct device *dev,
 
 	list_for_each_entry(opp, &dev_opp->opp_list, node) {
 		if (opp->available) {
-            if(opp->rate / 1000 > 600000)
-                break;
 			freq_table[i].index = i;
 			freq_table[i].frequency = opp->rate / 1000;
 			i++;
