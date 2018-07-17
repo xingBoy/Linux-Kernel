@@ -90,19 +90,19 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
 #ifdef COMMANDLINE_FINDER
 	if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
 	{
-		pwm_config(pb->pwm, 0, pb->period);
-		pwm_disable(pb->pwm);
-	}
-	else
-	{
 		pwm_config(pb->pwm,  pb->period, pb->period);
 		pwm_enable(pb->pwm);
 	}
+	else
+	{
+		pwm_config(pb->pwm, 0, pb->period);
+		pwm_disable(pb->pwm);
+	}
 	if (pb->enable_gpio) {
 		if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
-			gpiod_set_value(pb->enable_gpio, 0);
-		else
 			gpiod_set_value(pb->enable_gpio, 1);
+		else
+			gpiod_set_value(pb->enable_gpio, 0);
 	}
 #else
 	pwm_config(pb->pwm, 0, pb->period);
@@ -328,7 +328,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 		data->lth_brightness=0;
 	//if(cmd_Backlight_polarity)
 	//	data->enable_gpio_flags |= PWM_BACKLIGHT_GPIO_ACTIVE_LOW;
-	printk("%s(%d): (%d), %d, %d, %ld\n", __func__, __LINE__ , data->pwm_period_ns,cmd_Backlight_min,cmd_Backlight_frequency,cmd_Backlight_polarity);
+	//printk("%s(%d): (%d), %d, %d, %d\n", __func__, __LINE__ , data->pwm_period_ns,cmd_Backlight_min,cmd_Backlight_frequency,cmd_Backlight_polarity);
 #endif
 
 	if (data->init) {
