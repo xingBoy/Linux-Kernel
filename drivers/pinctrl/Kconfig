@@ -210,6 +210,12 @@ config PINCTRL_TI_IODELAY
 	  IODelay module is used for the DRA7 SoC family. This driver is in
 	  addition to PINCTRL_SINGLE which controls the mux.
 
+config PINCTRL_APLEX
+	bool "aplex pinmux config"
+	depends on OF
+	select PINCONF
+	select GENERIC_PINCONF
+	select REGMAP_MMIO
 
 config PINCTRL_TZ1090
 	bool "Toumaz Xenif TZ1090 pin control driver"
