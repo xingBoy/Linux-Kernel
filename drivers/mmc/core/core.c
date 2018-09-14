@@ -2464,6 +2464,7 @@ static int mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)
 	pr_info("%s: %s: trying to init card at %u Hz\n",
 		mmc_hostname(host), __func__, host->f_init);
 #endif
+
 	mmc_power_up(host, host->ocr_avail);
 
 	/*
@@ -2561,11 +2562,12 @@ int mmc_detect_card_removed(struct mmc_host *host)
 }
 EXPORT_SYMBOL(mmc_detect_card_removed);
 
+#define RE_TRY_TIME_VALUE 3
 void mmc_rescan(struct work_struct *work)
 {
 	struct mmc_host *host =
 		container_of(work, struct mmc_host, detect.work);
-	int i;
+	int i, re_try_time = RE_TRY_TIME_VALUE;
 
 	if (host->trigger_card_event && host->ops->card_event) {
 		host->ops->card_event(host);
@@ -2620,12 +2622,21 @@ void mmc_rescan(struct work_struct *work)
 	}
 
 	mmc_claim_host(host);
-	for (i = 0; i < ARRAY_SIZE(freqs); i++) {
-		if (!mmc_rescan_try_freq(host, max(freqs[i], host->f_min)))
-			break;
-		if (freqs[i] <= host->f_min)
-			break;
-	}
+
+    while (re_try_time)
+    {
+        re_try_time--;
+	    for (i = 0; i < ARRAY_SIZE(freqs); i++) {
+	    	if (!mmc_rescan_try_freq(host, max(freqs[i], host->f_min)))
+            {
+                re_try_time = 0;
+	    		break;
+            }
+	    	if (freqs[i] <= host->f_min)
+	    		break;
+	    }
+    }
+
 	mmc_release_host(host);
 
  out:

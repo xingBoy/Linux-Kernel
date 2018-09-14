@@ -889,6 +889,9 @@ unsigned mmc_sd_get_max_clock(struct mmc_card *card)
  * In the case of a resume, "oldcard" will contain the card
  * we're trying to reinitialise.
  */
+
+/* #define MMC_CHEN_DEBUG */
+
 static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 	struct mmc_card *oldcard)
 {
@@ -902,7 +905,12 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 
 	err = mmc_sd_get_cid(host, ocr, cid, &rocr);
 	if (err)
+    {
+#ifdef MMC_CHEN_DEBUG
+        printk("mmc_sd_get_cid error : %d\n", err);
+#endif
 		return err;
+    }
 
 	if (oldcard) {
 		if (memcmp(cid, oldcard->raw_cid, sizeof(cid)) != 0)
@@ -915,7 +923,12 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 		 */
 		card = mmc_alloc_card(host, &sd_type);
 		if (IS_ERR(card))
+        {
+#ifdef MMC_CHEN_DEBUG
+            printk( "error card -------- \n");
+#endif
 			return PTR_ERR(card);
+        }
 
 		card->ocr = ocr;
 		card->type = MMC_TYPE_SD;
@@ -934,13 +947,23 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 	if (!mmc_host_is_spi(host)) {
 		err = mmc_send_relative_addr(host, &card->rca);
 		if (err)
+        {
+#ifdef MMC_CHEN_DEBUG
+            printk("mmc_send_relative_addr error : %d\n", err);
+#endif
 			goto free_card;
+        }
 	}
 
 	if (!oldcard) {
 		err = mmc_sd_get_csd(host, card);
 		if (err)
+        {
+#ifdef MMC_CHEN_DEBUG
+            printk("mmc_sd_get_csd error : %d\n", err);
+#endif
 			goto free_card;
+        }
 
 		mmc_decode_cid(card);
 	}
@@ -958,18 +981,33 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 	if (!mmc_host_is_spi(host)) {
 		err = mmc_select_card(card);
 		if (err)
+        {
+#ifdef MMC_CHEN_DEBUG
+            printk("mmc_select_card error : %d\n", err);
+#endif
 			goto free_card;
+        }
 	}
 
 	err = mmc_sd_setup_card(host, card, oldcard != NULL);
 	if (err)
+    {
+#ifdef MMC_CHEN_DEBUG
+        printk("mmc_sd_setup_card error : %d\n", err);
+#endif
 		goto free_card;
+    }
 
 	/* Initialization sequence for UHS-I cards */
 	if (rocr & SD_ROCR_S18A) {
 		err = mmc_sd_init_uhs_card(card);
 		if (err)
+        {
+#ifdef MMC_CHEN_DEBUG
+        printk("mmc_sd_init_uhs_card error : %d\n", err);
+#endif
 			goto free_card;
+        }
 	} else {
 		/*
 		 * Attempt to change to high-speed (if supported)
@@ -978,7 +1016,12 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
 		if (err > 0)
 			mmc_set_timing(card->host, MMC_TIMING_SD_HS);
 		else if (err)
+        {
+#ifdef MMC_CHEN_DEBUG
+            printk("mmc_sd_switch_hs error : %d\n", err);
+#endif
 			goto free_card;
+        }
 
 		/*
 		 * Set bus speed.
@@ -1197,6 +1240,8 @@ static const struct mmc_bus_ops mmc_sd_ops = {
 /*
  * Starting point for SD card init.
  */
+
+
 int mmc_attach_sd(struct mmc_host *host)
 {
 	int err;
@@ -1204,6 +1249,10 @@ int mmc_attach_sd(struct mmc_host *host)
 
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
+
+#ifdef MMC_CHEN_DEBUG
+    printk("mmc_send_app_op_cond into from mmc_attach_sd\n");
+#endif
 
 	err = mmc_send_app_op_cond(host, 0, &ocr);
 	if (err)
@@ -1224,6 +1273,10 @@ int mmc_attach_sd(struct mmc_host *host)
 			goto err;
 	}
 
+#ifdef MMC_CHEN_DEBUG
+    printk("ocr == %d\n", ocr);
+#endif
+
 	rocr = mmc_select_voltage(host, ocr);
 
 	/*
@@ -1239,12 +1292,22 @@ int mmc_attach_sd(struct mmc_host *host)
 	 */
 	err = mmc_sd_init_card(host, rocr, NULL);
 	if (err)
+    {
+#ifdef MMC_CHEN_DEBUG
+        printk("mmc_sd_init_card error : %d\n", err);
+#endif
 		goto err;
+    }
 
 	mmc_release_host(host);
 	err = mmc_add_card(host->card);
 	if (err)
+    {
+#ifdef MMC_CHEN_DEBUG
+        printk("mmc_add_card  error : %d\n", err);
+#endif
 		goto remove_card;
+    }
 
 	mmc_claim_host(host);
 	return 0;

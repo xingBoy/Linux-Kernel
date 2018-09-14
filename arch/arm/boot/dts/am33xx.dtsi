@@ -437,7 +437,20 @@
 			status = "disabled";
 		};
 
-		mmc1: mmc@48060000 {
+		mmc1: mmc@481d8000 {
+			compatible = "ti,omap4-hsmmc";
+			ti,hwmods = "mmc2";
+			ti,needs-special-reset;
+			dmas = <&edma 2 0
+				&edma 3 0>;
+			dma-names = "tx", "rx";
+			interrupts = <28>;
+			interrupt-parent = <&intc>;
+			reg = <0x481d8000 0x1000>;
+			status = "disabled";
+		};
+
+		mmc2: mmc@48060000 {
 			compatible = "ti,omap4-hsmmc";
 			ti,hwmods = "mmc1";
 			ti,dual-volt;
@@ -449,19 +462,6 @@
 			interrupts = <64>;
 			interrupt-parent = <&intc>;
 			reg = <0x48060000 0x1000>;
-			status = "disabled";
-		};
-
-		mmc2: mmc@481d8000 {
-			compatible = "ti,omap4-hsmmc";
-			ti,hwmods = "mmc2";
-			ti,needs-special-reset;
-			dmas = <&edma 2 0
-				&edma 3 0>;
-			dma-names = "tx", "rx";
-			interrupts = <28>;
-			interrupt-parent = <&intc>;
-			reg = <0x481d8000 0x1000>;
 			status = "disabled";
 		};
 

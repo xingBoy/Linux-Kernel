@@ -756,20 +756,21 @@
 
 &mmc1 {
 	vmmc-supply = <&vmmcsd_fixed>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_pins>;
+	bus-width = <8>;
+	status = "okay";
+};
+
+&mmc2 {
+	/* vmmc-supply = <&vmmcsd_fixed>; */
+	vmmc-supply = <&vmmcsd_fixed>;
 	status = "okay";
 	bus-width = <0x4>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc1_pins>;
 	cd-gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
-    max-frequency = <25000000>;
-};
-
-&mmc2 {
-	vmmc-supply = <&vmmcsd_fixed>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&emmc_pins>;
-	bus-width = <8>;
-	status = "okay";
+    max-frequency = <24000000>;
 };
 
 &sham {
