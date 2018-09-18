@@ -1,2 +1,0 @@
-make distclean
-make am335x_cmi_at151_defconfig

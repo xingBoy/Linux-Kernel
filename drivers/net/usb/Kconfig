@@ -182,6 +182,13 @@ config USB_NET_AX8817X
 	  This driver creates an interface named "ethX", where X depends on
 	  what other networking devices you have in use.
 
+config USB_NET_SIM_7600
+	tristate "USB_NET_SIM_7600"
+	depends on USB_USBNET
+    default y
+	help
+	  This option adds support for ASIX SIM7600 based USB 3.0/2.0
+
 config USB_NET_AX88179_178A
 	tristate "ASIX AX88179/178A USB 3.0/2.0 to Gigabit Ethernet"
 	depends on USB_USBNET

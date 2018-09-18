@@ -518,11 +518,29 @@ static void option_instat_callback(struct urb *urb);
 #define VIATELECOM_VENDOR_ID			0x15eb
 #define VIATELECOM_PRODUCT_CDS7			0x0001
 
+
+/*SIM7600*/
+#define SIMCOM_SIM7600_VID 0x1E0E
+#define SIMCOM_SIM7600_PID 0x9001
+
+/*CH341*/
+#define ACH341_VID 0x1a86
+#define ACH341_PID 0x7523
+
 struct option_blacklist_info {
 	/* bitmask of interface numbers blacklisted for send_setup */
 	const unsigned long sendsetup;
 	/* bitmask of interface numbers that are reserved */
 	const unsigned long reserved;
+};
+
+static const struct option_blacklist_info simcom_sim7600_blacklist = {
+    .reserved = BIT(5),
+};
+
+
+static const struct option_blacklist_info simcom_ch341_blacklist = {
+    .reserved = BIT(5),
 };
 
 static const struct option_blacklist_info four_g_w14_blacklist = {
@@ -642,6 +660,7 @@ static const struct option_blacklist_info cinterion_rmnet2_blacklist = {
 };
 
 static const struct usb_device_id option_ids[] = {
+	{ USB_DEVICE(0x10c4, 0xea70) },
 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
@@ -674,6 +693,12 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(QUANTA_VENDOR_ID, QUANTA_PRODUCT_GLE) },
 	{ USB_DEVICE(QUANTA_VENDOR_ID, 0xea42),
 		.driver_info = (kernel_ulong_t)&net_intf4_blacklist },
+    { USB_DEVICE(SIMCOM_SIM7600_VID, SIMCOM_SIM7600_PID),
+        .driver_info = (kernel_ulong_t)& simcom_sim7600_blacklist
+    },
+   // { USB_DEVICE(ACH341_VID,ACH341_PID),
+    //    .driver_info = (kernel_ulong_t)& simcom_ch341_blacklist
+   // },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0x1c05, USB_CLASS_COMM, 0x02, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0x1c1f, USB_CLASS_COMM, 0x02, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0x1c23, USB_CLASS_COMM, 0x02, 0xff) },
@@ -2021,6 +2046,16 @@ static int option_probe(struct usb_serial *serial,
 	if (iface_desc->bInterfaceClass == 0x08)
 		return -ENODEV;
 
+    if (serial->dev->descriptor.idVendor == SIMCOM_SIM7600_VID &&
+        serial->dev->descriptor.idProduct == SIMCOM_SIM7600_PID &&
+        serial->interface->cur_altsetting->desc.bInterfaceNumber == 5 )
+        return -ENODEV;
+/*
+    if (serial->dev->descriptor.idVendor == ACH341_VID &&
+        serial->dev->descriptor.idProduct == ACH341_PID &&
+        serial->interface->cur_altsetting->desc.bInterfaceNumber == 5 )
+        return -ENODEV;
+*/
 	/*
 	 * Don't bind reserved interfaces (like network ones) which often have
 	 * the same class/subclass/protocol as the serial interfaces.  Look at
