@@ -132,12 +132,13 @@
 			opp-microvolt = <1260000 1234800 1285200>;
 			opp-supported-hw = <0x06 0x0100>;
 		};
-
+/*
 		oppnitro@1000000000 {
 			opp-hz = /bits/ 64 <1000000000>;
 			opp-microvolt = <1325000 1298500 1351500>;
 			opp-supported-hw = <0x04 0x0200>;
 		};
+*/
 	};
 
 	pmu {

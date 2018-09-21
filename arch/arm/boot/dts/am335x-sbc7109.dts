@@ -658,7 +658,7 @@
 			/* VDD_MPU voltage limits 0.95V - 1.26V with +/-4% tolerance */
 			regulator-name = "vdd_mpu";
 			regulator-min-microvolt = <912500>;
-			regulator-max-microvolt = <1351500>;
+			regulator-max-microvolt = <1270000>;
 			regulator-boot-on;
 			regulator-always-on;
 		};
