@@ -85,6 +85,11 @@ config GPIO_SYSFS
 	  Kernel drivers may also request that a particular GPIO be
 	  exported to userspace; this can be useful when debugging.
 
+config APLEX_GPIO_IRQ
+    tristate "aplex gpio irq"
+    help
+        aplex gpio irq interface
+
 config GPIO_GENERIC
 	tristate
 

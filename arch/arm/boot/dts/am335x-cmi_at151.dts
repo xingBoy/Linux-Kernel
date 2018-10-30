@@ -44,7 +44,7 @@
 		regulator-max-microvolt = <3300000>;
 	};
 
-    gpio_to_irq {
+    gpio_irq {
       compatible = "gpio_to_irq";
       gpio_nu = <44  IRQ_TYPE_EDGE_FALLING>;
     };
@@ -75,16 +75,16 @@
             0xe0  (MUX_MODE7)   /* U5 lcd_vsync.gpio2_22  AM335X_IO_LED2  */
             0xe4  (MUX_MODE7)   /* R5 lcd_hsync.gpio2_23  AM335X_IO_LED3  */
 
-            0x1ac (MUX_MODE7)  /* A14 mcasp0_ahclkx.gpio3_21   AM335X_GPIO0  */
-            0x190 (MUX_MODE7)  /* A13 mcasp0_aclkx.gpio3_14    AM335X_GPIO1  */
+            0x1ac (MUX_MODE7 | PIN_INPUT_PULLUP)  /* A14 mcasp0_ahclkx.gpio3_21   AM335X_GPIO0  */
+            0x190 (MUX_MODE7 | PIN_INPUT_PULLUP)  /* A13 mcasp0_aclkx.gpio3_14    AM335X_GPIO1  */
             0x194 (MUX_MODE7)  /* B13 mcasp0_fsx.gpio3_15      AM335X_GPIO2  */
             0x198 (MUX_MODE7)  /* D12 mcasp0_axr0.gpio3_16     AM335X_GPIO3  */
             0x19c (MUX_MODE7)  /* C12 mcasp0_ahclkr.gpio3_17   AM335X_GPIO4  */
             0x1a0 (MUX_MODE7)  /* B12 mcasp0_aclkr.gpio3_18    AM335X_GPIO5  */
             0x1a4 (MUX_MODE7)  /* C13 mcasp0_fsr.gpio3_19      AM335X_GPIO6  */
             0x1a8 (MUX_MODE7)  /* D13 mcasp0_axr1.gpio3_20     AM335X_GPIO7  */
-            0x1b0 (MUX_MODE7)  /* A15 xdma_event_intr0.gpio0_19     AM335X_GPIO8  */
-            0x1b4 (MUX_MODE7)  /* D14 xdma_event_intr1.gpio0_20     AM335X_GPIO9  */
+            0x1b0 (MUX_MODE7 | PIN_INPUT_PULLUP)  /* A15 xdma_event_intr0.gpio0_19     AM335X_GPIO8  */
+            0x1b4 (MUX_MODE7 | PIN_INPUT_PULLUP)  /* D14 xdma_event_intr1.gpio0_20     AM335X_GPIO9  */
 
             0x30 (MUX_MODE7|PIN_INPUT_PULLUP)  /* T12 gpmc_ad12.gpio1_12  RESET_IP  */
             0x34 (MUX_MODE7)  /* R12 gpmc_ad13.gpio1_13  PMIC_PWR_INT  */
@@ -448,7 +448,11 @@
 		};
 		partition@4 {
 			label = "NAND.rootfs.ubi";
-			reg = <0x00780000 0x0F880000>;
+			reg = <0x00780000 0x07C40000>;
+		};
+		partition@5 {
+			label = "NAND.opt.ubi";
+			reg = <0x083C0000 0x07C40000>;
 		};
 	};
 };
