@@ -24,6 +24,12 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
+#define COMMANDLINE_FINDER
+#ifdef COMMANDLINE_FINDER
+extern char *saved_command_line;
+#define PWM_BACKLIGHT_GPIO_ACTIVE_LOW	1
+#endif
+
 struct pwm_bl_data {
 	struct pwm_device	*pwm;
 	struct device		*dev;
@@ -42,6 +48,11 @@ struct pwm_bl_data {
 	int			(*check_fb)(struct device *, struct fb_info *);
 	void			(*exit)(struct device *);
 	char			fb_id[16];
+#ifdef COMMANDLINE_FINDER
+	unsigned char		Backlight_polarity;
+	//unsigned int		Backlight_min;
+	unsigned int		Backlight_max;
+#endif
 };
 
 static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
@@ -55,8 +66,17 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
 	if (err < 0)
 		dev_err(pb->dev, "failed to enable power supply\n");
 
+#ifdef COMMANDLINE_FINDER
+	if (pb->enable_gpio) {
+		if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+			gpiod_set_value(pb->enable_gpio, 0);
+		else
+			gpiod_set_value(pb->enable_gpio, 1);
+	}
+#else
 	if (pb->enable_gpio)
 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
+#endif
 
 	pwm_enable(pb->pwm);
 	pb->enabled = true;
@@ -67,11 +87,30 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
 	if (!pb->enabled)
 		return;
 
+#ifdef COMMANDLINE_FINDER
+	if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+	{
+		pwm_config(pb->pwm,  pb->period, pb->period);
+		pwm_enable(pb->pwm);
+	}
+	else
+	{
+		pwm_config(pb->pwm, 0, pb->period);
+		pwm_disable(pb->pwm);
+	}
+	if (pb->enable_gpio) {
+		if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+			gpiod_set_value(pb->enable_gpio, 1);
+		else
+			gpiod_set_value(pb->enable_gpio, 0);
+	}
+#else
 	pwm_config(pb->pwm, 0, pb->period);
 	pwm_disable(pb->pwm);
 
 	if (pb->enable_gpio)
 		gpiod_set_value_cansleep(pb->enable_gpio, 0);
+#endif
 
 	regulator_disable(pb->power_supply);
 	pb->enabled = false;
@@ -80,6 +119,23 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
 static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
 {
 	unsigned int lth = pb->lth_brightness;
+#if 0
+//#ifdef COMMANDLINE_FINDER
+	u64 duty_cycle;
+
+	if(brightness>pb->Backlight_max)
+		brightness=pb->Backlight_max;
+
+	if (pb->levels)
+		duty_cycle = pb->levels[brightness];
+	else
+		duty_cycle = brightness;
+
+	if (pb->Backlight_polarity & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+		return pb->period-lth -(duty_cycle * (pb->period - lth) / pb->scale);
+	else
+		return (duty_cycle * (pb->period - lth) / pb->scale) + lth;
+#else
 	u64 duty_cycle;
 
 	if (pb->levels)
@@ -91,6 +147,7 @@ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
 	do_div(duty_cycle, pb->scale);
 
 	return duty_cycle + lth;
+#endif
 }
 
 static int pwm_backlight_update_status(struct backlight_device *bl)
@@ -224,6 +281,36 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	int initial_blank = FB_BLANK_UNBLANK;
 	struct pwm_args pargs;
 	int ret;
+#ifdef COMMANDLINE_FINDER
+	char * cmdfinder;
+	int cmd_Backlight_polarity=0;
+	int cmd_Backlight_min=0;
+	int cmd_Backlight_max=236;
+	int cmd_Backlight_frequency=0;
+
+	//default:cmd_data_width=18; in dts file
+	cmdfinder=strstr(saved_command_line,"Backlight_polarity=1");
+	if(cmdfinder!=NULL)
+		cmd_Backlight_polarity=1;
+	cmdfinder=strstr(saved_command_line,"Backlight_min=");
+	if(cmdfinder!=NULL)
+	{
+		cmdfinder +=14;
+		cmd_Backlight_min=simple_strtol(cmdfinder, &cmdfinder, 10);
+	}
+	cmdfinder=strstr(saved_command_line,"Backlight_max=");
+	if(cmdfinder!=NULL)
+	{
+		cmdfinder +=14;
+		cmd_Backlight_max=simple_strtol(cmdfinder, &cmdfinder, 10);
+	}
+	cmdfinder=strstr(saved_command_line,"Backlight_frequency=");
+	if(cmdfinder!=NULL)
+	{
+		cmdfinder +=20;
+		cmd_Backlight_frequency=simple_strtol(cmdfinder, &cmdfinder, 10);
+	}
+#endif
 
 	if (!data) {
 		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
@@ -234,6 +321,29 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 
 		data = &defdata;
 	}
+#ifdef COMMANDLINE_FINDER
+	//printk("%s(%d): %d, %d, %ld\n", __func__, __LINE__,data->pwm_period_ns,data->lth_brightness,data->enable_gpio_flags);
+	if(cmd_Backlight_frequency>=50 && cmd_Backlight_frequency<=50000)
+	{
+		data->pwm_period_ns=(1000000/cmd_Backlight_frequency)*1000;
+	}
+	if(cmd_Backlight_max<70 && cmd_Backlight_min>=236)//255*0.2=51
+	{
+		cmd_Backlight_max=236;
+	}
+	if(cmd_Backlight_min>0 && cmd_Backlight_min<=100)//255*0.2=51
+	{
+		if(cmd_Backlight_min>cmd_Backlight_max)
+			data->lth_brightness=cmd_Backlight_max/2;
+		else
+			data->lth_brightness=cmd_Backlight_min;
+	}
+	else
+		data->lth_brightness=0;
+	//if(cmd_Backlight_polarity)
+	//	data->enable_gpio_flags |= PWM_BACKLIGHT_GPIO_ACTIVE_LOW;
+	//printk("%s(%d): (%d), %d, %d, %d\n", __func__, __LINE__ , data->pwm_period_ns,cmd_Backlight_min,cmd_Backlight_frequency,cmd_Backlight_polarity);
+#endif
 
 	if (data->init) {
 		ret = data->init(&pdev->dev);
@@ -257,7 +367,17 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 		pb->levels = data->levels;
 	} else
 		pb->scale = data->max_brightness;
-
+#ifdef COMMANDLINE_FINDER
+	pb->Backlight_polarity = 0;
+	if(cmd_Backlight_polarity)
+		pb->Backlight_polarity |= PWM_BACKLIGHT_GPIO_ACTIVE_LOW;
+	if(cmd_Backlight_max>70 && cmd_Backlight_min<=236)//255*0.2=51
+	{
+		pb->Backlight_max=cmd_Backlight_max;
+	}
+	else
+		pb->Backlight_max=236;
+#endif
 	pb->notify = data->notify;
 	pb->notify_after = data->notify_after;
 	pb->check_fb = data->check_fb;
@@ -343,6 +463,12 @@ static int pwm_backlight_probe(struct platform_device *pdev)
 	 */
 	pwm_get_args(pb->pwm, &pargs);
 	pb->period = pargs.period;
+#ifdef COMMANDLINE_FINDER
+	if(cmd_Backlight_frequency>=50 && cmd_Backlight_frequency<=50000)
+	{
+		pb->period=(1000000/cmd_Backlight_frequency)*1000;
+	}
+#endif
 	if (!pb->period && (data->pwm_period_ns > 0))
 		pb->period = data->pwm_period_ns;
 

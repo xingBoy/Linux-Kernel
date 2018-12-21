@@ -86,6 +86,13 @@
 #define IMX7_OCOTP_ANA1		0x04f0
 #define IMX7_OCOTP_TESTER3	0x0440
 
+#include <linux/gpio.h>
+#define GPIO2_IO03				IMX_GPIO_NR(2, 3)
+#define GPIO2_IO02				IMX_GPIO_NR(2, 2)
+
+static int alarm_status=1;
+static int boot_status=1;
+
 /* The driver supports 1 passive trip point and 1 critical trip point */
 enum imx_thermal_trip {
 	IMX_TRIP_PASSIVE,
@@ -365,6 +372,29 @@ static int imx_get_temp(struct thermal_zone_device *tz, int *temp)
 		data->last_temp = *temp;
 	}
 
+	if(data->last_temp > 90000)
+	{
+		//printk("50(%d)(%d)\n",data->last_temp,data->alarm_temp);
+		gpio_set_value(GPIO2_IO03, alarm_status ? 1 : 0);
+		gpio_set_value(GPIO2_IO02, 0);
+		alarm_status=alarm_status?0:1;
+	}
+	else
+	{
+		if(boot_status)
+		{
+			if(boot_status++>5)
+			{
+				boot_status=0;
+			}
+			gpio_set_value(GPIO2_IO03, 1);
+		}
+		else
+		{
+			gpio_set_value(GPIO2_IO03, 0);
+			gpio_set_value(GPIO2_IO02, 1);
+		}
+	}
 	/* Reenable alarm IRQ if temperature below alarm temperature */
 	if (!data->irq_enabled && *temp < data->alarm_temp) {
 		data->irq_enabled = true;
@@ -892,9 +922,6 @@ static int imx_thermal_probe(struct platform_device *pdev)
 	regmap_write(map, data->socdata->sensor_ctrl + REG_SET,
 		     data->socdata->measure_temp_mask);
 
-	data->irq_enabled = true;
-	data->mode = THERMAL_DEVICE_ENABLED;
-
 	ret = devm_request_threaded_irq(&pdev->dev, data->irq,
 			imx_thermal_alarm_irq, imx_thermal_alarm_irq_thread,
 			0, "imx_thermal", data);
@@ -907,9 +934,25 @@ static int imx_thermal_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+	data->irq_enabled = true;
+	data->mode = THERMAL_DEVICE_ENABLED;
+
 	/* register the busfreq notifier called in low bus freq */
 	if (data->socdata->version != TEMPMON_IMX7)
 		register_busfreq_notifier(&thermal_notifier);
+
+	ret = gpio_request(GPIO2_IO03, "Alarm_LED");
+	if ( ret ) {
+        printk("get GPIO2_IO03 gpio FAILED!\n");
+		return ret;
+	}
+	gpio_direction_output(GPIO2_IO03, 1);
+	ret = gpio_request(GPIO2_IO02, "Green_LED");
+	if ( ret ) {
+        printk("get GPIO2_IO02 gpio FAILED!\n");
+		return ret;
+	}
+	gpio_direction_output(GPIO2_IO02, 1);
 
 	return 0;
 }

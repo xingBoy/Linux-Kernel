@@ -80,7 +80,7 @@
 	fsl,pins = <
 	>;
 };
-
+#if 0
 &uart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5_1
@@ -92,7 +92,8 @@
 	/* fsl,dte-mode; */
 	/* pinctrl-0 = <&pinctrl_uart5dte_1>; */
 };
-
+#endif
+#if 0
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wifi>;
@@ -103,3 +104,4 @@
 	pm-ignore-notify;
 	wifi-host;
 };
+#endif
