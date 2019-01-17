@@ -425,7 +425,6 @@
     };
 };
 #endif
-#if 1//active fec
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -434,7 +433,7 @@
 	fsl,magic-packet;
 	status = "okay";
 };
-#endif
+
 &gpc {
 	fsl,ldo-bypass = <1>;
 };
@@ -877,8 +876,7 @@
 				MX6QDL_PAD_GPIO_6__ENET_IRQ		0x000b1
 			>;
 		};
-#endif
-#if 0
+
 		pinctrl_gpio_keys: gpio_keysgrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x1b0b0
@@ -934,7 +932,7 @@
 				MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28	0x80000000	/* scl */
 			>;
 		};
-#endif
+
 		pinctrl_can1: can1grp {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_7__FLEXCAN1_TX          0x1b0b1
@@ -962,6 +960,7 @@
 				MX6QDL_PAD_NANDF_D7__GPIO2_IO07		0x80000000//gpio_out3
 			>;
 		};
+#endif
 		pinctrl_ipu1: ipu1grp {
 			fsl,pins = <
 				MX6QDL_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK 0x10
@@ -1039,8 +1038,7 @@
 				MX6QDL_PAD_SD1_DAT2__PWM2_OUT		0x1b0b1
 			>;
 		};
-#endif
-#if 1
+
 		pinctrl_pwm4: pwm4grp {
 			fsl,pins = <
 				MX6QDL_PAD_SD1_CMD__PWM4_OUT		0x1b0b1
@@ -1053,7 +1051,6 @@
 				MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA	0x1b0b1
 			>;
 		};
-
 #if 1
 		pinctrl_uart2: uart2grp {
 			fsl,pins = <

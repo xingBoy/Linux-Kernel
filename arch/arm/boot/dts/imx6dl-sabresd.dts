@@ -21,8 +21,7 @@
 	offset-discharger = <1464>;
 	offset-usb-charger = <1285>;
 };
-#endif
-#if 0
+
 &iomuxc {
         epdc {
                 pinctrl_epdc_0: epdcgrp-0 {
@@ -60,8 +59,7 @@
         DISPLAY-supply = <&DISPLAY_reg>;
         status = "okay";
 };
-#endif
-#if 0
+
 &i2c3 {
         max17135@48 {
                 compatible = "maxim,max17135";
