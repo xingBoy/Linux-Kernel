@@ -1,9 +1,9 @@
-#. /opt/fsl-imx-x11/4.9.88-2.0.0/environment-setup-cortexa9hf-neon-poky-linux-gnueabi
+. /opt/fsl-imx-x11/4.9.88-2.0.0/environment-setup-cortexa9hf-neon-poky-linux-gnueabi
 #!/bin/sh
 
 export ARCH=arm
-export PATH=~/gcc-linaro/bin/:$PATH
-export CROSS_COMPILE=arm-linux-gnueabihf-
+#export PATH=~/gcc-linaro/bin/:$PATH
+#export CROSS_COMPILE=arm-linux-gnueabihf-
 
 #make distclean
 #make clean
