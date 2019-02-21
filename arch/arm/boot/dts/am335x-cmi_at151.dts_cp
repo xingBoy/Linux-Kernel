@@ -440,21 +440,20 @@
 		};
 		partition@2 {
 			label = "NAND.kernel.img";
-            reg = <0x00280000 0x01480000>;
+			reg = <0x00280000 0x00480000>;
 		};
 		partition@3 {
 			label = "NAND.kernel.dts";
-            reg = <0x01700000 0x00080000>;
+			reg = <0x00700000 0x00080000>;
 		};
 		partition@4 {
 			label = "NAND.rootfs.ubi";
-		    reg = <0x01780000 0x1e000000>;
-        };
-	/*	partition@5 {
+			reg = <0x00780000 0x07C40000>;
+		};
+		partition@5 {
 			label = "NAND.opt.ubi";
 			reg = <0x083C0000 0x07C40000>;
 		};
-        */
 	};
 };
 

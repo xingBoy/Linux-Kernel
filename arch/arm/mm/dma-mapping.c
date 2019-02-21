@@ -319,7 +319,7 @@ static void __dma_free_remap(void *cpu_addr, size_t size)
 }
 
 //#define DEFAULT_DMA_COHERENT_POOL_SIZE	SZ_256K
-#define DEFAULT_DMA_COHERENT_POOL_SIZE	SZ_2M
+#define DEFAULT_DMA_COHERENT_POOL_SIZE	SZ_1M
 static struct gen_pool *atomic_pool;
 
 static size_t atomic_pool_size = DEFAULT_DMA_COHERENT_POOL_SIZE;
