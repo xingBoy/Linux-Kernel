@@ -471,7 +471,8 @@ dtb-$(CONFIG_SOC_AM33XX) += \
 	am335x-wega-rdk.dtb \
 	am335x-sbc7109.dtb  \
 	am335x-sbc_7109_455.dtb \
-	am335x-cmi_at151.dtb
+	am335x-cmi_at151.dtb \
+	am335x-ecm_5410t.dtb
 dtb-$(CONFIG_ARCH_OMAP4) += \
 	omap4-duovero-parlor.dtb \
 	omap4-panda.dtb \
