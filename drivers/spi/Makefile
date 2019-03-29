@@ -8,6 +8,9 @@ ccflags-$(CONFIG_SPI_DEBUG) := -DDEBUG
 # config declarations into driver model code
 obj-$(CONFIG_SPI_MASTER)		+= spi.o
 obj-$(CONFIG_SPI_SPIDEV)		+= spidev.o
+obj-$(CONFIG_SPI_WK2124A)		+= wk2xxx_spiA.o
+obj-$(CONFIG_SPI_WK2124A)		+= wk2xxx_spiB.o
+obj-$(CONFIG_SPI_WK2124A)		+= wk2xxx_spiC.o
 
 # SPI master controller drivers (bus)
 obj-$(CONFIG_SPI_ALTERA)		+= spi-altera.o
@@ -56,7 +59,7 @@ obj-$(CONFIG_SPI_OC_TINY)		+= spi-oc-tiny.o
 obj-$(CONFIG_SPI_OCTEON)		+= spi-octeon.o
 obj-$(CONFIG_SPI_OMAP_UWIRE)		+= spi-omap-uwire.o
 obj-$(CONFIG_SPI_OMAP_100K)		+= spi-omap-100k.o
-obj-$(CONFIG_SPI_OMAP24XX)		+= spi-omap2-mcspi.o
+obj-$(CONFIG_SPI_OMAP)		+= spi-omap2-mcspi.o
 obj-$(CONFIG_SPI_TI_QSPI)		+= spi-ti-qspi.o
 obj-$(CONFIG_SPI_ORION)			+= spi-orion.o
 obj-$(CONFIG_SPI_PL022)			+= spi-pl022.o

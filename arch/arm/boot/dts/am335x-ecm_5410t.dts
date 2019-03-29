@@ -44,10 +44,12 @@
 		regulator-max-microvolt = <3300000>;
 	};
 
+    /*
     gpio_irq {
       compatible = "gpio_to_irq";
       gpio_nu = <44  IRQ_TYPE_EDGE_FALLING>;
     };
+    */
 };
 
 &am33xx_pinmux {
@@ -55,6 +57,31 @@
 		pinctrl-single,pins = <
 			0x188 (PIN_INPUT_PULLUP | MUX_MODE0)	/* i2c0_sda.i2c0_sda */
 			0x18c (PIN_INPUT_PULLUP | MUX_MODE0)	/* i2c0_scl.i2c0_scl */
+		>;
+	};
+
+	spi0_pins: pinmux_spi0_pins {
+		pinctrl-single,pins = <
+			0x150 (PIN_INPUT_PULLDOWN | MUX_MODE0)	/* spi0_clk.spi0_clk */
+			0x154 (PIN_INPUT_PULLDOWN | MUX_MODE0)	/* spi0_d0.spi0_d0 */
+			0x158 (PIN_INPUT_PULLUP | MUX_MODE0)	/* spi0_d1.spi0_d1 */
+			0x15c (PIN_INPUT_PULLUP | MUX_MODE0)	/* spi0_cs0.spi0_cs0 */
+            0x20  (MUX_MODE7 | PIN_OUTPUT_PULLUP)   /* gpmc_ad8  */
+            0x24  (MUX_MODE7 | PIN_INPUT_PULLUP)    /* gpmc_ad9  */
+		>;
+	};
+
+	spi1_pins: pinmux_spi1_pins {
+		pinctrl-single,pins = <
+			0x190 (PIN_INPUT_PULLDOWN | MUX_MODE3)	/* mcasp0_aclkx.spi1_clk */
+			0x194 (PIN_INPUT_PULLDOWN | MUX_MODE3)	/* mcasp0_fsx.spi1_d0 */
+			0x198 (PIN_INPUT_PULLUP   | MUX_MODE3)	/* mcasp0_axr0.spi1_d1 */
+			0x19c (PIN_INPUT_PULLUP | MUX_MODE3)	/* mcasp0_ahclkr.spi1_cs0 */
+			0x1b0 (PIN_INPUT_PULLUP | MUX_MODE4)	/* xdma_event_intr0.spi1_cs1 */
+            0x28  (MUX_MODE7 | PIN_OUTPUT_PULLUP)   /* gpmc_ad10 */
+            0x2c  (MUX_MODE7 | PIN_INPUT_PULLUP)    /* gpmc_ad11 */
+            0x34  (MUX_MODE7 | PIN_OUTPUT_PULLUP)   /* gpmc_ad13 */
+            0x38  (MUX_MODE7 | PIN_INPUT_PULLUP)    /* gpmc_ad14 */
 		>;
 	};
 
@@ -108,8 +135,8 @@
 
 	uart5_pins: uart5_pins {
 		pinctrl-single,pins = <
-			0xc4 (PIN_INPUT_PULLUP | MUX_MODE1)    /* lcd_data9.uart5_rxd */
-			0xc0 (PIN_OUTPUT_PULLDOWN | MUX_MODE1) /* lcd_data8.uart5_txd */
+			0xc4 (PIN_INPUT_PULLUP | MUX_MODE4)    /* lcd_data9.uart5_rxd */
+			0xc0 (PIN_OUTPUT_PULLDOWN | MUX_MODE4) /* lcd_data8.uart5_txd */
 		>;
 	};
 
@@ -297,6 +324,62 @@
 
 &cppi41dma  {
 	status = "okay";
+};
+
+&spi0 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&spi0_pins>;
+    ti,pindir-d0-out-d1-in;
+
+    wk2124a: wk2124a {
+        compatible = "aplex,wk2124spiA";
+        reg = <0>;
+        poll_mode = <0>;
+        type = <0>;
+        enable_dma = <0>;
+        spi-max-frequency = <10000000>;
+        irq_gpio = <23 IRQ_TYPE_LEVEL_LOW>;
+        driver_name = "ttysWZA";
+        dev_name = "ttysWZA";
+        major = <190>;
+        minor = <5>;
+    };
+};
+
+&spi1 {
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&spi1_pins>;
+    ti,pindir-d0-out-d1-in;
+
+    wk2124b: wk2124b {
+        compatible = "aplex,wk2124spiB";
+        reg = <0>;
+        poll_mode = <0>;
+        type = <0>;
+        enable_dma = <0>;
+        spi-max-frequency = <10000000>;
+        irq_gpio = <27 IRQ_TYPE_LEVEL_LOW>;
+        driver_name = "ttysWZB";
+        dev_name = "ttysWZB";
+        major = <200>;
+        minor = <5>;
+    };
+
+    wk2124c: wk2124c {
+        compatible = "aplex,wk2124spiC";
+        reg = <1>;
+        poll_mode = <0>;
+        type = <0>;
+        enable_dma = <0>;
+        spi-max-frequency = <10000000>;
+        irq_gpio = <46 IRQ_TYPE_LEVEL_LOW>;
+        driver_name = "ttysWZC";
+        dev_name = "ttysWZC";
+        major = <210>;
+        minor = <5>;
+    };
 };
 
 &i2c0 {

@@ -367,7 +367,7 @@ config SPI_OMAP_UWIRE
 	help
 	  This hooks up to the MicroWire controller on OMAP1 chips.
 
-config SPI_OMAP24XX
+config SPI_OMAP
 	tristate "McSPI driver for OMAP"
 	depends on HAS_DMA
 	depends on ARM || ARM64 || AVR32 || HEXAGON || MIPS || SUPERH
@@ -688,6 +688,11 @@ config SPI_SPIDEV
 
 	  Note that this application programming interface is EXPERIMENTAL
 	  and hence SUBJECT TO CHANGE WITHOUT NOTICE while it stabilizes.
+
+config SPI_WK2124A
+	tristate "wk2124A"
+	help
+      wk2124a driver
 
 config SPI_TLE62X0
 	tristate "Infineon TLE62X0 (for power switching)"
