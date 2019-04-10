@@ -448,11 +448,7 @@
 		};
 		partition@4 {
 			label = "NAND.rootfs.ubi";
-			reg = <0x00780000 0x07C40000>;
-		};
-		partition@5 {
-			label = "NAND.opt.ubi";
-			reg = <0x083C0000 0x07C40000>;
+			reg = <0x00780000 0x0F880000>;
 		};
 	};
 };
