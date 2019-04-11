@@ -409,7 +409,7 @@ void __init omap3xxx_check_revision(void)
 		}
 		break;
 	case 0xb944:
-		pr_warn("<danny debug> this board is am335x, cpu revision = %d \n",rev);
+		pr_warn("<danny debug> this board is ecm_5206, cpu revision = %d \n",rev);
 		switch (rev) {
 		case 0:
 			omap_revision = AM335X_REV_ES1_0;

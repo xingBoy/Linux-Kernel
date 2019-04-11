@@ -341,7 +341,7 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 			if (!quiet)
 				ubifs_err("corrupt empty space at LEB %d:%d",
 					  lnum, offs);
-			goto corrupted;
+			//goto corrupted;
 		}
 
 	return sleb;

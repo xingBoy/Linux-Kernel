@@ -1321,7 +1321,7 @@ static void __init am335x_evm_map_io(void)
 	omapam33xx_map_common_io();
 }
 
-MACHINE_START(APLEX_ECM_5206, "aplex_ECM_5206")
+MACHINE_START(APLEX_ECM_5206, "aplex_ECM_5206_20190328")
 	/* Maintainer: Texas Instruments */
 	.atag_offset	= 0x100,
 	.map_io		= am335x_evm_map_io,
