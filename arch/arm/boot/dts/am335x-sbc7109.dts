@@ -13,7 +13,7 @@
 / {
 	model = "APLEX SBC7109";
 	compatible = "ti,am335x-sbc7109", "ti,am33xx";
-	
+
 	chosen {
 		linux,stdout-path = &uart1;
 	};
@@ -141,19 +141,18 @@
 		pinctrl-single,pins = <
 			0x170 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart0_rxd.uart0_rxd */
 			0x174 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart0_txd.uart0_txd */
-			0x20  (PIN_OUTPUT_PULLUP | MUX_MODE7)   /* (U10) gpmc_ad8.gpio0[22] COM0_MODE_0 */
-			0x24  (PIN_OUTPUT_PULLDOWN | MUX_MODE7)   /* (T10) gpmc_ad9.gpio0[23] COM0_MODE_1 */
-			0x1b0 (PIN_OUTPUT_PULLDOWN | MUX_MODE7 ) /* (A15) xdma_event_intr0.gpio0[19] COM0_TERM */
 		>;
 	};
 
 	uart1_pins: pinmux_uart1_pins {
 		pinctrl-single,pins = <
+			0x178 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart1_ctsn.uart1_ctsn */
+			0x17C (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_rtsn.uart1_rtsn */
 			0x180 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart1_rxd.uart1_rxd */
 			0x184 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart1_txd.uart1_txd */
 		>;
 	};
-	
+
 //	nandflash_pins_s0: nandflash_pins_s0 {
 //		pinctrl-single,pins = <
 //			0x0 (PIN_INPUT_PULLUP | MUX_MODE0)	/* gpmc_ad0.gpmc_ad0 */
@@ -173,7 +172,7 @@
 //			0x9c (PIN_OUTPUT | MUX_MODE0)		/* gpmc_be0n_cle.gpmc_be0n_cle */
 //		>;
 //	};
-	
+
 	emmc_pins: pinmux_emmc_pins {
 		pinctrl-single,pins = <
 			0x80 (PIN_INPUT_PULLUP | MUX_MODE2) /* gpmc_csn1.mmc1_clk */
@@ -213,7 +212,7 @@
 	ecap0_pins: backlight_pins {
 		pinctrl-single,pins = <
 			0x164 0x0	/* eCAP0_in_PWM0_out.eCAP0_in_PWM0_out MODE0 */
-			0x178 ( PIN_OUTPUT_PULLUP | MUX_MODE7 ) /* (D18) uart1_ctsn.gpio0[12] LVDS_BLKT_ON s*/
+			0x19c ( PIN_OUTPUT_PULLUP | MUX_MODE7 )  /* mcasp0_ahclkr  gpio3_17  */
 		>;
 	};
 
@@ -232,6 +231,9 @@
 			0x34 ( PIN_INPUT | MUX_MODE7 ) /* (R12) gpmc_ad13.gpio1[13] */
 			0x38 ( PIN_INPUT | MUX_MODE7 ) /* (V13) gpmc_ad14.gpio1[14] */
 			0x3c ( PIN_INPUT | MUX_MODE7 ) /* (U13) gpmc_ad15.gpio1[15] */
+
+			0x190 ( PIN_INPUT | MUX_MODE7 ) /* A13 mcasp0_aclkx.gpio3_14  */
+			0x194 ( PIN_INPUT | MUX_MODE7 ) /* B13 mcasp0_fsx.gpio3_15*/
 		>;
 	};
 
@@ -333,13 +335,13 @@
 			0x160 ( PIN_INPUT | MUX_MODE2 ) /* (C15) spi0_cs1.eCAP1_in_PWM1_out */
 		>;
 	};
-	
+
 	myglue1_pins_default: myglue1_pins_default {
 		pinctrl-single,pins = <
 			0x1b8 ( PIN_OUTPUT_PULLUP | MUX_MODE0 ) /* (A10) nRESETIN_OUT.nRESETIN_OUT */
 		>;
 	};
-	
+
 	lcd_pins_s0: lcd_pins_s0 {
 		pinctrl-single,pins = <
 			0xe0 ( PIN_OUTPUT | MUX_MODE0 ) /* (U5) lcd_vsync.lcd_vsync */
@@ -377,7 +379,7 @@
 			0x1a8 ( PIN_OUTPUT_PULLDOWN | MUX_MODE3 ) /* (D13) mcasp0_axr1.mcasp1_axr0 */ //DIN
 		>;
 	};
-	
+
 	mcasp1_pins_sleep: mcasp1_pins_sleep {
 		pinctrl-single,pins = <
 			0x1ac (PIN_INPUT_PULLDOWN | MUX_MODE7)
@@ -658,7 +660,7 @@
 			/* VDD_MPU voltage limits 0.95V - 1.26V with +/-4% tolerance */
 			regulator-name = "vdd_mpu";
 			regulator-min-microvolt = <912500>;
-			regulator-max-microvolt = <1351500>;
+			regulator-max-microvolt = <1270000>;
 			regulator-boot-on;
 			regulator-always-on;
 		};

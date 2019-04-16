@@ -1711,14 +1711,8 @@ static int serial_omap_probe(struct platform_device *pdev)
 	pm_runtime_put_autosuspend(up->dev);
 	// John add.
 #define GPIO_TO_PIN(bank, gpio)		(32 * (bank) + (gpio))
-devm_gpio_request(up->dev, GPIO_TO_PIN(0,22), "omap-serial");
-devm_gpio_request(up->dev, GPIO_TO_PIN(0,23), "omap-serial");
-devm_gpio_request(up->dev, GPIO_TO_PIN(0,19), "omap-serial");
-devm_gpio_request(up->dev, GPIO_TO_PIN(0,12), "omap-serial");
-	gpio_direction_output(GPIO_TO_PIN(0,22),1); //COM0_MODE_0=1
-	gpio_direction_output(GPIO_TO_PIN(0,23),0); //COM0_MODE_1=0
-	gpio_direction_output(GPIO_TO_PIN(0,19),0); //COM0_TERM=0
-	gpio_direction_output(GPIO_TO_PIN(0,12),1); //LVDS_BLKT_ON=1
+    devm_gpio_request(up->dev, GPIO_TO_PIN(3,17), "omap-serial");
+	gpio_direction_output(GPIO_TO_PIN(3, 17),1); //LVDS_BLKT_ON=1
 	return 0;
 
 err_add_port:
