@@ -259,6 +259,7 @@ obj-$(CONFIG_MACH_APLEX_ECM_5416)	+= board-aplex_ECM_5416.o
 obj-$(CONFIG_MACH_APLEX_CMI_AT101)	+= board-aplex_cmi_at101.o
 obj-$(CONFIG_MACH_APLEX_ECM_5410)	+= board-aplex_ecm_5410.o
 obj-$(CONFIG_MACH_APLEX_ECM_5206)	+= board-aplex_ecm_5206.o
+obj-$(CONFIG_MACH_APLEX_ECM_5206L)	+= board-aplex_ecm_5206l.o
 
 obj-$(CONFIG_MACH_AM335XEVM_VIBRATOR)	+= board-am335xevm-vibrator.o
 
