@@ -34,7 +34,7 @@ struct fasync_struct *fasync_queue;
 struct work_struct  workqueue;
 int demo_open(struct inode *inode, struct file *filp)
 {
-	//printk("%s,%d\n",__func__, __LINE__);
+    //printk("%s,%d\n",__func__, __LINE__);
 
     if(!flags)
     {
@@ -50,7 +50,7 @@ int demo_release(struct inode *inode, struct file *filp)
 {
 
     flags = 0;
-	return 0;
+    return 0;
 }
 int demo_fasync(int fd, struct file * filp, int mode)
 {
@@ -68,15 +68,15 @@ void workqueue_func(struct work_struct *work)
 
 }
 struct file_operations fops = {
-	.owner = THIS_MODULE,
-	.open = demo_open,
-	.release = demo_release,
+    .owner = THIS_MODULE,
+    .open = demo_open,
+    .release = demo_release,
     .fasync = demo_fasync,
 };
 
 
 
- int dev_file_create(void)
+int dev_file_create(void)
 {
     int ret =  0;
     ret = alloc_chrdev_region(&devno,minor, count, DEVFSILE_NANE);//创建设备号并且注册设备号
@@ -141,17 +141,17 @@ static irqreturn_t reset_ip_handler(int irqno, void * dev_id)
 
 int demo_probe(struct platform_device * pdevice)
 {
-	u32  out_value[2] = {100};
+    u32  out_value[2] = {100};
     np = pdevice->dev.of_node;
     of_property_read_u32_array(np, "gpioirq", out_value, 2);
-  //  printk("-----name:----%s---out_value0 = %d---out_value1 = --%d\n",np->name,out_value[0],out_value[1]);
+    //  printk("-----name:----%s---out_value0 = %d---out_value1 = --%d\n",np->name,out_value[0],out_value[1]);
     int ret = 0;
     gpio_nu = out_value[0];
     irq_flags = out_value[1];
     gpio_request(gpio_nu,"xxxx");
     gpio_direction_input(gpio_nu);
-   // gpio_direction_output(gpio_nu,1);
-   // gpio_export(gpio_nu, 1);
+    // gpio_direction_output(gpio_nu,1);
+    // gpio_export(gpio_nu, 1);
 
     INIT_WORK(&workqueue, workqueue_func);
 
@@ -163,10 +163,10 @@ int demo_probe(struct platform_device * pdevice)
         printk("Failed to request_irq.\n");
         return ret;
     }
-	printk("demo_probe ok!\n");
+    printk("demo_probe ok!\n");
     ret = dev_file_create();
 
-	return ret;
+    return ret;
 
 }
 
@@ -174,7 +174,7 @@ int demo_probe(struct platform_device * pdevice)
 int demo_remove(struct platform_device * pdevice)
 {
 
-	printk("%s,%d\n",__func__, __LINE__);
+    printk("%s,%d\n",__func__, __LINE__);
     device_destroy(pclass, devno);//销毁设备节点结构体
     class_destroy(pclass);
     cdev_del(pdev);
@@ -183,21 +183,21 @@ int demo_remove(struct platform_device * pdevice)
     //gpio_unexport(gpio_nu);
     free_irq(gpio_to_irq(gpio_nu), NULL);
     gpio_free(gpio_nu);
-	return 0;
+    return 0;
 }
 
 struct of_device_id  idts[] = {
-	{.compatible = "gpio_to_irq"},
-	{/*Nothing to done.*/},
+    {.compatible = "gpio_to_irq"},
+    {/*Nothing to done.*/},
 };
 
 struct platform_driver  pdriver = {
-	.probe = demo_probe,
-	.remove = demo_remove,
-	.driver = {
-		.name = "demo",
-		.of_match_table = idts,
-	},
+    .probe = demo_probe,
+    .remove = demo_remove,
+    .driver = {
+        .name = "demo",
+        .of_match_table = idts,
+    },
 };
 
 module_platform_driver(pdriver);
