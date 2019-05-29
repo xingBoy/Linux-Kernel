@@ -1635,21 +1635,6 @@ static int wk2xxx_probe(struct spi_device *spi)
     	int status, irq;
     	uint8_t dat[1];
         struct wk2xxx_port *s;
-//////////////////test spi////////////////////////
-
-	do
-	{
-		wk2xxx_read_global_reg(spi,WK2XXX_GENA,dat);
-		printk(KERN_ERR "wk2xxx_probe()  GENA = 0x%X\n",dat[0]);
-		wk2xxx_write_global_reg(spi,WK2XXX_GENA,0xf5);
-		wk2xxx_read_global_reg(spi,WK2XXX_GENA,dat);
-		printk(KERN_ERR "wk2xxx_probe()  GENA = 0x%X\n",dat[0]);
-		wk2xxx_write_global_reg(spi,WK2XXX_GENA,0xf0);
-		wk2xxx_read_global_reg(spi,WK2XXX_GENA,dat);
-		printk(KERN_ERR "wk2xxx_probe()  GENA = 0x%X\n",dat[0]);
-	}while(0);
-/////////////////////test spi //////////////////////////	
-
 printk( KERN_ERR"-wk2xxx_probe()------in---\n");	
 	irq = rockchip_spi_parse_dt(&spi->dev);
 	if(irq<0)
