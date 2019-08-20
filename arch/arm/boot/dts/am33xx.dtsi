@@ -354,8 +354,8 @@
 			reg = <0x44e09000 0x2000>;
 			interrupts = <72>;
 			status = "disabled";
-			dmas = <&edma 26 0>, <&edma 27 0>;
-			dma-names = "tx", "rx";
+			#dmas = <&edma 26 0>, <&edma 27 0>;
+			#dma-names = "tx", "rx";
 		};
 
 		uart1: serial@48022000 {
@@ -365,8 +365,8 @@
 			reg = <0x48022000 0x2000>;
 			interrupts = <73>;
 			status = "disabled";
-			dmas = <&edma 28 0>, <&edma 29 0>;
-			dma-names = "tx", "rx";
+			#dmas = <&edma 28 0>, <&edma 29 0>;
+			#dma-names = "tx", "rx";
 		};
 
 		uart2: serial@48024000 {
@@ -376,8 +376,8 @@
 			reg = <0x48024000 0x2000>;
 			interrupts = <74>;
 			status = "disabled";
-			dmas = <&edma 30 0>, <&edma 31 0>;
-			dma-names = "tx", "rx";
+			#dmas = <&edma 30 0>, <&edma 31 0>;
+			#dma-names = "tx", "rx";
 		};
 
 		uart3: serial@481a6000 {
