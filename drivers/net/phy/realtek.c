@@ -22,12 +22,20 @@
 #define RTL821x_INER		0x12
 #define RTL821x_INER_INIT	0x6400
 #define RTL821x_INSR		0x13
+#define RTL821x_PAGE_SELECT     0x1f
 #define RTL8211E_INER_LINK_STATUS 0x400
 
 #define RTL8211F_INER_LINK_STATUS 0x0010
 #define RTL8211F_INSR		0x1d
 #define RTL8211F_PAGE_SELECT	0x1f
 #define RTL8211F_TX_DELAY	0x100
+
+#define RTL8211E_CONFREG        0x1c
+#define RTL8211E_TX_DELAY       0x1000
+#define RTL8211E_RX_DELAY       0x0800
+#define RTL8211E_CONFREG_MAGIC  0x2000
+
+#define RTL8211E_EXT_PAGE_SELECT  0x1e
 
 MODULE_DESCRIPTION("Realtek PHY driver");
 MODULE_AUTHOR("Johnson Leung");
@@ -119,6 +127,28 @@ static int rtl8211f_config_init(struct phy_device *phydev)
 	return 0;
 }
 
+static int rtl8211e_config_init(struct phy_device *phydev)
+{
+        u16 reg;
+
+        phy_write(phydev, RTL821x_PAGE_SELECT, 7);
+
+        phy_write(phydev, RTL8211E_EXT_PAGE_SELECT, 0xa4);
+
+        reg = phy_read(phydev, RTL8211E_CONFREG);
+
+        reg &= ~(RTL8211E_TX_DELAY | RTL8211E_RX_DELAY | RTL8211E_CONFREG_MAGIC );
+        //reg &= ~(RTL8211E_RX_DELAY);
+
+        reg |= (RTL8211E_CONFREG_MAGIC | RTL8211E_RX_DELAY | RTL8211E_TX_DELAY );
+
+        phy_write(phydev, RTL8211E_CONFREG, reg);       //RTL8211E_CONFREG 0x1c
+
+        phy_write(phydev, RTL821x_PAGE_SELECT, 0x0);
+
+        return 0;
+}
+
 static struct phy_driver realtek_drvs[] = {
 	{
 		.phy_id         = 0x00008201,
@@ -157,6 +187,7 @@ static struct phy_driver realtek_drvs[] = {
 		.features	= PHY_GBIT_FEATURES,
 		.flags		= PHY_HAS_INTERRUPT,
 		.config_aneg	= &genphy_config_aneg,
+		.config_init    = &rtl8211e_config_init,
 		.read_status	= &genphy_read_status,
 		.ack_interrupt	= &rtl821x_ack_interrupt,
 		.config_intr	= &rtl8211e_config_intr,
